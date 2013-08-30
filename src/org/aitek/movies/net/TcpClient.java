@@ -16,19 +16,14 @@ import java.net.Socket;
  */
 public class TcpClient {
 
-    private String mede8erAddress;
     private Socket socket;
-    private int port;
     private BufferedReader inputStream;
     private PrintWriter outputStream;
 
 
     public TcpClient(String mede8erAddress, int port) throws Exception {
 
-        this.mede8erAddress = mede8erAddress;
-        this.port = port;
-
-        // creates the socket to the mede8er
+        // creates the socket to the mede8er and set the streams
         socket = new Socket(mede8erAddress, port);
         outputStream = new PrintWriter(socket.getOutputStream());
         inputStream = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -55,6 +50,12 @@ public class TcpClient {
     @Override
     protected void finalize() throws Throwable {
         super.finalize();
+        if (outputStream != null) {
+            outputStream.close();
+        }
+        if (inputStream!= null) {
+            inputStream.close();
+        }
         if (socket != null) {
             socket.close();
         }

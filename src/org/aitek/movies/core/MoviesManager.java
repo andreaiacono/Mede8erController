@@ -2,18 +2,12 @@ package org.aitek.movies.core;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.util.Log;
-import org.aitek.movies.core.Movie;
-import org.aitek.movies.loaders.FileSystemScanner;
+import org.aitek.movies.loaders.GenericProgressIndicator;
 import org.aitek.movies.loaders.MovieLoader;
-import org.aitek.movies.loaders.Progressable;
 import org.aitek.movies.utils.Constants;
 import org.aitek.movies.utils.ProgressIndicator;
 
-import java.io.*;
-import java.net.URL;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -27,15 +21,15 @@ import java.util.List;
  */
 public class MoviesManager {
 
-    static private String genreFilter = null;
-    static private String genericFilter = null;
-    static private List<String> genres;
-    static private List<Movie> movies;
-    static private List<Movie> filteredMovies = null;
-    static private String sortField;
-    static private boolean sortDescending;
+    private String genreFilter = null;
+    private String genericFilter = null;
+    private List<String> genres;
+    private List<Movie> movies;
+    private List<Movie> filteredMovies = null;
+    private String sortField;
+    private boolean sortDescending;
 
-    public static void init(Activity activity) throws Exception {
+    public MoviesManager(Activity activity) throws Exception {
 
         genreFilter = null;
         genericFilter = null;
@@ -45,18 +39,18 @@ public class MoviesManager {
 
         if (movies == null) {
 
-            genres = new ArrayList<String>();
-            movies = new ArrayList<Movie>();
+            genres = new ArrayList<>();
+            movies = new ArrayList<>();
 
-            Progressable progressable = new MovieLoader();
-            progressable.setup(activity);
-            new ProgressIndicator().progress("Loading movies..", progressable);
+            GenericProgressIndicator genericProgressIndicator = new MovieLoader(activity);
+            genericProgressIndicator.setup();
+            new ProgressIndicator().progress("Loading movies..", genericProgressIndicator);
         }
     }
 
-    public static void clear() {
-        genres = new ArrayList<String>();
-        movies = new ArrayList<Movie>();
+    public void clear() {
+        genres = new ArrayList<>();
+        movies = new ArrayList<>();
         genreFilter = null;
         genericFilter = null;
         filteredMovies = null;
@@ -64,7 +58,7 @@ public class MoviesManager {
         sortDescending = false;
     }
 
-    public static String insertGenre(String genre) {
+    public String insertMovieGenre(String genre) {
 
         for (String existingGenre : genres) {
             if (existingGenre.toLowerCase().equals(genre.toLowerCase().trim())) {
@@ -75,66 +69,69 @@ public class MoviesManager {
         return genre;
     }
 
-    public static Movie insertMovie(Movie movie) {
+    public Movie insertMovie(Movie movie) {
 
         movies.add(movie);
 
         return movie;
     }
 
-    public static String[] getGenres() {
-        List<String> allGenresList = new ArrayList<String>();
+    public String[] getMovieGenres() {
+        List<String> allGenresList = new ArrayList<>();
         allGenresList.add(Constants.ALL_MOVIES);
         allGenresList.addAll(genres);
         String genresArray[] = new String[allGenresList.size()];
         return allGenresList.toArray(genresArray);
     }
 
-    public static Movie getMovie(String title) {
-        for (Movie movie : movies) {
-            if (movie.getTitle().equals(title)) {
-                return movie;
-            }
-        }
-        return null;
+    public void setMovieGenres(List<String> newGenres) {
+        genres = newGenres;
     }
 
-    public static void sortMovies() {
+//    public Movie getMovie(String title) {
+//        for (Movie movie : movies) {
+//            if (movie.getTitle().equals(title)) {
+//                return movie;
+//            }
+//        }
+//        return null;
+//    }
+
+    public void sortMovies() {
         if ("title".equals(sortField)) {
             if (sortDescending) {
                 Collections.sort(movies, Collections.reverseOrder());
-            }
-            else {
+            } else {
                 Collections.sort(movies);
             }
         }
     }
 
-    public static void sortGenres() {
+    public void sortMovieGenres() {
         Collections.sort(genres);
     }
 
-    public static int getMoviesCount() {
+    public int getMoviesCount() {
         if (filteredMovies == null) {
             return movies.size();
         }
         return filteredMovies.size();
     }
 
-    public static Movie getMovie(int index) {
+    public Movie getMovie(int index) {
         if (filteredMovies == null) {
             return movies.get(index);
         }
         return filteredMovies.get(index);
     }
 
-    public static List<Movie> getFilteredMovies() {
+    public List<Movie> getFilteredMovies() {
 
-        filteredMovies = new ArrayList<Movie>();
+        filteredMovies = new ArrayList<>();
         for (Movie movie : movies) {
 
             if ((genericFilter == null || movie.getTitle().toLowerCase().indexOf(genericFilter) >= 0 || movie.getNames().toLowerCase().indexOf(genericFilter) >= 0) &&
-                (genreFilter == null || movie.getGenres().indexOf(genreFilter) >=0)) {
+                    (genreFilter == null || movie.getGenres().indexOf(genreFilter) >= 0)) {
                 filteredMovies.add(movie);
             } else {
                 continue;
@@ -144,9 +141,7 @@ public class MoviesManager {
         return filteredMovies;
     }
 
-
-
-    public static void setGenreFilter(String value) {
+    public void setMovieGenreFilter(String value) {
         if (value.equals(Constants.ALL_MOVIES)) {
             value = null;
             if (genericFilter == null) {
@@ -158,7 +153,7 @@ public class MoviesManager {
         filteredMovies = getFilteredMovies();
     }
 
-    public static void setGenericFilter(String value) {
+    public void setMovieGenericFilter(String value) {
         if (value.equals("")) {
             genericFilter = null;
             if (genreFilter == null) {
@@ -170,7 +165,7 @@ public class MoviesManager {
         filteredMovies = getFilteredMovies();
     }
 
-    public static void setSortField(String field) {
+    public void setMovieSortField(String field) {
         if (sortField.equals(field)) {
             sortDescending = !sortDescending;
         } else {
@@ -180,7 +175,7 @@ public class MoviesManager {
         sortMovies();
     }
 
-    public static void saveMovies(Activity activity) throws Exception {
+    public void saveMovies(Activity activity) throws Exception {
 
         final String NEWLINE = "\n";
         StringBuffer fileContent = new StringBuffer();
@@ -200,9 +195,5 @@ public class MoviesManager {
         FileOutputStream outputStream = activity.openFileOutput(Constants.MOVIES_FILE, Context.MODE_PRIVATE);
         outputStream.write(fileContent.toString().getBytes());
         outputStream.close();
-    }
-
-    public static void setGenres(List<String> newGenres) {
-        genres = newGenres;
     }
 }

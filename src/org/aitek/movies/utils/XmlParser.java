@@ -1,16 +1,15 @@
 package org.aitek.movies.utils;
 
+import android.app.Activity;
 import android.content.Context;
 import org.aitek.movies.core.Movie;
 import org.aitek.movies.core.MoviesManager;
-import org.aitek.movies.database.MovieDbHelper;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 
 /**
  * Created with IntelliJ IDEA.
@@ -23,10 +22,12 @@ public class XmlParser {
 
     private static String text;
 
-    public static Movie parse(InputStream in, Context context) throws XmlPullParserException, IOException {
+    public static Movie parse(InputStream in, Activity activity) throws Exception {
 
-        XmlPullParserFactory factory = null;
-        XmlPullParser parser = null;
+        Mede8erCommander mede8erCommander = Mede8erCommander.getInstance(activity);
+
+        XmlPullParserFactory factory;
+        XmlPullParser parser;
 
         String title = "";
         StringBuffer names = new StringBuffer();
@@ -56,7 +57,7 @@ public class XmlParser {
                             title = text;
                         } else if (tagName.equalsIgnoreCase("genre")) {
                             genres.append(text).append(" ");
-                            MoviesManager.insertGenre(text);
+                            mede8erCommander.getMoviesManager().insertMovieGenre(text);
                         } else if (tagName.equalsIgnoreCase("name")) {
                             names.append(text).append(" ");
                         } else if (tagName.equalsIgnoreCase("actor")) {
@@ -77,7 +78,7 @@ public class XmlParser {
         }
 
         Movie movie = new Movie(null, title, null, genres.toString(), names.toString());
-        MoviesManager.insertMovie(movie);
+        mede8erCommander.getMoviesManager().insertMovie(movie);
         return movie;
     }
 }

@@ -11,9 +11,10 @@ import android.view.View;
 import android.widget.*;
 import org.aitek.movies.R;
 import org.aitek.movies.core.MoviesManager;
-import org.aitek.movies.loaders.FileSystemScanner;
 import org.aitek.movies.loaders.ImageAdapter;
-import org.aitek.movies.loaders.Progressable;
+import org.aitek.movies.loaders.NetworkScanner;
+import org.aitek.movies.loaders.GenericProgressIndicator;
+import org.aitek.movies.utils.Mede8erCommander;
 import org.aitek.movies.utils.ProgressIndicator;
 
 import java.io.FileNotFoundException;
@@ -27,6 +28,7 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
     private ListView musicGenresListView;
     private SearchView searchView;
     private ActionBar actionBar;
+    private Mede8erCommander mede8erCommander;
 
     /**
      * Called when the activity is first created.
@@ -42,11 +44,11 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
         actionBar.addTab(actionBar.newTab().setText(getString(R.string.music_tab)).setTabListener(this));
         actionBar.addTab(actionBar.newTab().setText(getString(R.string.playlist_tab)).setTabListener(this));
 
-        try {
-            MoviesManager.init(this);
 
+        try {
+            mede8erCommander = Mede8erCommander.getInstance(this);
             imageAdapter = new ImageAdapter(this);
-            ArrayAdapter adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, MoviesManager.getGenres());
+            ArrayAdapter adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, mede8erCommander.getMoviesManager().getMovieGenres());
 
             moviesGenresListView = (ListView) findViewById(R.id.listView);
             moviesGenresListView.setAdapter(adapter);
@@ -54,7 +56,7 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
 
                 @Override
                 public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                    MoviesManager.setGenreFilter(moviesGenresListView.getAdapter().getItem(i).toString());
+                    mede8erCommander.getMoviesManager().setMovieGenreFilter(moviesGenresListView.getAdapter().getItem(i).toString());
                     imageAdapter.notifyDataSetChanged();
                 }
             });
@@ -85,12 +87,12 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
 
     private void showInitDialog() {
 
-        AlertDialog.Builder alertDialog2 = new AlertDialog.Builder(MainActivity.this);
-        alertDialog2.setTitle(getString(R.string.first_time_run));
-        alertDialog2.setMessage(getString(R.string.first_time_run_message));
+        AlertDialog.Builder firstTimeDialog = new AlertDialog.Builder(MainActivity.this);
+        firstTimeDialog.setTitle(getString(R.string.first_time_run));
+        firstTimeDialog.setMessage(getString(R.string.first_time_run_message));
 
         // YES button
-        alertDialog2.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+        firstTimeDialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
 
                 scanMediaPlayer();
@@ -98,28 +100,24 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
         });
 
         // NO button
-        alertDialog2.setNegativeButton("NO",
+        firstTimeDialog.setNegativeButton("NO",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
 
-                        AlertDialog alertDialog1 = new AlertDialog.Builder(MainActivity.this).create();
-                        alertDialog1.setTitle(getString(R.string.no_data));
-                        alertDialog1.setMessage(getString(R.string.no_data_message));
+                        AlertDialog noDataDialog = new AlertDialog.Builder(MainActivity.this).create();
+                        noDataDialog.setTitle(getString(R.string.no_data));
+                        noDataDialog.setMessage(getString(R.string.no_data_message));
 
-                        // Setting OK Button
-                        alertDialog1.setButton(which, "OK", new DialogInterface.OnClickListener() {
+                        noDataDialog.setButton(which, "OK", new DialogInterface.OnClickListener() {
 
                             public void onClick(DialogInterface dialog, int which) {
                             }
                         });
-
-                        // Showing Alert Message
-                        alertDialog1.show();
+                        noDataDialog.show();
                     }
                 });
 
-// Showing Alert Dialog
-        alertDialog2.show();
+        firstTimeDialog.show();
     }
 
     @Override
@@ -149,15 +147,18 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
                 return true;
 
             case R.id.menuSortByTitle:
-                MoviesManager.setSortField("title");
+                mede8erCommander.getMoviesManager().setMovieSortField("title");
                 imageAdapter.notifyDataSetChanged();
                 return true;
 
             case R.id.menuSortByDate:
-                MoviesManager.setSortField("date");
+                mede8erCommander.getMoviesManager().setMovieSortField("date");
                 imageAdapter.notifyDataSetChanged();
                 return true;
 
+            case R.id.menu_mediaplayer_info:
+
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -165,10 +166,10 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
 
     private void scanMediaPlayer() {
         try {
-            MoviesManager.clear();
-            Progressable progressable = new FileSystemScanner();
-            progressable.setup(this);
-            new ProgressIndicator().progress("Scanning media player..", progressable);
+            mede8erCommander.getMoviesManager().clear();
+            GenericProgressIndicator genericProgressIndicator = new NetworkScanner(this);
+            genericProgressIndicator.setup();
+            new ProgressIndicator().progress("Scanning media player..", genericProgressIndicator);
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -181,7 +182,7 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
         if (newText.length() == 0) {
             searchView.clearFocus();
         }
-        MoviesManager.setGenericFilter(newText);
+        mede8erCommander.getMoviesManager().setMovieGenericFilter(newText);
         imageAdapter.notifyDataSetChanged();
 
         return true;
@@ -190,7 +191,7 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
     @Override
     public boolean onQueryTextSubmit(String query) {
 
-        MoviesManager.setGenericFilter(query);
+        mede8erCommander.getMoviesManager().setMovieGenericFilter(query);
         imageAdapter.notifyDataSetChanged();
         searchView.clearFocus();
 

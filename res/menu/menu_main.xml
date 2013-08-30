@@ -22,7 +22,12 @@
     <item
             android:id="@+id/menu_scan_mediaplayer"
             android:title="@string/scan_mede8er"
-            android:orderInCategory="90"
+            android:orderInCategory="50"
+            android:showAsAction="never"/>
+    <item
+            android:id="@+id/menu_mediaplayer_info"
+            android:title="@string/mediaplayer_info"
+            android:orderInCategory="60"
             android:showAsAction="never"/>
     <item
             android:id="@+id/menu_settings"

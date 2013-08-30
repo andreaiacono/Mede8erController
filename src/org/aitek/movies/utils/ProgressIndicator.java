@@ -1,11 +1,8 @@
 package org.aitek.movies.utils;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.os.Handler;
-import android.os.Looper;
-import org.aitek.movies.core.MoviesManager;
-import org.aitek.movies.loaders.Progressable;
+import org.aitek.movies.loaders.GenericProgressIndicator;
 
 /**
  * Created with IntelliJ IDEA.
@@ -20,14 +17,14 @@ public class ProgressIndicator {
     private int progressBarStatus;
 
 
-    public void progress(final String message, final Progressable progressable) {
+    public void progress(final String message, final GenericProgressIndicator genericProgressIndicator) {
 
-        progressBar = new ProgressDialog(progressable.getActivity());
+        progressBar = new ProgressDialog(genericProgressIndicator.getActivity());
         progressBar.setCancelable(true);
         progressBar.setMessage(message);
         progressBar.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
         progressBar.setProgress(0);
-        progressBar.setMax(100);
+        progressBar.setMax(genericProgressIndicator.getMax());
         progressBar.show();
         progressBarStatus = 0;
 
@@ -37,13 +34,14 @@ public class ProgressIndicator {
             public void run() {
 
                 try {
-                    progressable.setup(progressable.getActivity());
+                    genericProgressIndicator.setup();
 
                     while (progressBarStatus < 100) {
 
-                        progressBarStatus = progressable.next();
+                        progressBarStatus = genericProgressIndicator.next();
                         progressBarHandler.post(new Runnable() {
                             public void run() {
+                                progressBar.setMessage(genericProgressIndicator.getText());
                                 progressBar.setProgress(progressBarStatus);
                             }
                         });
@@ -52,7 +50,7 @@ public class ProgressIndicator {
                     if (progressBarStatus >= 100) {
 
                         progressBar.dismiss();
-                        progressable.finish();
+                        genericProgressIndicator.finish();
                     }
                 } catch (Exception e) {
                     e.printStackTrace();

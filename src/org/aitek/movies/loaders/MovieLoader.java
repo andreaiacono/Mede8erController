@@ -3,12 +3,12 @@ package org.aitek.movies.loaders;
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.util.Log;
 import org.aitek.movies.activities.MainActivity;
 import org.aitek.movies.core.Movie;
 import org.aitek.movies.core.MoviesManager;
 import org.aitek.movies.utils.Constants;
 import org.aitek.movies.utils.Logger;
+import org.aitek.movies.utils.Mede8erCommander;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -30,17 +30,23 @@ import java.util.List;
 /**
  * The MovieLoader class is responsible for loading the movies info from the datafile.
  */
-public class MovieLoader implements Progressable {
+public class MovieLoader extends GenericProgressIndicator {
     BitmapFactory.Options options;
     private Activity activity;
     private List<String> genres;
     private BufferedReader bufferedReader;
     private int fileLength;
     private int read = 0;
+    private Mede8erCommander mede8erCommander;
+
+    public MovieLoader(Activity activity) throws Exception{
+        super(activity);
+        this.activity = activity;
+        mede8erCommander = Mede8erCommander.getInstance(activity);
+    }
 
     @Override
-    public void setup(Activity activity) throws Exception {
-        this.activity = activity;
+    public void setup() throws Exception {
 
         options = new BitmapFactory.Options();
         options.inSampleSize = 2;
@@ -54,7 +60,7 @@ public class MovieLoader implements Progressable {
         String line = bufferedReader.readLine();
         Logger.log("line=" + line);
         genres = Arrays.asList(line.split(", "));
-        MoviesManager.setGenres(genres);
+        mede8erCommander.getMoviesManager().setMovieGenres(genres);
     }
 
     @Override
@@ -73,7 +79,7 @@ public class MovieLoader implements Progressable {
             InputStream inputStream = (InputStream) url.getContent();
             Bitmap thumbnail = BitmapFactory.decodeStream(inputStream, null, options);
             Movie movie = new Movie(filePath, title, thumbnail, movieGenres, persons);
-            MoviesManager.insertMovie(movie);
+            mede8erCommander.getMoviesManager().insertMovie(movie);
             read += line.length();
         }
         else {
@@ -85,13 +91,8 @@ public class MovieLoader implements Progressable {
     @Override
     public void finish() throws Exception {
         bufferedReader.close();
-        MoviesManager.sortMovies();
-        MoviesManager.sortGenres();
+        mede8erCommander.getMoviesManager().sortMovies();
+        mede8erCommander.getMoviesManager().sortMovieGenres();
         MainActivity.imageAdapter.notifyDataSetChanged();
-    }
-
-    @Override
-    public Activity getActivity() {
-        return activity;
     }
 }

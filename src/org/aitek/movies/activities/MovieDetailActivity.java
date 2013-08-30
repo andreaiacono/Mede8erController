@@ -30,9 +30,9 @@ public class MovieDetailActivity extends Activity {
         Intent intent = getIntent();
         ImageView imageView = (ImageView) findViewById(R.id.full_screen_view);
         int position = (Integer) intent.getExtras().get(MovieDetailActivity.class.getName());
-        movie = MoviesManager.getMovie(position);
 
         try {
+            movie = Mede8erCommander.getInstance(this).getMoviesManager().getMovie(position);
             imageView.setImageBitmap(movie.getImage());
         } catch (Exception e) {
             Logger.toast("Error: " + e.getMessage(), this);

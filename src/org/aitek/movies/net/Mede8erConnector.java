@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.DhcpInfo;
 import android.net.wifi.WifiManager;
+import org.aitek.movies.core.MoviesManager;
 import org.aitek.movies.utils.Constants;
 import org.aitek.movies.utils.Logger;
 

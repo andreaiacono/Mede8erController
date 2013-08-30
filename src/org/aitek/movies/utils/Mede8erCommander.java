@@ -1,6 +1,7 @@
 package org.aitek.movies.utils;
 
 import android.app.Activity;
+import org.aitek.movies.core.MoviesManager;
 import org.aitek.movies.net.Command;
 import org.aitek.movies.net.Mede8erConnector;
 import org.aitek.movies.net.RemoteCommand;
@@ -18,26 +19,24 @@ public class Mede8erCommander {
 
     private static Mede8erCommander mede8erCommander;
     private Mede8erConnector mede8erConnector;
+    private MoviesManager moviesManager;
+
 
     private Mede8erCommander(Activity activity) throws Exception {
         mede8erConnector = new Mede8erConnector(activity);
+        moviesManager = new MoviesManager(activity);
     }
 
-    public static Mede8erCommander getInstance(Activity activity) {
+    public static Mede8erCommander getInstance(Activity activity) throws Exception {
 
         if (mede8erCommander == null) {
-
-            try {
-                mede8erCommander = new Mede8erCommander(activity);
-            }
-            catch (Exception e) {
-                Logger.toast("An error has occurred creating Mede8erCommander: " + e.getMessage(), activity.getApplicationContext());
-                e.printStackTrace();
-            }
+            mede8erCommander = new Mede8erCommander(activity);
         }
 
         return mede8erCommander;
     }
+
+
 
     public Response playMovieDir(String movieDir) throws Exception {
         return mede8erConnector.send(Command.PLAY, "<moviedir>" + movieDir + "</movieDir>");
@@ -59,4 +58,12 @@ public class Mede8erCommander {
         return mede8erConnector.send(Command.RC, remoteCommand.getRemoteCommand());
     }
 
+    public int scanJukebox() {
+
+        return 0;
+    }
+
+    public MoviesManager getMoviesManager() {
+        return moviesManager;
+    }
 }

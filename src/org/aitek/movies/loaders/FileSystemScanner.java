@@ -3,9 +3,10 @@ package org.aitek.movies.loaders;
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import org.aitek.movies.core.Movie;
 import org.aitek.movies.core.MoviesManager;
+import org.aitek.movies.core.Movie;
 import org.aitek.movies.utils.Constants;
+import org.aitek.movies.utils.Mede8erCommander;
 import org.aitek.movies.utils.XmlParser;
 
 import java.io.File;
@@ -19,16 +20,18 @@ import java.net.URL;
  * Time: 2:31 PM
  * To change this template use File | Settings | File Templates.
  */
-public class FileSystemScanner implements Progressable {
+public class FileSystemScanner extends GenericProgressIndicator {
 
     private File[] list;
     private int listCounter = 0;
     private int fileNumber;
-    private Activity activity;
+
+    public FileSystemScanner(Activity activity) {
+        super(activity);
+    }
 
     @Override
-    public void setup(Activity activity) {
-        this.activity = activity;
+    public void setup() {
         list = new File(Constants.ROOT_DIRECTORY).listFiles();
         fileNumber = list.length;
     }
@@ -43,14 +46,10 @@ public class FileSystemScanner implements Progressable {
 
     @Override
     public void finish() throws Exception {
-        MoviesManager.saveMovies(activity);
-        MoviesManager.sortMovies();
-        MoviesManager.sortGenres();
-    }
-
-    @Override
-    public Activity getActivity() {
-        return activity;
+        Mede8erCommander mede8erCommander = Mede8erCommander.getInstance(activity);
+        mede8erCommander.getMoviesManager().saveMovies(activity);
+        mede8erCommander.getMoviesManager().sortMovies();
+        mede8erCommander.getMoviesManager().sortMovieGenres();
     }
 
     private void saveMovieInfo(File f) throws Exception {
@@ -64,7 +63,7 @@ public class FileSystemScanner implements Progressable {
 
                 String xmlFilename = "file://" + Constants.ROOT_DIRECTORY + "/" + f.getName() + f.getName() + ".xml";
                 InputStream xmlInputStream = (InputStream) new URL(xmlFilename).getContent();
-                Movie movie = XmlParser.parse(xmlInputStream, activity.getApplicationContext());
+                Movie movie = XmlParser.parse(xmlInputStream, activity);
                 movie.setAbsolutePath(f.getAbsolutePath());
 
                 BitmapFactory.Options options = new BitmapFactory.Options();

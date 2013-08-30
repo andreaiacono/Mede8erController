@@ -1,13 +1,14 @@
 package org.aitek.movies.loaders;
 
+import android.app.Activity;
 import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
-import android.widget.Toast;
 import org.aitek.movies.core.MoviesManager;
+import org.aitek.movies.utils.Mede8erCommander;
 
 /**
  * Created with IntelliJ IDEA.
@@ -18,19 +19,21 @@ import org.aitek.movies.core.MoviesManager;
  */
 public class ImageAdapter extends BaseAdapter {
 
+    private final Mede8erCommander mede8erCommander;
     private Context context;
 
-    public ImageAdapter(Context c) {
-        context = c;
+    public ImageAdapter(Activity activity) throws Exception {
+        context = activity.getApplicationContext();
+        mede8erCommander = Mede8erCommander.getInstance(activity);
     }
 
     public int getCount() {
-        return MoviesManager.getMoviesCount();
+        return mede8erCommander.getMoviesManager().getMoviesCount();
     }
 
     @Override
     public Object getItem(int i) {
-        return MoviesManager.getMovie(i).getThumbnail();
+        return mede8erCommander.getMoviesManager().getMovie(i).getThumbnail();
     }
 
     @Override
@@ -51,7 +54,7 @@ public class ImageAdapter extends BaseAdapter {
             imageView = (ImageView) convertView;
         }
 
-        imageView.setImageBitmap(MoviesManager.getMovie(position).getThumbnail());
+        imageView.setImageBitmap(mede8erCommander.getMoviesManager().getMovie(position).getThumbnail());
         return imageView;
     }
 
