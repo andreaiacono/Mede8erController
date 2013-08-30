@@ -5,14 +5,11 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.DhcpInfo;
 import android.net.wifi.WifiManager;
-import org.aitek.movies.core.MoviesManager;
 import org.aitek.movies.utils.Constants;
 import org.aitek.movies.utils.Logger;
 
-import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
+import java.io.*;
+import java.net.*;
 
 /**
  * Created with IntelliJ IDEA.
@@ -39,7 +36,6 @@ public class Mede8erConnector {
 
         tcpClient = new TcpClient(inetAddress, Constants.TCP_PORT);
     }
-
 
     private void saveMede8erIpAddress(String inetAddress) {
         SharedPreferences sharedPref = activity.getPreferences(Context.MODE_PRIVATE);
@@ -69,7 +65,6 @@ public class Mede8erConnector {
         return InetAddress.getByAddress(quads);
     }
 
-
     public String getMede8erIpAddress() throws Exception {
 
         String helloCommand = Command.HELLO.toString().toLowerCase() + " thisis " + Constants.APP;
@@ -86,20 +81,58 @@ public class Mede8erConnector {
         return packet.getAddress().getHostAddress();
     }
 
-
     public Response send(Command command, String content) throws Exception {
 
         String request = command.toString().toLowerCase() + " " + content;
         return getResponseFromMessage(tcpClient.sendMessage(request));
     }
 
-    private Response getResponseFromMessage(String message) {
+    private Response getResponseFromMessage(String message) throws Exception {
 
         Response.Value value = Response.Value.OK;
-        if (message.startsWith("err_")) {
+        if (message.startsWith("err_") || message.equals("empty")) {
             value = Response.Value.valueOf(message.toUpperCase());
         }
-
+        else {
+            message = getHttpResource(message);
+        }
         return new Response(value, message);
+    }
+
+    private String getHttpResource(String uri) throws Exception {
+
+        URL url = new URL("http://" + inetAddress + "/" + uri);
+        HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+        try {
+            InputStream in = new BufferedInputStream(urlConnection.getInputStream());
+            return readStream(in);
+        }
+        finally {
+            urlConnection.disconnect();
+        }
+    }
+
+    private String readStream(InputStream inputStream) {
+        BufferedReader bufferedReader = null;
+        StringBuilder streamContent = new StringBuilder();
+
+        try {
+            bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+            while ((streamContent.append(bufferedReader.readLine())) != null) ;
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+        finally {
+            if (bufferedReader != null) {
+                try {
+                    bufferedReader.close();
+                }
+                catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return streamContent.toString();
     }
 }

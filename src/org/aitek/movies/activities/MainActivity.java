@@ -10,9 +10,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.*;
 import org.aitek.movies.R;
-import org.aitek.movies.core.MoviesManager;
 import org.aitek.movies.loaders.ImageAdapter;
-import org.aitek.movies.loaders.NetworkScanner;
+import org.aitek.movies.loaders.Mede8erScanner;
 import org.aitek.movies.loaders.GenericProgressIndicator;
 import org.aitek.movies.utils.Mede8erCommander;
 import org.aitek.movies.utils.ProgressIndicator;
@@ -167,7 +166,7 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
     private void scanMediaPlayer() {
         try {
             mede8erCommander.getMoviesManager().clear();
-            GenericProgressIndicator genericProgressIndicator = new NetworkScanner(this);
+            GenericProgressIndicator genericProgressIndicator = new Mede8erScanner(this);
             genericProgressIndicator.setup();
             new ProgressIndicator().progress("Scanning media player..", genericProgressIndicator);
         }

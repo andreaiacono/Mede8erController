@@ -9,12 +9,12 @@ import org.aitek.movies.utils.Mede8erCommander;
  * Date: 8/30/13
  * Time: 12:26 PM
  */
-public class NetworkScanner extends GenericProgressIndicator {
+public class Mede8erScanner extends GenericProgressIndicator {
 
     private Mede8erCommander mede8erCommander;
     private boolean initialized;
 
-    public NetworkScanner(Activity activity) {
+    public Mede8erScanner(Activity activity) {
         super(activity);
     }
 

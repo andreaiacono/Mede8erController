@@ -1,11 +1,10 @@
 package org.aitek.movies.utils;
 
 import android.app.Activity;
+import org.aitek.movies.core.Jukebox;
 import org.aitek.movies.core.MoviesManager;
-import org.aitek.movies.net.Command;
-import org.aitek.movies.net.Mede8erConnector;
-import org.aitek.movies.net.RemoteCommand;
-import org.aitek.movies.net.Response;
+import org.aitek.movies.loaders.JsonParser;
+import org.aitek.movies.net.*;
 
 import java.net.InetAddress;
 
@@ -20,7 +19,10 @@ public class Mede8erCommander {
     private static Mede8erCommander mede8erCommander;
     private Mede8erConnector mede8erConnector;
     private MoviesManager moviesManager;
-
+    private int scanStep;
+    private String scannedId;
+    private Jukebox[] jukeboxes;
+    private int jukeboxCounter;
 
     private Mede8erCommander(Activity activity) throws Exception {
         mede8erConnector = new Mede8erConnector(activity);
@@ -35,8 +37,6 @@ public class Mede8erCommander {
 
         return mede8erCommander;
     }
-
-
 
     public Response playMovieDir(String movieDir) throws Exception {
         return mede8erConnector.send(Command.PLAY, "<moviedir>" + movieDir + "</movieDir>");
@@ -54,11 +54,42 @@ public class Mede8erCommander {
         return mede8erConnector.send(Command.PLAY, argument.toString());
     }
 
-    public Response sendRemoteCommand(RemoteCommand remoteCommand) throws Exception {
+    public Response jukeboxCommand(JukeboxCommand jukeboxCommand) throws Exception {
+        return mede8erConnector.send(Command.JUKEBOX, "entry");
+    }
+
+    public Response jukeboxCommand(JukeboxCommand jukeboxCommand, String id) throws Exception {
+        return mede8erConnector.send(Command.JUKEBOX, jukeboxCommand.toString().toLowerCase() + " " + id);
+    }
+
+    public Response remoteCommand(RemoteCommand remoteCommand) throws Exception {
         return mede8erConnector.send(Command.RC, remoteCommand.getRemoteCommand());
     }
 
-    public int scanJukebox() {
+    public int scanJukebox() throws Exception {
+
+        switch (scanStep)  {
+            case 0:
+                Response response = jukeboxCommand(JukeboxCommand.QUERY);
+                if (response.getContent().equals("EMPTY")) {
+                    return -1;
+                }
+                jukeboxes = JsonParser.getJukeboxes(response.getContent());
+                jukeboxCounter = 0;
+                scanStep++;
+                return 10;
+
+            case 1:
+                response = jukeboxCommand(JukeboxCommand.OPEN, jukeboxes[jukeboxCounter].getId());
+
+                jukeboxCounter++;
+                if (jukeboxCounter == jukeboxes.length-1) {
+                    scanStep++;
+                }
+                return 10 + (90 - (int) (90 * ((double)jukeboxes.length/jukeboxCounter)));
+            case 2:
+                return 100;
+        }
 
         return 0;
     }
