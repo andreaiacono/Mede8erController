@@ -1,0 +1,7 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/action_play"
+          android:title="Play"
+          android:layout_centerInParent="true"
+          android:icon="@android:drawable/ic_media_play"
+          android:showAsAction="always"/>
+</menu>
