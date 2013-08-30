@@ -3,5 +3,8 @@
     <string name="app_name">Mede8erController</string>
     <string name="menu_settings">Settings</string>
     <string name="search">Search</string>
+    <string name="movies_tab">Movies</string>
+    <string name="music_tab">Music</string>
+    <string name="playlist_tab">Playlist</string>
     <string name="scan_mede8er">Rescan Media Player</string>
 </resources>

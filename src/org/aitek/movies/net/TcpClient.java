@@ -16,20 +16,20 @@ import java.net.Socket;
  */
 public class TcpClient {
 
-    private InetAddress mede8erAddress;
+    private String mede8erAddress;
     private Socket socket;
     private int port;
     private BufferedReader inputStream;
     private PrintWriter outputStream;
 
 
-    public TcpClient(InetAddress mede8erAddress, int port) throws Exception {
+    public TcpClient(String mede8erAddress, int port) throws Exception {
 
         this.mede8erAddress = mede8erAddress;
         this.port = port;
 
         // creates the socket to the mede8er
-        socket = new Socket(mede8erAddress.getHostAddress(), port);
+        socket = new Socket(mede8erAddress, port);
         outputStream = new PrintWriter(socket.getOutputStream());
         inputStream = new BufferedReader(new InputStreamReader(socket.getInputStream()));
     }

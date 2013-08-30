@@ -22,4 +22,6 @@ public class Constants {
 
     static public final int UDP_PORT = 1186;
     static public final int TCP_PORT = 1187;
+
+    static public final String PREFERENCES_MEDE8ER_IPADDRESS = "mede8er_ipaddress";
 }

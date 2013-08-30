@@ -2,6 +2,7 @@ package org.aitek.movies.net;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.DhcpInfo;
 import android.net.wifi.WifiManager;
 import org.aitek.movies.utils.Constants;
@@ -22,12 +23,12 @@ public class Mede8erConnector {
 
     private final TcpClient tcpClient;
     private Activity activity;
-    private InetAddress inetAddress;
+    private String inetAddress;
 
     public Mede8erConnector(Activity activity) throws Exception {
 
         this.activity = activity;
-        this.inetAddress = getMede8erAddressFromConfig();
+        this.inetAddress = getMede8erAddressFromPreferences();
 
         if (inetAddress == null) {
 
@@ -35,16 +36,20 @@ public class Mede8erConnector {
             saveMede8erIpAddress(inetAddress);
         }
 
-        tcpClient = new TcpClient(getMede8erIpAddress(), Constants.TCP_PORT);
+        tcpClient = new TcpClient(inetAddress, Constants.TCP_PORT);
     }
 
 
-    private void saveMede8erIpAddress(InetAddress inetAddress) {
-
+    private void saveMede8erIpAddress(String inetAddress) {
+        SharedPreferences sharedPref = activity.getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putString(Constants.PREFERENCES_MEDE8ER_IPADDRESS, inetAddress);
+        editor.commit();
     }
 
-    private InetAddress getMede8erAddressFromConfig() {
-        return null;
+    private String getMede8erAddressFromPreferences() {
+        SharedPreferences sharedPref = activity.getPreferences(Context.MODE_PRIVATE);
+        return sharedPref.getString(Constants.PREFERENCES_MEDE8ER_IPADDRESS, null);
     }
 
     @SuppressWarnings("deprecation")
@@ -57,25 +62,27 @@ public class Mede8erConnector {
 
         int broadcast = (dhcpInfo.ipAddress & dhcpInfo.netmask) | ~dhcpInfo.netmask;
         byte[] quads = new byte[4];
-        for (int k = 0; k < 4; k++)
+        for (int k = 0; k < 4; k++) {
             quads[k] = (byte) ((broadcast >> k * 8) & 0xFF);
+        }
         return InetAddress.getByAddress(quads);
     }
 
 
-    public InetAddress getMede8erIpAddress() throws Exception {
+    public String getMede8erIpAddress() throws Exception {
 
         String helloCommand = Command.HELLO.toString().toLowerCase() + " thisis " + Constants.APP;
         DatagramSocket socket = new DatagramSocket(Constants.UDP_PORT);
         socket.setBroadcast(true);
-        DatagramPacket packet = new DatagramPacket(helloCommand.getBytes(), helloCommand.length(), inetAddress, Constants.UDP_PORT);
+        DatagramPacket packet = new DatagramPacket(helloCommand.getBytes(), helloCommand.length(), getBroadcastAddress(), Constants.UDP_PORT);
         socket.send(packet);
 
         byte[] buf = new byte[1024];
         packet = new DatagramPacket(buf, buf.length);
         socket.receive(packet);
         Logger.toast("IP: " + packet.getAddress().getHostAddress(), activity.getApplicationContext());
-        return packet.getAddress();
+        Logger.log("IP: " + packet.getAddress().getHostAddress());
+        return packet.getAddress().getHostAddress();
     }
 
 

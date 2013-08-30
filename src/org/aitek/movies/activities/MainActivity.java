@@ -40,9 +40,9 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
 
         actionBar = getActionBar();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-        actionBar.addTab(actionBar.newTab().setText("Movies").setTabListener(this));
-        actionBar.addTab(actionBar.newTab().setText("Music").setTabListener(this));
-        actionBar.addTab(actionBar.newTab().setText("Playlists").setTabListener(this));
+        actionBar.addTab(actionBar.newTab().setText(getString(R.string.movies_tab)).setTabListener(this));
+        actionBar.addTab(actionBar.newTab().setText(getString(R.string.music_tab)).setTabListener(this));
+        actionBar.addTab(actionBar.newTab().setText(getString(R.string.playlist_tab)).setTabListener(this));
 
         try {
             MoviesManager.init(this);
@@ -63,7 +63,6 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
 
             moviesGridView = (GridView) findViewById(R.id.gridView);
             moviesGridView.setAdapter(imageAdapter);
-
             moviesGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
                 @Override
@@ -92,7 +91,6 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
         searchView = (SearchView) searchItem.getActionView();
         searchView.setIconifiedByDefault(false);
         searchView.setOnQueryTextListener(this);
-
         return true;
     }
 
