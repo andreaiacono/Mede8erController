@@ -7,4 +7,9 @@
     <string name="music_tab">Music</string>
     <string name="playlist_tab">Playlist</string>
     <string name="scan_mede8er">Rescan Media Player</string>
+
+    <string name="first_time_run">First time run</string>
+    <string name="first_time_run_message">This is the first time the app is running. Do you want to scan the media player?</string>
+    <string name="no_data">No data</string>
+    <string name="no_data_message">The app contains no data. You can scan the media player using the menu.</string>
 </resources>

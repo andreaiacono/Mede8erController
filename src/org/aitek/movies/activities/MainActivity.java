@@ -1,9 +1,7 @@
 package org.aitek.movies.activities;
 
-import android.app.ActionBar;
-import android.app.Activity;
-import android.app.FragmentTransaction;
-import android.app.ProgressDialog;
+import android.app.*;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
@@ -18,15 +16,15 @@ import org.aitek.movies.loaders.ImageAdapter;
 import org.aitek.movies.loaders.Progressable;
 import org.aitek.movies.utils.ProgressIndicator;
 
+import java.io.FileNotFoundException;
+
 public class MainActivity extends Activity implements SearchView.OnQueryTextListener, ActionBar.TabListener {
 
     public static ImageAdapter imageAdapter;
     private GridView moviesGridView;
     private ListView moviesGenresListView;
-
     private GridView musicGridView;
     private ListView musicGenresListView;
-
     private SearchView searchView;
     private ActionBar actionBar;
 
@@ -74,12 +72,54 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
                 }
             });
         }
+        catch (FileNotFoundException e) {
+            showInitDialog();
+        }
         catch (Exception ex) {
             Toast toast = Toast.makeText(getApplicationContext(), "Error on initialization: " + ex.getMessage(), Toast.LENGTH_LONG);
             toast.show();
             ex.printStackTrace();
         }
 
+    }
+
+    private void showInitDialog() {
+
+        AlertDialog.Builder alertDialog2 = new AlertDialog.Builder(MainActivity.this);
+        alertDialog2.setTitle(getString(R.string.first_time_run));
+        alertDialog2.setMessage(getString(R.string.first_time_run_message));
+
+        // YES button
+        alertDialog2.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+
+                scanMediaPlayer();
+            }
+        });
+
+        // NO button
+        alertDialog2.setNegativeButton("NO",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+
+                        AlertDialog alertDialog1 = new AlertDialog.Builder(MainActivity.this).create();
+                        alertDialog1.setTitle(getString(R.string.no_data));
+                        alertDialog1.setMessage(getString(R.string.no_data_message));
+
+                        // Setting OK Button
+                        alertDialog1.setButton(which, "OK", new DialogInterface.OnClickListener() {
+
+                            public void onClick(DialogInterface dialog, int which) {
+                            }
+                        });
+
+                        // Showing Alert Message
+                        alertDialog1.show();
+                    }
+                });
+
+// Showing Alert Dialog
+        alertDialog2.show();
     }
 
     @Override
@@ -105,15 +145,7 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
 
             case R.id.menu_scan_mediaplayer:
 
-                try {
-                    MoviesManager.clear();
-                    Progressable progressable = new FileSystemScanner();
-                    progressable.setup(this);
-                    new ProgressIndicator().progress("Scanning media player..", progressable);
-                }
-                catch (Exception e) {
-                    e.printStackTrace();
-                }
+                scanMediaPlayer();
                 return true;
 
             case R.id.menuSortByTitle:
@@ -128,6 +160,18 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
 
             default:
                 return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void scanMediaPlayer() {
+        try {
+            MoviesManager.clear();
+            Progressable progressable = new FileSystemScanner();
+            progressable.setup(this);
+            new ProgressIndicator().progress("Scanning media player..", progressable);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
