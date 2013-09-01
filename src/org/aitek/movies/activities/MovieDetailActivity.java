@@ -18,7 +18,6 @@ import org.aitek.movies.utils.Mede8erCommander;
  * User: andrea
  * Date: 8/16/13
  * Time: 6:23 PM
- * To change this template use File | Settings | File Templates.
  */
 public class MovieDetailActivity extends Activity {
 
@@ -56,7 +55,7 @@ public class MovieDetailActivity extends Activity {
         if (item.getItemId() == R.id.menu_settings) {
 
             try {
-                Mede8erCommander.getInstance(this).playMovieDir(movie.getAbsolutePath());
+                Mede8erCommander.getInstance(this).playMovieDir(movie.getPath());
             }
             catch (Exception e) {
                 Logger.toast("An error occurred trying to play the movie: " + e.getMessage(), getApplicationContext());

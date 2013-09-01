@@ -5,6 +5,7 @@ import android.content.Context;
 import org.aitek.movies.loaders.GenericProgressIndicator;
 import org.aitek.movies.loaders.MovieLoader;
 import org.aitek.movies.utils.Constants;
+import org.aitek.movies.utils.Logger;
 import org.aitek.movies.utils.ProgressIndicator;
 
 import java.io.FileOutputStream;
@@ -185,12 +186,12 @@ public class MoviesManager {
         for (Movie movie : movies) {
 
             fileContent.append(movie.getTitle()).append("||");
-            fileContent.append(movie.getAbsolutePath()).append("||");
+            fileContent.append(movie.getPath()).append("||");
             fileContent.append(movie.getGenres()).append("||");
             fileContent.append(movie.getNames()).append(NEWLINE);
         }
 
-        //Log.w("mede8er", "file: " + fileContent.toString());
+        Logger.log("file: " + fileContent.toString());
 
         FileOutputStream outputStream = activity.openFileOutput(Constants.MOVIES_FILE, Context.MODE_PRIVATE);
         outputStream.write(fileContent.toString().getBytes());

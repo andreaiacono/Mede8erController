@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.DhcpInfo;
 import android.net.wifi.WifiManager;
+import android.os.StrictMode;
 import org.aitek.movies.utils.Constants;
 import org.aitek.movies.utils.Logger;
 
@@ -66,6 +67,10 @@ public class Mede8erConnector {
     }
 
     public String getMede8erIpAddress() throws Exception {
+
+        StrictMode.ThreadPolicy policy = new
+        StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
 
         String helloCommand = Command.HELLO.toString().toLowerCase() + " thisis " + Constants.APP;
         DatagramSocket socket = new DatagramSocket(Constants.UDP_PORT);

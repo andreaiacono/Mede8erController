@@ -29,7 +29,7 @@ public class Mede8erScanner extends GenericProgressIndicator {
         }
         else {
 
-            return mede8erCommander.scanJukebox();
+            return mede8erCommander.scanJukeboxes();
         }
     }
 
@@ -46,6 +46,7 @@ public class Mede8erScanner extends GenericProgressIndicator {
     @Override
     public void finish() throws Exception {
 
+        mede8erCommander.getMoviesManager().saveMovies(activity);
     }
 
     @Override

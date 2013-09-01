@@ -18,7 +18,6 @@ import java.net.URL;
  * User: andrea
  * Date: 8/16/13
  * Time: 2:31 PM
- * To change this template use File | Settings | File Templates.
  */
 public class FileSystemScanner extends GenericProgressIndicator {
 
@@ -64,7 +63,7 @@ public class FileSystemScanner extends GenericProgressIndicator {
                 String xmlFilename = "file://" + Constants.ROOT_DIRECTORY + "/" + f.getName() + f.getName() + ".xml";
                 InputStream xmlInputStream = (InputStream) new URL(xmlFilename).getContent();
                 Movie movie = XmlParser.parse(xmlInputStream, activity);
-                movie.setAbsolutePath(f.getAbsolutePath());
+                movie.setPath(f.getAbsolutePath());
 
                 BitmapFactory.Options options = new BitmapFactory.Options();
                 options.inSampleSize = 2;

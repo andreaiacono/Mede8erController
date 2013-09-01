@@ -1,12 +1,11 @@
 package org.aitek.movies.utils;
 
 import android.app.Activity;
+import org.aitek.movies.core.Element;
 import org.aitek.movies.core.Jukebox;
+import org.aitek.movies.core.Movie;
 import org.aitek.movies.core.MoviesManager;
-import org.aitek.movies.loaders.JsonParser;
 import org.aitek.movies.net.*;
-
-import java.net.InetAddress;
 
 /**
  * Created with IntelliJ IDEA.
@@ -23,6 +22,7 @@ public class Mede8erCommander {
     private String scannedId;
     private Jukebox[] jukeboxes;
     private int jukeboxCounter;
+    private int elements;
 
     private Mede8erCommander(Activity activity) throws Exception {
         mede8erConnector = new Mede8erConnector(activity);
@@ -48,7 +48,7 @@ public class Mede8erCommander {
 
     public Response playFiles(String[] files) throws Exception {
         StringBuilder argument = new StringBuilder();
-        for (String file: files) {
+        for (String file : files) {
             argument.append("<file>").append(file).append("</file>");
         }
         return mede8erConnector.send(Command.PLAY, argument.toString());
@@ -66,9 +66,11 @@ public class Mede8erCommander {
         return mede8erConnector.send(Command.RC, remoteCommand.getRemoteCommand());
     }
 
-    public int scanJukebox() throws Exception {
+    public int scanJukeboxes() throws Exception {
 
-        switch (scanStep)  {
+        switch (scanStep) {
+
+            // STEP 1
             case 0:
                 Response response = jukeboxCommand(JukeboxCommand.QUERY);
                 if (response.getContent().equals("EMPTY")) {
@@ -77,21 +79,57 @@ public class Mede8erCommander {
                 jukeboxes = JsonParser.getJukeboxes(response.getContent());
                 jukeboxCounter = 0;
                 scanStep++;
-                return 10;
+                return 5;
 
             case 1:
-                response = jukeboxCommand(JukeboxCommand.OPEN, jukeboxes[jukeboxCounter].getId());
 
-                jukeboxCounter++;
-                if (jukeboxCounter == jukeboxes.length-1) {
-                    scanStep++;
+                // STEP 2
+                elements = 0;
+                for (Jukebox jukebox : jukeboxes) {
+                    response = jukeboxCommand(JukeboxCommand.OPEN, jukebox.getId());
+                    jukebox.setJsonContent(response.getContent());
+                    elements += jukebox.getLength();
                 }
-                return 10 + (90 - (int) (90 * ((double)jukeboxes.length/jukeboxCounter)));
+                return 10;
+
+                // STEP 3
             case 2:
+                for (Jukebox jukebox : jukeboxes) {
+
+                    if (jukeboxCounter > jukebox.getLength()) {
+                        continue;
+                    }
+
+                    // creates the element
+                    String json = jukebox.getElement(jukeboxCounter);
+                    Element element = JsonParser.getElement(json);
+                    insertElement(element);
+
+                    if (jukeboxCounter == jukebox.getLength() - 1) {
+                        jukeboxCounter = 0;
+                    } else {
+                        jukeboxCounter++;
+                    }
+
+                    return 10 + (90 - (int) (90 * ((double) jukeboxes.length / jukeboxCounter)));
+                }
+
+                // if arrives here, all elements has been parsed
                 return 100;
         }
 
-        return 0;
+        // should be not arrive here
+        return -1;
+    }
+
+    private void insertElement(Element element) {
+
+        switch (element.getType()) {
+            case MOVIE_FOLDER:
+
+                getMoviesManager().insertMovie((Movie) element);
+                break;
+        }
     }
 
     public MoviesManager getMoviesManager() {
