@@ -2,6 +2,7 @@ package org.aitek.controller.core;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import org.aitek.controller.utils.ImageDownloader;
 
 import java.io.InputStream;
 import java.net.URL;
@@ -12,15 +13,16 @@ import java.net.URL;
  * Date: 8/16/13
  * Time: 2:32 PM
  */
-public class Movie extends Element implements Comparable{
+public class Movie extends Element implements Comparable {
 
     private String title;
     private Bitmap thumbnail;
+    private Bitmap image;
     private String genres;
     private String names;
 
-    public Movie(String absoluteFile, String title, Bitmap thumbnail, String genres, String names) {
-        super(Type.MOVIE_FOLDER, absoluteFile);
+    public Movie(String movieDirectory, String title, Bitmap thumbnail, String genres, String names) {
+        super(Type.MOVIE_FOLDER, movieDirectory);
         this.title = title;
         this.thumbnail = thumbnail;
         this.genres = genres;
@@ -42,21 +44,20 @@ public class Movie extends Element implements Comparable{
         return thumbnail;
     }
 
-    public Bitmap getImage() throws Exception {
-        BitmapFactory.Options options=new BitmapFactory.Options();
-        options.inSampleSize = 2;
+    public void setThumbnail(Bitmap thumbnail) {
+        this.thumbnail = thumbnail;
+    }
 
-        URL url = new URL("file://" + getPath() + "/about.jpg");
-        InputStream inputStream = (InputStream) url.getContent();
-        return BitmapFactory.decodeStream(inputStream, null, options);
+    public Bitmap getImage() throws Exception {
+
+        if (image == null) {
+            image = ImageDownloader.downloadBitmap(getBasePath() + "/" + getImageName());
+        }
+        return image;
     }
 
     public String getGenres() {
         return genres;
-    }
-
-    public void setThumbnail(Bitmap thumbnail) {
-        this.thumbnail = thumbnail;
     }
 
     public String getNames() {

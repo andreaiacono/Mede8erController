@@ -29,6 +29,9 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
     private ActionBar actionBar;
     private Mede8erCommander mede8erCommander;
 
+    private boolean areAllImagesSaved = false;
+    private int savedImageCounter;
+
     /**
      * Called when the activity is first created.
      */
@@ -136,6 +139,7 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
 
         switch (item.getItemId()) {
             case R.id.menu_settings:
+
                 Toast toast = Toast.makeText(getApplicationContext(), "Settings!", Toast.LENGTH_SHORT);
                 toast.show();
                 return true;
@@ -217,5 +221,9 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
 
     @Override
     public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
+    }
+
+    public void imageSaved() {
+        savedImageCounter ++;
     }
 }

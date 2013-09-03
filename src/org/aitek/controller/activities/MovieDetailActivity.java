@@ -9,8 +9,8 @@ import android.view.MenuItem;
 import android.widget.ImageView;
 import org.aitek.controller.R;
 import org.aitek.controller.core.Movie;
-import org.aitek.controller.utils.Logger;
 import org.aitek.controller.mede8er.Mede8erCommander;
+import org.aitek.controller.utils.Logger;
 
 /**
  * Created with IntelliJ IDEA.
@@ -32,7 +32,8 @@ public class MovieDetailActivity extends Activity {
         try {
             movie = Mede8erCommander.getInstance(this).getMoviesManager().getMovie(position);
             imageView.setImageBitmap(movie.getImage());
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             Logger.toast("Error: " + e.getMessage(), this);
             e.printStackTrace();
         }
@@ -54,7 +55,7 @@ public class MovieDetailActivity extends Activity {
         if (item.getItemId() == R.id.menu_settings) {
 
             try {
-                Mede8erCommander.getInstance(this).playMovieDir(movie.getPath());
+                Mede8erCommander.getInstance(this).playMovieDir(movie.getBasePath());
             }
             catch (Exception e) {
                 Logger.toast("An error occurred trying to play the movie: " + e.getMessage(), getApplicationContext());

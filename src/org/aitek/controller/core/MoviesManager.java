@@ -186,7 +186,7 @@ public class MoviesManager {
         for (Movie movie : movies) {
 
             fileContent.append(movie.getTitle()).append("||");
-            fileContent.append(movie.getPath()).append("||");
+            fileContent.append(movie.getBasePath()).append("||");
             fileContent.append(movie.getGenres()).append("||");
             fileContent.append(movie.getNames()).append(NEWLINE);
         }

@@ -13,25 +13,34 @@ public class Element {
 
     }
     private Type type;
-
-    private String path;
+    private String basePath;
+    private String thumbnailName;
+    private String imageName;
 
     public Element(Type type, String path) {
         this.type = type;
-        this.path = path;
-    }
-
-    public String getPath() {
-        return path;
+        this.basePath = path;
+        thumbnailName = "folder.jpg";
+        imageName = "about.jpg";
     }
 
     public Type getType() {
         return type;
     }
 
-    public void setPath(String path) {
-        this.path = path;
+    public String getBasePath() {
+        return basePath;
     }
 
+    public String getThumbnailName() {
+        return thumbnailName;
+    }
 
+    public String getImageName() {
+        return imageName;
+    }
+
+    public void setBasePath(String basePath) {
+        this.basePath = basePath;
+    }
 }
