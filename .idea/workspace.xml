@@ -35,23 +35,45 @@
     </option>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="a6ec3a8f-2bfd-4ee6-9327-153e9c9ae49b" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/org/aitek/movies/core/Element.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/org/aitek/movies/loaders/JsonParser.java" afterPath="$PROJECT_DIR$/src/org/aitek/movies/utils/JsonParser.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/org/aitek/movies/loaders/FileSystemScanner.java" afterPath="$PROJECT_DIR$/src/org/aitek/movies/loaders/FileSystemScanner.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/org/aitek/movies/core/Jukebox.java" afterPath="$PROJECT_DIR$/src/org/aitek/movies/core/Jukebox.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/org/aitek/movies/utils/Mede8erCommander.java" afterPath="$PROJECT_DIR$/src/org/aitek/movies/utils/Mede8erCommander.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/org/aitek/movies/net/Mede8erConnector.java" afterPath="$PROJECT_DIR$/src/org/aitek/movies/net/Mede8erConnector.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/org/aitek/movies/loaders/Mede8erScanner.java" afterPath="$PROJECT_DIR$/src/org/aitek/movies/loaders/Mede8erScanner.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/org/aitek/movies/core/Movie.java" afterPath="$PROJECT_DIR$/src/org/aitek/movies/core/Movie.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/org/aitek/movies/activities/MovieDetailActivity.java" afterPath="$PROJECT_DIR$/src/org/aitek/movies/activities/MovieDetailActivity.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/org/aitek/movies/core/MoviesManager.java" afterPath="$PROJECT_DIR$/src/org/aitek/movies/core/MoviesManager.java" />
+    <list default="true" id="a6ec3a8f-2bfd-4ee6-9327-153e9c9ae49b" name="Default" comment="refactoring; started JSON parsing">
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/org/aitek/movies/database/ActorsContract.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/org/aitek/movies/database/DirectorsContract.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/org/aitek/movies/database/GenreContract.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/org/aitek/movies/database/MovieContract.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/org/aitek/movies/database/MovieDbHelper.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/org/aitek/movies/database/MovieGenreContract.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/org/aitek/movies/database/PersonContract.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/org/aitek/movies/net/Protocol.java" afterPath="" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/org/aitek/movies/activities/MainActivity.java" afterPath="$PROJECT_DIR$/src/org/aitek/controller/activities/MainActivity.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/org/aitek/movies/activities/MovieDetailActivity.java" afterPath="$PROJECT_DIR$/src/org/aitek/controller/activities/MovieDetailActivity.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/org/aitek/movies/core/Element.java" afterPath="$PROJECT_DIR$/src/org/aitek/controller/core/Element.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/org/aitek/movies/core/Jukebox.java" afterPath="$PROJECT_DIR$/src/org/aitek/controller/core/Jukebox.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/org/aitek/movies/core/Movie.java" afterPath="$PROJECT_DIR$/src/org/aitek/controller/core/Movie.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/org/aitek/movies/core/MoviesManager.java" afterPath="$PROJECT_DIR$/src/org/aitek/controller/core/MoviesManager.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/org/aitek/movies/loaders/FileSystemScanner.java" afterPath="$PROJECT_DIR$/src/org/aitek/controller/loaders/FileSystemScanner.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/org/aitek/movies/loaders/GenericProgressIndicator.java" afterPath="$PROJECT_DIR$/src/org/aitek/controller/ui/GenericProgressIndicator.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/org/aitek/movies/loaders/ImageAdapter.java" afterPath="$PROJECT_DIR$/src/org/aitek/controller/ui/ImageAdapter.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/org/aitek/movies/loaders/Mede8erScanner.java" afterPath="$PROJECT_DIR$/src/org/aitek/controller/loaders/Mede8erScanner.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/org/aitek/movies/loaders/MovieLoader.java" afterPath="$PROJECT_DIR$/src/org/aitek/controller/loaders/MovieLoader.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/org/aitek/movies/net/Command.java" afterPath="$PROJECT_DIR$/src/org/aitek/controller/mede8er/Command.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/org/aitek/movies/net/JukeboxCommand.java" afterPath="$PROJECT_DIR$/src/org/aitek/controller/mede8er/JukeboxCommand.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/org/aitek/movies/net/Mede8erConnector.java" afterPath="$PROJECT_DIR$/src/org/aitek/controller/mede8er/net/Mede8erConnector.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/org/aitek/movies/net/RemoteCommand.java" afterPath="$PROJECT_DIR$/src/org/aitek/controller/mede8er/RemoteCommand.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/org/aitek/movies/net/Response.java" afterPath="$PROJECT_DIR$/src/org/aitek/controller/mede8er/net/Response.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/org/aitek/movies/net/TcpClient.java" afterPath="$PROJECT_DIR$/src/org/aitek/controller/mede8er/net/TcpClient.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/org/aitek/movies/utils/Constants.java" afterPath="$PROJECT_DIR$/src/org/aitek/controller/utils/Constants.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/org/aitek/movies/utils/JsonParser.java" afterPath="$PROJECT_DIR$/src/org/aitek/controller/parsers/JsonParser.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/org/aitek/movies/utils/Logger.java" afterPath="$PROJECT_DIR$/src/org/aitek/controller/utils/Logger.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/org/aitek/movies/utils/Mede8erCommander.java" afterPath="$PROJECT_DIR$/src/org/aitek/controller/mede8er/Mede8erCommander.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/org/aitek/movies/utils/ProgressIndicator.java" afterPath="$PROJECT_DIR$/src/org/aitek/controller/ui/ProgressIndicator.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/org/aitek/movies/utils/XmlParser.java" afterPath="$PROJECT_DIR$/src/org/aitek/controller/parsers/XmlParser.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/AndroidManifest.xml" afterPath="$PROJECT_DIR$/AndroidManifest.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="Mede8er Movies.iws" />
     <ignored path=".idea/workspace.xml" />
     <file path="/a.xml" changelist="a6ec3a8f-2bfd-4ee6-9327-153e9c9ae49b" time="1377354381172" ignored="false" />
-    <file path="/Dummy.txt" changelist="a6ec3a8f-2bfd-4ee6-9327-153e9c9ae49b" time="1378068439409" ignored="false" />
+    <file path="/Dummy.txt" changelist="a6ec3a8f-2bfd-4ee6-9327-153e9c9ae49b" time="1378213246157" ignored="false" />
     <file path="/MyActivity.java" changelist="a6ec3a8f-2bfd-4ee6-9327-153e9c9ae49b" time="1376648523266" ignored="false" />
     <file path="/strings.xml" changelist="a6ec3a8f-2bfd-4ee6-9327-153e9c9ae49b" time="1377858314023" ignored="false" />
     <file path="/ActionBarActivity.java" changelist="a6ec3a8f-2bfd-4ee6-9327-153e9c9ae49b" time="1376649847127" ignored="false" />
@@ -71,7 +93,7 @@
     <file path="/FullScreenImage.java" changelist="a6ec3a8f-2bfd-4ee6-9327-153e9c9ae49b" time="1377036994788" ignored="false" />
     <file path="/fullscreen.xml" changelist="a6ec3a8f-2bfd-4ee6-9327-153e9c9ae49b" time="1376742666326" ignored="false" />
     <file path="/Database.java" changelist="a6ec3a8f-2bfd-4ee6-9327-153e9c9ae49b" time="1377036919099" ignored="false" />
-    <file path="/XmlParser.java" changelist="a6ec3a8f-2bfd-4ee6-9327-153e9c9ae49b" time="1377866811383" ignored="false" />
+    <file path="/XmlParser.java" changelist="a6ec3a8f-2bfd-4ee6-9327-153e9c9ae49b" time="1378214391492" ignored="false" />
     <file path="/AndroidManifest.xml" changelist="a6ec3a8f-2bfd-4ee6-9327-153e9c9ae49b" time="1377867444728" ignored="false" />
     <file path="/menu_main.xml" changelist="a6ec3a8f-2bfd-4ee6-9327-153e9c9ae49b" time="1377864998078" ignored="false" />
     <file path="/menu_movie_detail.xml" changelist="a6ec3a8f-2bfd-4ee6-9327-153e9c9ae49b" time="1377037107680" ignored="false" />
@@ -107,7 +129,7 @@
     <file path="/Command.java" changelist="a6ec3a8f-2bfd-4ee6-9327-153e9c9ae49b" time="1377870345791" ignored="false" />
     <file path="/JukeboxCommand.java" changelist="a6ec3a8f-2bfd-4ee6-9327-153e9c9ae49b" time="1377871426686" ignored="false" />
     <file path="/Jukebox.java" changelist="a6ec3a8f-2bfd-4ee6-9327-153e9c9ae49b" time="1378056308594" ignored="false" />
-    <file path="/JsonParser.java" changelist="a6ec3a8f-2bfd-4ee6-9327-153e9c9ae49b" time="1378068728071" ignored="false" />
+    <file path="/JsonParser.java" changelist="a6ec3a8f-2bfd-4ee6-9327-153e9c9ae49b" time="1378214287874" ignored="false" />
     <file path="/Mede8erScanner.java" changelist="a6ec3a8f-2bfd-4ee6-9327-153e9c9ae49b" time="1378056823336" ignored="false" />
     <file path="/Element.java" changelist="a6ec3a8f-2bfd-4ee6-9327-153e9c9ae49b" time="1378068498067" ignored="false" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -175,91 +197,93 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="Mede8erScanner.java" pinned="false" current="true" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/org/aitek/movies/loaders/Mede8erScanner.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="9" column="17" selection-start="198" selection-end="198" vertical-scroll-proportion="0.021428572">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="MoviesManager.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/org/aitek/movies/core/MoviesManager.java">
+        <entry file="file://$PROJECT_DIR$/src/org/aitek/controller/core/MoviesManager.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="188" column="46" selection-start="5367" selection-end="5367" vertical-scroll-proportion="0.0">
+            <state line="45" column="73" selection-start="1260" selection-end="1260" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Mede8erCommander.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/org/aitek/movies/utils/Mede8erCommander.java">
+      <file leaf-file-name="MovieLoader.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/org/aitek/controller/loaders/MovieLoader.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="90" column="46" selection-start="3061" selection-end="3061" vertical-scroll-proportion="0.0">
+            <state line="53" column="33" selection-start="1551" selection-end="1551" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Element.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/org/aitek/movies/core/Element.java">
+      <file leaf-file-name="Command.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/org/aitek/controller/mede8er/Command.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="15" column="0" selection-start="268" selection-end="268" vertical-scroll-proportion="0.0">
+            <state line="8" column="12" selection-start="143" selection-end="143" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Movie.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/org/aitek/movies/core/Movie.java">
+      <file leaf-file-name="TcpClient.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/org/aitek/controller/mede8er/net/TcpClient.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="17" column="4" selection-start="332" selection-end="357" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="FileSystemScanner.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/org/aitek/movies/loaders/FileSystemScanner.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="66" column="25" selection-start="2124" selection-end="2124" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="MovieDetailActivity.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/org/aitek/movies/activities/MovieDetailActivity.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="20" column="3" selection-start="529" selection-end="529" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Mede8erConnector.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/org/aitek/movies/net/Mede8erConnector.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="88" column="31" selection-start="3112" selection-end="3112" vertical-scroll-proportion="0.0">
+            <state line="15" column="13" selection-start="307" selection-end="307" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
       <file leaf-file-name="JsonParser.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/org/aitek/movies/utils/JsonParser.java">
+        <entry file="file://$PROJECT_DIR$/src/org/aitek/controller/parsers/JsonParser.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="32" column="9" selection-start="1006" selection-end="1006" vertical-scroll-proportion="0.0">
+            <state line="39" column="0" selection-start="1125" selection-end="1125" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Jukebox.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/org/aitek/movies/core/Jukebox.java">
+      <file leaf-file-name="XmlParser.java" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/org/aitek/controller/parsers/XmlParser.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="58" column="15" selection-start="961" selection-end="961" vertical-scroll-proportion="0.0">
+            <state line="29" column="24" selection-start="755" selection-end="755" vertical-scroll-proportion="0.5211864">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Mede8erCommander.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/org/aitek/controller/mede8er/Mede8erCommander.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="29" column="37" selection-start="914" selection-end="914" vertical-scroll-proportion="0.0">
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="RemoteCommand.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/org/aitek/controller/mede8er/RemoteCommand.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="8" column="12" selection-start="141" selection-end="141" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Mede8erConnector.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/org/aitek/controller/mede8er/net/Mede8erConnector.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="24" column="30" selection-start="605" selection-end="605" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Response.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/org/aitek/controller/mede8er/net/Response.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="8" column="13" selection-start="146" selection-end="146" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -284,15 +308,6 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/AndroidManifest.xml" />
-        <option value="$PROJECT_DIR$/src/org/aitek/movies/activities/MainActivity.java" />
-        <option value="$PROJECT_DIR$/src/org/aitek/movies/net/Command.java" />
-        <option value="$PROJECT_DIR$/src/org/aitek/movies/net/JukeboxCommand.java" />
-        <option value="$PROJECT_DIR$/src/org/aitek/movies/loaders/JsonParser.java" />
-        <option value="$PROJECT_DIR$/src/org/aitek/movies/utils/ProgressIndicator.java" />
-        <option value="$PROJECT_DIR$/src/org/aitek/movies/core/Jukebox.java" />
-        <option value="$PROJECT_DIR$/src/org/aitek/movies/loaders/Mede8erScanner.java" />
-        <option value="$PROJECT_DIR$/src/org/aitek/movies/utils/Mede8erCommander.java" />
         <option value="$PROJECT_DIR$/src/org/aitek/movies/core/Movie.java" />
         <option value="$PROJECT_DIR$/src/org/aitek/movies/core/MoviesManager.java" />
         <option value="$PROJECT_DIR$/src/org/aitek/movies/loaders/FileSystemScanner.java" />
@@ -300,14 +315,23 @@
         <option value="$PROJECT_DIR$/src/org/aitek/movies/activities/MovieDetailActivity.java" />
         <option value="$PROJECT_DIR$/src/org/aitek/movies/net/Mede8erConnector.java" />
         <option value="$PROJECT_DIR$/src/org/aitek/movies/utils/JsonParser.java" />
+        <option value="$PROJECT_DIR$/src/org/aitek/movies/loaders/Mede8erScanner.java" />
+        <option value="$PROJECT_DIR$/src/org/aitek/mede8ercontroller/utils/Mede8erCommander.java" />
+        <option value="$PROJECT_DIR$/src/org/aitek/mede8ercontroller/core/Mede8erCommander.java" />
+        <option value="$PROJECT_DIR$/src/org/aitek/controller/loaders/Mede8erScanner.java" />
+        <option value="$PROJECT_DIR$/src/org/aitek/controller/mede8er/RemoteCommand.java" />
+        <option value="$PROJECT_DIR$/src/org/aitek/controller/mede8er/Mede8erCommander.java" />
+        <option value="$PROJECT_DIR$/src/org/aitek/controller/parsers/JsonParser.java" />
+        <option value="$PROJECT_DIR$/src/org/aitek/controller/mede8er/net/Mede8erConnector.java" />
+        <option value="$PROJECT_DIR$/src/org/aitek/controller/parsers/XmlParser.java" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="-10" />
-    <option name="y" value="19" />
-    <option name="width" value="1940" />
-    <option name="height" value="1071" />
+    <option name="x" value="-1" />
+    <option name="y" value="27" />
+    <option name="width" value="1282" />
+    <option name="height" value="773" />
   </component>
   <component name="ProjectInspectionProfilesVisibleTreeState">
     <entry key="Project Default">
@@ -333,6 +357,9 @@
           </State>
           <State>
             <id>Plugin DevKit</id>
+          </State>
+          <State>
+            <id>Serialization issues</id>
           </State>
           <State>
             <id>Threading issues</id>
@@ -388,46 +415,6 @@
               <option name="myItemId" value="External Libraries" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ExternalLibrariesNode" />
             </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="&lt; Android 4.3 Platform &gt;" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.NamedLibraryElementNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Mede8er Controller" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="External Libraries" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ExternalLibrariesNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="&lt; Android 4.3 Platform &gt;" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.NamedLibraryElementNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="annotations.jar" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Mede8er Controller" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="External Libraries" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ExternalLibrariesNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="&lt; Android 4.3 Platform &gt;" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.NamedLibraryElementNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="android.jar" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
           </PATH>
           <PATH>
             <PATH_ELEMENT>
@@ -453,7 +440,7 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="movies" />
+              <option name="myItemId" value="controller" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
@@ -475,7 +462,77 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="movies" />
+              <option name="myItemId" value="controller" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ui" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Mede8er Controller" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Mede8erController" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="controller" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="parsers" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Mede8er Controller" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Mede8erController" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="controller" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="mede8er" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Mede8er Controller" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Mede8erController" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="controller" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="mede8er" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
@@ -497,7 +554,7 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="movies" />
+              <option name="myItemId" value="controller" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
@@ -519,29 +576,7 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="movies" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="database" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Mede8er Controller" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Mede8erController" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="movies" />
+              <option name="myItemId" value="controller" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
@@ -563,7 +598,7 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="movies" />
+              <option name="myItemId" value="controller" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
@@ -651,7 +686,7 @@
     <property name="options.splitter.main.proportions" value="0.3" />
     <property name="MemberChooser.sorted" value="false" />
     <property name="recentsLimit" value="5" />
-    <property name="options.lastSelected" value="preferences.keymap" />
+    <property name="options.lastSelected" value="editor.preferences.appearance" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="AndroidLayoutSelectedEditor" value="text-editor" />
     <property name="project.structure.side.proportion" value="0.2" />
@@ -912,7 +947,11 @@
       <created>1377874784341</created>
       <updated>1377874784341</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="refactoring; started JSON parsing">
+      <created>1378070949903</created>
+      <updated>1378070949903</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TodoView" selected-index="0">
@@ -936,24 +975,24 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="-10" y="19" width="1940" height="1071" extended-state="6" />
+    <frame x="-1" y="27" width="1282" height="773" extended-state="6" />
     <editor active="false" />
     <layout>
-      <window_info id="Changes" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.17692308" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Changes" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.17488076" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.21303657" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.21236134" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.21303657" sideWeight="0.5" order="11" side_tool="true" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="1" side_tool="true" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3296355" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.31758243" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3169572" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Android" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.2802198" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.13736264" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.24878444" sideWeight="0.6703645" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.19903949" sideWeight="0.8230769" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.21312805" sideWeight="0.82511926" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.16043957" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Palette&#9;" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3298217" sideWeight="0.6868045" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
@@ -1007,7 +1046,7 @@
     <option name="WRAP_WHEN_TYPING_REACHES_RIGHT_MARGIN" value="false" />
     <option name="FORCE_NON_EMPTY_COMMENT" value="false" />
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="false" />
-    <option name="LAST_COMMIT_MESSAGE" value="mede8er scan process (still to complete)" />
+    <option name="LAST_COMMIT_MESSAGE" value="refactoring; started JSON parsing" />
     <option name="MAKE_NEW_CHANGELIST_ACTIVE" value="false" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_FILES_UP_TO_DATE_BEFORE_COMMIT" value="false" />
@@ -1025,6 +1064,7 @@
     <MESSAGE value="added dialogs for first time run" />
     <MESSAGE value="refactoring" />
     <MESSAGE value="mede8er scan process (still to complete)" />
+    <MESSAGE value="refactoring; started JSON parsing" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
@@ -1034,114 +1074,116 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/org/aitek/movies/net/Response.java">
+    <entry file="file://$PROJECT_DIR$/src/org/aitek/controller/loaders/FileSystemScanner.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="8" column="13" selection-start="134" selection-end="134" vertical-scroll-proportion="0.0">
+        <state line="64" column="25" selection-start="1986" selection-end="1986" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/org/aitek/movies/net/JukeboxCommand.java">
+    <entry file="file://$PROJECT_DIR$/src/org/aitek/controller/activities/MovieDetailActivity.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="9" column="23" selection-start="172" selection-end="172" vertical-scroll-proportion="0.0">
+        <state line="18" column="3" selection-start="490" selection-end="490" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/org/aitek/movies/activities/MainActivity.java">
+    <entry file="file://$PROJECT_DIR$/src/org/aitek/controller/core/Movie.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="170" column="27" selection-start="6597" selection-end="6597" vertical-scroll-proportion="0.0">
+        <state line="15" column="0" selection-start="312" selection-end="312" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/org/aitek/movies/loaders/GenericProgressIndicator.java">
+    <entry file="file://$PROJECT_DIR$/src/org/aitek/controller/core/Jukebox.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="12" column="22" selection-start="274" selection-end="274" vertical-scroll-proportion="0.019788919">
+        <state line="76" column="0" selection-start="1208" selection-end="1208" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/org/aitek/movies/utils/ProgressIndicator.java">
+    <entry file="file://$PROJECT_DIR$/src/org/aitek/controller/ui/GenericProgressIndicator.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="36" column="0" selection-start="1071" selection-end="1071" vertical-scroll-proportion="0.0">
+        <state line="11" column="22" selection-start="248" selection-end="248" vertical-scroll-proportion="0.26369864">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/org/aitek/movies/core/MoviesManager.java">
+    <entry file="file://$PROJECT_DIR$/src/org/aitek/controller/loaders/Mede8erScanner.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="188" column="46" selection-start="5367" selection-end="5367" vertical-scroll-proportion="0.0">
+        <state line="12" column="49" selection-start="319" selection-end="319" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/org/aitek/movies/loaders/FileSystemScanner.java">
+    <entry file="file://$PROJECT_DIR$/src/org/aitek/controller/mede8er/RemoteCommand.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="66" column="25" selection-start="2124" selection-end="2124" vertical-scroll-proportion="0.0">
+        <state line="8" column="12" selection-start="141" selection-end="141" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/org/aitek/movies/activities/MovieDetailActivity.java">
+    <entry file="file://$PROJECT_DIR$/src/org/aitek/controller/mede8er/Command.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="20" column="3" selection-start="529" selection-end="529" vertical-scroll-proportion="0.0">
+        <state line="8" column="12" selection-start="143" selection-end="143" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/org/aitek/movies/core/Movie.java">
+    <entry file="file://$PROJECT_DIR$/src/org/aitek/controller/mede8er/net/Response.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="17" column="4" selection-start="332" selection-end="357" vertical-scroll-proportion="0.0">
+        <state line="8" column="13" selection-start="146" selection-end="146" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/org/aitek/movies/core/Element.java">
+    <entry file="file://$PROJECT_DIR$/src/org/aitek/controller/mede8er/net/TcpClient.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="15" column="0" selection-start="268" selection-end="268" vertical-scroll-proportion="0.0">
+        <state line="15" column="13" selection-start="307" selection-end="307" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/org/aitek/movies/utils/Mede8erCommander.java">
+    <entry file="file://$PROJECT_DIR$/src/org/aitek/controller/parsers/JsonParser.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="90" column="46" selection-start="3061" selection-end="3061" vertical-scroll-proportion="0.0">
+        <state line="39" column="0" selection-start="1125" selection-end="1125" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/org/aitek/movies/core/Jukebox.java">
+    <entry file="file://$PROJECT_DIR$/src/org/aitek/controller/core/MoviesManager.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="58" column="15" selection-start="961" selection-end="961" vertical-scroll-proportion="0.0">
+        <state line="45" column="73" selection-start="1260" selection-end="1260" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/org/aitek/movies/utils/JsonParser.java">
+    <entry file="file://$PROJECT_DIR$/src/org/aitek/controller/loaders/MovieLoader.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="32" column="9" selection-start="1006" selection-end="1006" vertical-scroll-proportion="0.0">
+        <state line="53" column="33" selection-start="1551" selection-end="1551" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="jar://$PROJECT_DIR$/../../../android-sdk-linux/platforms/android-18/android.jar!/java/net/DatagramSocket.class">
+    <entry file="file://$PROJECT_DIR$/src/org/aitek/controller/mede8er/Mede8erCommander.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="35" column="29" selection-start="1378" selection-end="1378" vertical-scroll-proportion="0.33333334">
+        <state line="29" column="37" selection-start="914" selection-end="914" vertical-scroll-proportion="0.0">
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/org/aitek/controller/mede8er/net/Mede8erConnector.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="24" column="30" selection-start="605" selection-end="605" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/org/aitek/movies/net/Mede8erConnector.java">
+    <entry file="file://$PROJECT_DIR$/src/org/aitek/controller/parsers/XmlParser.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="88" column="31" selection-start="3112" selection-end="3112" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/org/aitek/movies/loaders/Mede8erScanner.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="9" column="17" selection-start="198" selection-end="198" vertical-scroll-proportion="0.021428572">
+        <state line="29" column="24" selection-start="755" selection-end="755" vertical-scroll-proportion="0.5211864">
           <folding />
         </state>
       </provider>
