@@ -55,7 +55,8 @@ public class MovieDetailActivity extends Activity {
         if (item.getItemId() == R.id.menu_settings) {
 
             try {
-                Mede8erCommander.getInstance(this).playMovieDir(movie.getBasePath());
+                Intent mediaPLayerIntent = new Intent(getApplicationContext(), MoviePlayerActivity.class);
+                startActivity(mediaPLayerIntent);
             }
             catch (Exception e) {
                 Logger.toast("An error occurred trying to play the movie: " + e.getMessage(), getApplicationContext());
