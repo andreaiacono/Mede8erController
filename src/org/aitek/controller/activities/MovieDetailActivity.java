@@ -61,7 +61,7 @@ public class MovieDetailActivity extends Activity {
 
             try {
                 Logger.toast("Starting movie detail act", this);
-                Intent mediaPLayerIntent = new Intent(getApplicationContext(), MoviePlayerActivity.class);
+                Intent mediaPLayerIntent = new Intent(this, MoviePlayerActivity.class);
                 mediaPLayerIntent.putExtra(MoviePlayerActivity.class.getName(), position);
                 startActivity(mediaPLayerIntent);
             }

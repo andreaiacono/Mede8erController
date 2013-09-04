@@ -46,35 +46,8 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
         actionBar.addTab(actionBar.newTab().setText(getString(R.string.music_tab)).setTabListener(this));
         actionBar.addTab(actionBar.newTab().setText(getString(R.string.playlist_tab)).setTabListener(this));
 
-
         try {
             mede8erCommander = Mede8erCommander.getInstance(this);
-            imageAdapter = new ImageAdapter(this);
-            ArrayAdapter adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, mede8erCommander.getMoviesManager().getMovieGenres());
-
-            moviesGenresListView = (ListView) findViewById(R.id.listView);
-            moviesGenresListView.setAdapter(adapter);
-            moviesGenresListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
-                @Override
-                public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                    mede8erCommander.getMoviesManager().setMovieGenreFilter(moviesGenresListView.getAdapter().getItem(i).toString());
-                    imageAdapter.notifyDataSetChanged();
-                }
-            });
-
-            moviesGridView = (GridView) findViewById(R.id.gridView);
-            moviesGridView.setAdapter(imageAdapter);
-            moviesGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
-                @Override
-                public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-
-                    Intent fullScreenIntent = new Intent(v.getContext(), MovieDetailActivity.class);
-                    fullScreenIntent.putExtra(MovieDetailActivity.class.getName(), position);
-                    startActivity(fullScreenIntent);
-                }
-            });
         }
         catch (FileNotFoundException e) {
             showInitDialog();
@@ -85,6 +58,32 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
             ex.printStackTrace();
         }
 
+        imageAdapter = new ImageAdapter(this, mede8erCommander);
+        ArrayAdapter adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, mede8erCommander.getMoviesManager().getMovieGenres());
+
+        moviesGenresListView = (ListView) findViewById(R.id.listView);
+        moviesGenresListView.setAdapter(adapter);
+        moviesGenresListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                mede8erCommander.getMoviesManager().setMovieGenreFilter(moviesGenresListView.getAdapter().getItem(i).toString());
+                imageAdapter.notifyDataSetChanged();
+            }
+        });
+
+        moviesGridView = (GridView) findViewById(R.id.gridView);
+        moviesGridView.setAdapter(imageAdapter);
+        moviesGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+            @Override
+            public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
+
+                Intent fullScreenIntent = new Intent(v.getContext(), MovieDetailActivity.class);
+                fullScreenIntent.putExtra(MovieDetailActivity.class.getName(), position);
+                startActivity(fullScreenIntent);
+            }
+        });
     }
 
     private void showInitDialog() {

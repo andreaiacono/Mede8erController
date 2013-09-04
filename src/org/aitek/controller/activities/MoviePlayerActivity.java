@@ -22,7 +22,8 @@ public class MoviePlayerActivity extends Activity {
 
         try {
             int position = (Integer) getIntent().getExtras().get(MovieDetailActivity.class.getName());
-            Mede8erCommander.getInstance(this).playMovieDir(Mede8erCommander.getInstance(this).getMoviesManager().getMovie(position).getBasePath());
+            movie = Mede8erCommander.getInstance(this).getMoviesManager().getMovie(position);
+            Mede8erCommander.getInstance(this).playMovieDir(movie.getBasePath());
         }
         catch (Exception e) {
             e.printStackTrace();

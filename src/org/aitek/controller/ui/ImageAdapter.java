@@ -21,9 +21,9 @@ public class ImageAdapter extends BaseAdapter {
     private final Mede8erCommander mede8erCommander;
     private Context context;
 
-    public ImageAdapter(Activity activity) throws Exception {
-        context = activity.getApplicationContext();
-        mede8erCommander = Mede8erCommander.getInstance(activity);
+    public ImageAdapter(Activity activity, Mede8erCommander mede8erCommander) {
+        this.context = activity.getApplicationContext();
+        this.mede8erCommander = mede8erCommander;
     }
 
     public int getCount() {
