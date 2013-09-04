@@ -10,10 +10,7 @@ import org.aitek.controller.utils.Constants;
 import org.aitek.controller.utils.Logger;
 import org.aitek.controller.mede8er.Mede8erCommander;
 
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
@@ -23,7 +20,6 @@ import java.util.List;
  * User: andrea
  * Date: 8/24/13
  * Time: 1:05 AM
- * To change this template use File | Settings | File Templates.
  */
 
 
@@ -39,28 +35,33 @@ public class MovieLoader extends GenericProgressIndicator {
     private int read = 0;
     private Mede8erCommander mede8erCommander;
 
-    public MovieLoader(Activity activity) throws Exception{
+    public MovieLoader(Activity activity) throws Exception {
         super(activity);
         this.activity = activity;
-        mede8erCommander = Mede8erCommander.getInstance(activity);
     }
 
     @Override
     public void setup() throws Exception {
 
+        mede8erCommander = Mede8erCommander.getInstance(activity);
         options = new BitmapFactory.Options();
         options.inSampleSize = 2;
 
-        FileInputStream in = activity.openFileInput(Constants.MOVIES_FILE);
-        fileLength = in.available();
-        Logger.log("fileLength=" + fileLength);
-        InputStreamReader inputStreamReader = new InputStreamReader(in);
+        try {
+            FileInputStream in = activity.openFileInput(Constants.MOVIES_FILE);
+            fileLength = in.available();
+            Logger.log("fileLength=" + fileLength);
+            InputStreamReader inputStreamReader = new InputStreamReader(in);
 
-        bufferedReader = new BufferedReader(inputStreamReader);
-        String line = bufferedReader.readLine();
-        Logger.log("line=" + line);
-        genres = Arrays.asList(line.split(", "));
-        mede8erCommander.getMoviesManager().setMovieGenres(genres);
+            bufferedReader = new BufferedReader(inputStreamReader);
+            String line = bufferedReader.readLine();
+            Logger.log("line=" + line);
+            genres = Arrays.asList(line.split(", "));
+            mede8erCommander.getMoviesManager().setMovieGenres(genres);
+        }
+        catch (FileNotFoundException e) {
+            Logger.log("Error: " + e.getMessage());
+        }
     }
 
     @Override

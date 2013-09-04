@@ -21,14 +21,14 @@ public class Mede8erCommander {
     private Mede8erConnector mede8erConnector;
     private MoviesManager moviesManager;
     private int scanStep;
-    private String scannedId;
     private Jukebox[] jukeboxes;
     private int jukeboxCounter;
     private int elements;
+    private Activity activity;
 
     private Mede8erCommander(Activity activity) throws Exception {
+        this.activity = activity;
         mede8erConnector = new Mede8erConnector(activity);
-        moviesManager = new MoviesManager(activity);
     }
 
     public static Mede8erCommander getInstance(Activity activity) throws Exception {
@@ -94,7 +94,7 @@ public class Mede8erCommander {
                 }
                 return 10;
 
-                // STEP 3
+            // STEP 3
             case 2:
                 for (Jukebox jukebox : jukeboxes) {
 
@@ -124,17 +124,24 @@ public class Mede8erCommander {
         return -1;
     }
 
-    private void insertElement(Element element) {
+    private void insertElement(Element element) throws Exception {
 
         switch (element.getType()) {
             case MOVIE_FOLDER:
-
                 getMoviesManager().insertMovie((Movie) element);
                 break;
         }
     }
 
     public MoviesManager getMoviesManager() {
+        if (moviesManager == null) {
+            try {
+                moviesManager = new MoviesManager(activity);
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
         return moviesManager;
     }
 }

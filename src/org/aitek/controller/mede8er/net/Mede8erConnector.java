@@ -29,6 +29,10 @@ public class Mede8erConnector {
 
         this.activity = activity;
         this.inetAddress = getMede8erAddressFromPreferences();
+        Logger.toast("IP loaded from config: " + inetAddress, activity);
+
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
 
         if (inetAddress == null) {
 
@@ -36,7 +40,7 @@ public class Mede8erConnector {
             saveMede8erIpAddress(inetAddress);
         }
 
-        tcpClient = new TcpClient(inetAddress, Constants.TCP_PORT);
+        tcpClient = null; //new TcpClient(inetAddress, Constants.TCP_PORT);
     }
 
     private void saveMede8erIpAddress(String inetAddress) {
@@ -57,6 +61,7 @@ public class Mede8erConnector {
         DhcpInfo dhcpInfo = wifi.getDhcpInfo();
         if (dhcpInfo == null) {
             // TODO handle this!
+            Logger.toast("Error from Dhcpinfo()", activity);
         }
 
         int broadcast = (dhcpInfo.ipAddress & dhcpInfo.netmask) | ~dhcpInfo.netmask;
@@ -69,20 +74,16 @@ public class Mede8erConnector {
 
     public String getMede8erIpAddress() throws Exception {
 
-        StrictMode.ThreadPolicy policy = new
-        StrictMode.ThreadPolicy.Builder().permitAll().build();
-        StrictMode.setThreadPolicy(policy);
-
         String helloCommand = Command.HELLO.toString().toLowerCase() + " thisis " + Constants.APP;
         DatagramSocket socket = new DatagramSocket(Constants.UDP_PORT);
         socket.setBroadcast(true);
-        DatagramPacket packet = new DatagramPacket(helloCommand.getBytes(), helloCommand.length(), getBroadcastAddress(), Constants.UDP_PORT);
+        DatagramPacket packet = new DatagramPacket(helloCommand.getBytes(), helloCommand.length(), InetAddress.getByName("192.168.1.4"), Constants.UDP_PORT);
         socket.send(packet);
 
         byte[] buf = new byte[1024];
         packet = new DatagramPacket(buf, buf.length);
         socket.receive(packet);
-        Logger.toast("IP: " + packet.getAddress().getHostAddress(), activity.getApplicationContext());
+        Logger.toast("IP: " + packet.getAddress().getHostAddress() + " response=" + new String(packet.getData()), activity.getApplicationContext());
         Logger.log("IP: " + packet.getAddress().getHostAddress());
         return packet.getAddress().getHostAddress();
     }
