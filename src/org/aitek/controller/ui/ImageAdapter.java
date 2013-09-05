@@ -27,7 +27,7 @@ public class ImageAdapter extends BaseAdapter {
     }
 
     public int getCount() {
-        return mede8erCommander.getMoviesManager().getMoviesCount();
+        return mede8erCommander.getMoviesManager().getCount();
     }
 
     @Override
@@ -44,7 +44,7 @@ public class ImageAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
 
         ImageView imageView;
-        if (convertView == null) {  // if it's not recycled, initialize some attributes
+        if (convertView == null) {
             imageView = new ImageView(context);
             imageView.setLayoutParams(new GridView.LayoutParams(180, 220));
             imageView.setScaleType(ImageView.ScaleType.CENTER);

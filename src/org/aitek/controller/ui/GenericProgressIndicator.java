@@ -1,6 +1,7 @@
 package org.aitek.controller.ui;
 
 import android.app.Activity;
+import android.content.Context;
 
 /**
  * Created with IntelliJ IDEA.
@@ -12,12 +13,11 @@ import android.app.Activity;
 public abstract class GenericProgressIndicator {
 
 
-    protected Activity activity;
+    protected Context context;
     private int counter;
 
-    public GenericProgressIndicator(Activity activity) {
-
-        this.activity = activity;
+    public GenericProgressIndicator(Context context) {
+        this.context = context;
     }
 
     /**
@@ -56,8 +56,8 @@ public abstract class GenericProgressIndicator {
 
     }
 
-    public Activity getActivity() {
-        return activity;
+    public Context getContext() {
+        return context;
     }
 
     public CharSequence getText() {

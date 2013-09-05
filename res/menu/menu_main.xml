@@ -20,6 +20,12 @@
     </item>
 
     <item
+            android:id="@+id/menu_reset"
+            android:title="Reset"
+            android:orderInCategory="10"
+            android:showAsAction="never"/>
+
+    <item
             android:id="@+id/menu_scan_mediaplayer"
             android:title="@string/scan_mede8er"
             android:orderInCategory="50"

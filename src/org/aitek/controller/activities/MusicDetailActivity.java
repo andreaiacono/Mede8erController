@@ -18,17 +18,17 @@ import org.aitek.controller.utils.Logger;
  * Date: 8/16/13
  * Time: 6:23 PM
  */
-public class MovieDetailActivity extends Activity {
+public class MusicDetailActivity extends Activity {
 
     private Movie movie;
     private int position;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.movie_detail);
+        setContentView(R.layout.music_detail);
         Intent intent = getIntent();
         ImageView imageView = (ImageView) findViewById(R.id.movie_fullscreen_view);
-        position = (Integer) intent.getExtras().get(MovieDetailActivity.class.getName());
+        position = (Integer) intent.getExtras().get(MusicDetailActivity.class.getName());
 
         try {
             movie = Mede8erCommander.getInstance(this.getApplicationContext()).getMoviesManager().getMovie(position);
@@ -45,7 +45,7 @@ public class MovieDetailActivity extends Activity {
     public boolean onCreateOptionsMenu(Menu menu) {
 
         super.onCreateOptionsMenu(menu);
-        Logger.toast("Starting movie detail act23", this);
+        Logger.toast("Starting music detail act23", this);
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_movie_detail, menu);
         return true;
@@ -54,11 +54,11 @@ public class MovieDetailActivity extends Activity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
-        Logger.toast("Starting movie detail act2", this);
+        Logger.toast("Starting music detail act2", this);
         if (item.getItemId() == R.id.action_play) {
 
             try {
-                Logger.toast("Starting movie detail act", this);
+                Logger.toast("Starting music detail act", this);
                 Intent mediaPLayerIntent = new Intent(this, MoviePlayerActivity.class);
                 mediaPLayerIntent.putExtra(MoviePlayerActivity.class.getName(), position);
                 startActivity(mediaPLayerIntent);

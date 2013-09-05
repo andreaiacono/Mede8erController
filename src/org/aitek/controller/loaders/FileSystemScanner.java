@@ -1,8 +1,8 @@
 package org.aitek.controller.loaders;
 
-import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import org.aitek.controller.activities.MainActivity;
 import org.aitek.controller.core.Movie;
 import org.aitek.controller.ui.GenericProgressIndicator;
 import org.aitek.controller.utils.Constants;
@@ -25,7 +25,7 @@ public class FileSystemScanner extends GenericProgressIndicator {
     private int listCounter = 0;
     private int fileNumber;
 
-    public FileSystemScanner(Activity activity) {
+    public FileSystemScanner(MainActivity activity) {
         super(activity);
     }
 
@@ -45,10 +45,10 @@ public class FileSystemScanner extends GenericProgressIndicator {
 
     @Override
     public void finish() throws Exception {
-        Mede8erCommander mede8erCommander = Mede8erCommander.getInstance(activity);
-        mede8erCommander.getMoviesManager().saveMovies(activity);
+        Mede8erCommander mede8erCommander = Mede8erCommander.getInstance(context);
+        mede8erCommander.getMoviesManager().save();
         mede8erCommander.getMoviesManager().sortMovies();
-        mede8erCommander.getMoviesManager().sortMovieGenres();
+        mede8erCommander.getMoviesManager().sortGenres();
     }
 
     private void saveMovieInfo(File f) throws Exception {
@@ -62,7 +62,7 @@ public class FileSystemScanner extends GenericProgressIndicator {
 
                 String xmlFilename = "file://" + Constants.ROOT_DIRECTORY + "/" + f.getName() + f.getName() + ".xml";
                 InputStream xmlInputStream = (InputStream) new URL(xmlFilename).getContent();
-                Movie movie = XmlParser.parse(xmlInputStream, activity);
+                Movie movie = XmlParser.parse(xmlInputStream, context);
                 movie.setBasePath(f.getAbsolutePath());
 
                 BitmapFactory.Options options = new BitmapFactory.Options();

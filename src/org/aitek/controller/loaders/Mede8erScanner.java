@@ -1,6 +1,6 @@
 package org.aitek.controller.loaders;
 
-import android.app.Activity;
+import android.content.Context;
 import org.aitek.controller.mede8er.Mede8erCommander;
 import org.aitek.controller.ui.GenericProgressIndicator;
 
@@ -15,8 +15,8 @@ public class Mede8erScanner extends GenericProgressIndicator {
     private Mede8erCommander mede8erCommander;
     private boolean initialized;
 
-    public Mede8erScanner(Activity activity) {
-        super(activity);
+    public Mede8erScanner(Context context) {
+        super(context);
     }
 
     @Override
@@ -24,7 +24,7 @@ public class Mede8erScanner extends GenericProgressIndicator {
 
         if (!initialized) {
 
-            mede8erCommander = Mede8erCommander.getInstance(activity);
+            mede8erCommander = Mede8erCommander.getInstance(context);
             initialized = true;
             return 1;
         }
@@ -47,11 +47,7 @@ public class Mede8erScanner extends GenericProgressIndicator {
     @Override
     public void finish() throws Exception {
 
-        mede8erCommander.getMoviesManager().saveMovies(activity);
+        mede8erCommander.getMoviesManager().save();
     }
 
-    @Override
-    public Activity getActivity() {
-        return activity;
-    }
 }

@@ -1,6 +1,6 @@
 package org.aitek.controller.parsers;
 
-import android.app.Activity;
+import android.content.Context;
 import org.aitek.controller.core.Movie;
 import org.aitek.controller.mede8er.Mede8erCommander;
 import org.xmlpull.v1.XmlPullParser;
@@ -25,13 +25,13 @@ public class XmlParser {
      * reads an XML file as an input stream and returns the movie object
      * mapped by the file
      * @param inputStream
-     * @param activity
+     * @param context
      * @return
      * @throws Exception
      */
-    public static Movie parse(InputStream inputStream, Activity activity) throws Exception {
+    public static Movie parse(InputStream inputStream, Context context) throws Exception {
 
-        Mede8erCommander mede8erCommander = Mede8erCommander.getInstance(activity);
+        Mede8erCommander mede8erCommander = Mede8erCommander.getInstance(context);
 
         XmlPullParserFactory factory;
         XmlPullParser parser;
@@ -64,7 +64,7 @@ public class XmlParser {
                             title = text;
                         } else if (tagName.equalsIgnoreCase("genre")) {
                             genres.append(text).append(" ");
-                            mede8erCommander.getMoviesManager().insertMovieGenre(text);
+                            mede8erCommander.getMoviesManager().insertGenre(text);
                         } else if (tagName.equalsIgnoreCase("name")) {
                             names.append(text).append(" ");
                         } else if (tagName.equalsIgnoreCase("actor")) {
@@ -85,7 +85,7 @@ public class XmlParser {
         }
 
         Movie movie = new Movie(null, title, null, genres.toString(), names.toString());
-        mede8erCommander.getMoviesManager().insertMovie(movie);
+        mede8erCommander.getMoviesManager().insert(movie);
         return movie;
     }
 }

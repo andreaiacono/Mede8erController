@@ -1,10 +1,7 @@
 package org.aitek.controller.mede8er;
 
-import android.app.Activity;
-import org.aitek.controller.core.Element;
-import org.aitek.controller.core.Jukebox;
-import org.aitek.controller.core.Movie;
-import org.aitek.controller.core.MoviesManager;
+import android.content.Context;
+import org.aitek.controller.core.*;
 import org.aitek.controller.mede8er.net.Mede8erConnector;
 import org.aitek.controller.mede8er.net.Response;
 import org.aitek.controller.parsers.JsonParser;
@@ -20,21 +17,22 @@ public class Mede8erCommander {
     private static Mede8erCommander mede8erCommander;
     private Mede8erConnector mede8erConnector;
     private MoviesManager moviesManager;
+    private MusicManager musicManager;
     private int scanStep;
     private Jukebox[] jukeboxes;
     private int jukeboxCounter;
     private int elements;
-    private Activity activity;
+    private Context context;
 
-    private Mede8erCommander(Activity activity) throws Exception {
-        this.activity = activity;
-        mede8erConnector = new Mede8erConnector(activity);
+    private Mede8erCommander(Context context) {
+        this.context = context;
+        mede8erConnector = new Mede8erConnector(context);
     }
 
-    public static Mede8erCommander getInstance(Activity activity) throws Exception {
+    public static Mede8erCommander getInstance(Context context) {
 
         if (mede8erCommander == null) {
-            mede8erCommander = new Mede8erCommander(activity);
+            mede8erCommander = new Mede8erCommander(context);
         }
 
         return mede8erCommander;
@@ -57,7 +55,7 @@ public class Mede8erCommander {
     }
 
     public Response jukeboxCommand(JukeboxCommand jukeboxCommand) throws Exception {
-        return mede8erConnector.send(Command.JUKEBOX, "entry");
+        return jukeboxCommand(jukeboxCommand, "entry");
     }
 
     public Response jukeboxCommand(JukeboxCommand jukeboxCommand, String id) throws Exception {
@@ -128,7 +126,7 @@ public class Mede8erCommander {
 
         switch (element.getType()) {
             case MOVIE_FOLDER:
-                getMoviesManager().insertMovie((Movie) element);
+                getMoviesManager().insert((Movie) element);
                 break;
         }
     }
@@ -136,12 +134,24 @@ public class Mede8erCommander {
     public MoviesManager getMoviesManager() {
         if (moviesManager == null) {
             try {
-                moviesManager = new MoviesManager(activity);
+                moviesManager = new MoviesManager(context);
             }
             catch (Exception e) {
                 e.printStackTrace();
             }
         }
         return moviesManager;
+    }
+
+    public MusicManager getMusicManager() {
+        if (musicManager == null) {
+            try {
+                musicManager = new MusicManager(context);
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return musicManager;
     }
 }

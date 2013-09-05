@@ -5,7 +5,9 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.DhcpInfo;
 import android.net.wifi.WifiManager;
-import android.os.StrictMode;
+import android.os.AsyncTask;
+import android.preference.PreferenceManager;
+import org.aitek.controller.activities.MainActivity;
 import org.aitek.controller.mede8er.Command;
 import org.aitek.controller.utils.Constants;
 import org.aitek.controller.utils.Logger;
@@ -21,47 +23,40 @@ import java.net.*;
  */
 public class Mede8erConnector {
 
-    private final TcpClient tcpClient;
-    private Activity activity;
+    private TcpClient tcpClient;
     private String inetAddress;
+    private Context context;
 
-    public Mede8erConnector(Activity activity) throws Exception {
-
-        this.activity = activity;
+    public Mede8erConnector(Context context) {
+        this.context = context;
         this.inetAddress = getMede8erAddressFromPreferences();
-        Logger.toast("IP loaded from config: " + inetAddress, activity);
+        Logger.toast("IP loaded from config: " + inetAddress, context);
 
-        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-        StrictMode.setThreadPolicy(policy);
+//        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+//        StrictMode.setThreadPolicy(policy);
 
-        if (inetAddress == null) {
-
-            inetAddress = getMede8erIpAddress();
-            saveMede8erIpAddress(inetAddress);
-        }
-
-        tcpClient = null; //new TcpClient(inetAddress, Constants.TCP_PORT);
+        NetworkConnectorTask task = new NetworkConnectorTask();
+        task.doInBackground(new String[] {});
     }
 
     private void saveMede8erIpAddress(String inetAddress) {
-        SharedPreferences sharedPref = activity.getPreferences(Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPref.edit();
-        editor.putString(Constants.PREFERENCES_MEDE8ER_IPADDRESS, inetAddress);
-        editor.commit();
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        preferences.edit().putString(Constants.PREFERENCES_MEDE8ER_IPADDRESS, inetAddress);
+        preferences.edit().commit();
     }
 
     private String getMede8erAddressFromPreferences() {
-        SharedPreferences sharedPref = activity.getPreferences(Context.MODE_PRIVATE);
-        return sharedPref.getString(Constants.PREFERENCES_MEDE8ER_IPADDRESS, null);
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        return preferences.getString(Constants.PREFERENCES_MEDE8ER_IPADDRESS, inetAddress);
     }
 
     @SuppressWarnings("deprecation")
     private InetAddress getBroadcastAddress() throws IOException {
-        WifiManager wifi = (WifiManager) activity.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+        WifiManager wifi = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
         DhcpInfo dhcpInfo = wifi.getDhcpInfo();
         if (dhcpInfo == null) {
             // TODO handle this!
-            Logger.toast("Error from Dhcpinfo()", activity);
+            Logger.log("Error from Dhcpinfo()");
         }
 
         int broadcast = (dhcpInfo.ipAddress & dhcpInfo.netmask) | ~dhcpInfo.netmask;
@@ -83,8 +78,7 @@ public class Mede8erConnector {
         byte[] buf = new byte[1024];
         packet = new DatagramPacket(buf, buf.length);
         socket.receive(packet);
-        Logger.toast("IP: " + packet.getAddress().getHostAddress() + " response=" + new String(packet.getData()), activity.getApplicationContext());
-        Logger.log("IP: " + packet.getAddress().getHostAddress());
+        Logger.toast("IP: " + packet.getAddress().getHostAddress() + " response=" + new String(packet.getData()), context);
         return packet.getAddress().getHostAddress();
     }
 
@@ -141,5 +135,31 @@ public class Mede8erConnector {
             }
         }
         return streamContent.toString();
+    }
+
+    private class NetworkConnectorTask extends AsyncTask<String, Void, String> {
+
+        @Override
+        protected String doInBackground(String... params) {
+
+            try {
+                if (inetAddress == null) {
+
+                    inetAddress = getMede8erIpAddress();
+                    saveMede8erIpAddress(inetAddress);
+                }
+
+                tcpClient = new TcpClient(inetAddress, Constants.TCP_PORT);
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            return "working..";
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+        }
     }
 }

@@ -15,9 +15,12 @@ public class Constants {
     static public final String APP_VERSION = "0.1";
     static public final String APP = R.string.app_name + " v" + APP_VERSION;
 
-    static public final String ALL_MOVIES = "ALL MOVIES";
     static public final String ROOT_DIRECTORY = "/sdcard/MoviePlayer";
-    static public final String MOVIES_FILE = "controller.dat";
+
+    static public final String ALL_MOVIES = "ALL MOVIES";
+    static public final String ALL_MUSIC = "ALL TYPES";
+    static public final String MOVIES_FILE = "movies.dat";
+    static public final String MUSIC_FILE = "music.dat";
 
     static public final int UDP_PORT = 1186;
     static public final int TCP_PORT = 1187;

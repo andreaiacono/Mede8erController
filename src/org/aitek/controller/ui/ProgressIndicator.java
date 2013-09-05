@@ -18,7 +18,7 @@ public class ProgressIndicator {
 
     public void progress(final String message, final GenericProgressIndicator genericProgressIndicator) {
 
-        progressBar = new ProgressDialog(genericProgressIndicator.getActivity());
+        progressBar = new ProgressDialog(genericProgressIndicator.getContext());
         progressBar.setCancelable(true);
         progressBar.setMessage(message);
         progressBar.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);

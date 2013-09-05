@@ -1,16 +1,14 @@
 package org.aitek.controller.core;
 
-import android.app.Activity;
 import android.content.Context;
-import org.aitek.controller.ui.GenericProgressIndicator;
 import org.aitek.controller.loaders.MovieLoader;
+import org.aitek.controller.ui.GenericProgressIndicator;
+import org.aitek.controller.ui.ProgressIndicator;
 import org.aitek.controller.utils.Constants;
 import org.aitek.controller.utils.Logger;
-import org.aitek.controller.ui.ProgressIndicator;
 
 import java.io.FileOutputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -20,30 +18,30 @@ import java.util.List;
  * Date: 8/17/13
  * Time: 11:17 PM
  */
-public class MoviesManager {
+public class MusicManager {
 
     private String genreFilter = null;
     private String genericFilter = null;
     private List<String> genres;
-    private List<Movie> movies;
-    private List<Movie> filteredMovies = null;
+    private List<Movie> music;
+    private List<Movie> filteredMusic = null;
     private String sortField;
     private boolean sortDescending;
     private Context context;
 
-    public MoviesManager(Context context) throws Exception {
+    public MusicManager(Context context) throws Exception {
         this.context = context;
 
         genreFilter = null;
         genericFilter = null;
-        filteredMovies = null;
+        filteredMusic = null;
         sortField = "title";
         sortDescending = false;
 
-        if (movies == null) {
+        if (music == null) {
 
             genres = new ArrayList<>();
-            movies = new ArrayList<>();
+            music = new ArrayList<>();
 
             GenericProgressIndicator genericProgressIndicator = new MovieLoader(context);
             genericProgressIndicator.setup();
@@ -53,31 +51,15 @@ public class MoviesManager {
 
     public void clear() {
         genres = new ArrayList<>();
-        movies = new ArrayList<>();
+        music = new ArrayList<>();
         genreFilter = null;
         genericFilter = null;
-        filteredMovies = null;
+        filteredMusic = null;
         sortField = "title";
         sortDescending = false;
     }
 
-    public String insertGenre(String genre) {
 
-        for (String existingGenre : genres) {
-            if (existingGenre.toLowerCase().equals(genre.toLowerCase().trim())) {
-                return existingGenre;
-            }
-        }
-        genres.add(genre.trim());
-        return genre;
-    }
-
-    public Movie insert(Movie movie) {
-
-        movies.add(movie);
-
-        return movie;
-    }
 
     public String[] getGenres() {
         List<String> allGenresList = new ArrayList<>();
@@ -103,69 +85,69 @@ public class MoviesManager {
     public void sortMovies() {
         if ("title".equals(sortField)) {
             if (sortDescending) {
-                Collections.sort(movies, Collections.reverseOrder());
+                Collections.sort(music, Collections.reverseOrder());
             } else {
-                Collections.sort(movies);
+                Collections.sort(music);
             }
         }
     }
 
-    public void sortGenres() {
+    public void sortMovieGenres() {
         Collections.sort(genres);
     }
 
-    public int getCount() {
-        if (filteredMovies == null) {
-            return movies.size();
+    public int getMoviesCount() {
+        if (filteredMusic == null) {
+            return music.size();
         }
-        return filteredMovies.size();
+        return filteredMusic.size();
     }
 
     public Movie getMovie(int index) {
-        if (filteredMovies == null) {
-            return movies.get(index);
+        if (filteredMusic == null) {
+            return music.get(index);
         }
-        return filteredMovies.get(index);
+        return filteredMusic.get(index);
     }
 
-    public List<Movie> getFilteredMovies() {
+    public List<Movie> getFilteredMusic() {
 
-        filteredMovies = new ArrayList<>();
-        for (Movie movie : movies) {
+        filteredMusic = new ArrayList<>();
+        for (Movie movie : music) {
 
             if ((genericFilter == null || movie.getTitle().toLowerCase().indexOf(genericFilter) >= 0 || movie.getNames().toLowerCase().indexOf(genericFilter) >= 0) &&
                     (genreFilter == null || movie.getGenres().indexOf(genreFilter) >= 0)) {
-                filteredMovies.add(movie);
+                filteredMusic.add(movie);
             } else {
                 continue;
             }
         }
 
-        return filteredMovies;
+        return filteredMusic;
     }
 
     public void setGenreFilter(String value) {
-        if (value.equals(Constants.ALL_MOVIES)) {
+        if (value.equals(Constants.ALL_MUSIC)) {
             value = null;
             if (genericFilter == null) {
-                filteredMovies = null;
+                filteredMusic = null;
                 return;
             }
         }
         genreFilter = value;
-        filteredMovies = getFilteredMovies();
+        filteredMusic = getFilteredMusic();
     }
 
     public void setGenericFilter(String value) {
         if (value.equals("")) {
             genericFilter = null;
             if (genreFilter == null) {
-                filteredMovies = null;
+                filteredMusic = null;
                 return;
             }
         }
         genericFilter = value.toLowerCase();
-        filteredMovies = getFilteredMovies();
+        filteredMusic = getFilteredMusic();
     }
 
     public void setSortField(String field) {
@@ -178,24 +160,24 @@ public class MoviesManager {
         sortMovies();
     }
 
-    public void save() throws Exception {
+    public void saveMusic() throws Exception {
 
         final String NEWLINE = "\n";
         StringBuffer fileContent = new StringBuffer();
-        String genresArray[] = new String[genres.size()];
-        String genresValues = Arrays.toString(genres.toArray(genresArray));
-        fileContent.append(genresValues.substring(1, genresValues.length() - 1)).append(NEWLINE);
-        for (Movie movie : movies) {
-
-            fileContent.append(movie.getTitle()).append("||");
-            fileContent.append(movie.getBasePath()).append("||");
-            fileContent.append(movie.getGenres()).append("||");
-            fileContent.append(movie.getNames()).append(NEWLINE);
-        }
+//        String genresArray[] = new String[genres.size()];
+//        String genresValues = Arrays.toString(genres.toArray(genresArray));
+//        fileContent.append(genresValues.substring(1, genresValues.length() - 1)).append(NEWLINE);
+//        for (Movie movie : music) {
+//
+//            fileContent.append(movie.getTitle()).append("||");
+//            fileContent.append(movie.getBasePath()).append("||");
+//            fileContent.append(movie.getGenres()).append("||");
+//            fileContent.append(movie.getNames()).append(NEWLINE);
+//        }
 
         Logger.log("file: " + fileContent.toString());
 
-        FileOutputStream outputStream = context.openFileOutput(Constants.MOVIES_FILE, Context.MODE_PRIVATE);
+        FileOutputStream outputStream = context.openFileOutput(Constants.MUSIC_FILE, Context.MODE_PRIVATE);
         outputStream.write(fileContent.toString().getBytes());
         outputStream.close();
     }

@@ -4,10 +4,7 @@ import android.app.*;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.View;
+import android.view.*;
 import android.widget.*;
 import org.aitek.controller.R;
 import org.aitek.controller.ui.ImageAdapter;
@@ -16,19 +13,18 @@ import org.aitek.controller.ui.GenericProgressIndicator;
 import org.aitek.controller.mede8er.Mede8erCommander;
 import org.aitek.controller.ui.ProgressIndicator;
 
-import java.io.FileNotFoundException;
+public class MainActivity extends Activity implements SearchView.OnQueryTextListener {
 
-public class MainActivity extends Activity implements SearchView.OnQueryTextListener, ActionBar.TabListener {
-
-    public static ImageAdapter imageAdapter;
+    public static ImageAdapter movieGridAdapter;
+    public static ImageAdapter musicGridAdapter;
     private GridView moviesGridView;
     private ListView moviesGenresListView;
     private GridView musicGridView;
     private ListView musicGenresListView;
+
     private SearchView searchView;
     private ActionBar actionBar;
     private Mede8erCommander mede8erCommander;
-
     private boolean areAllImagesSaved = false;
     private int savedImageCounter;
 
@@ -38,52 +34,27 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.movies_main);
+        setContentView(R.layout.main);
+
+        mede8erCommander = Mede8erCommander.getInstance(this);
 
         actionBar = getActionBar();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-        actionBar.addTab(actionBar.newTab().setText(getString(R.string.movies_tab)).setTabListener(this));
-        actionBar.addTab(actionBar.newTab().setText(getString(R.string.music_tab)).setTabListener(this));
-        actionBar.addTab(actionBar.newTab().setText(getString(R.string.playlist_tab)).setTabListener(this));
+        ActionBar.Tab moviesTab = actionBar.newTab().setText(getString(R.string.movies_tab));
+        ActionBar.Tab musicTab = actionBar.newTab().setText(getString(R.string.music_tab));
+        ActionBar.Tab playlistTab = actionBar.newTab().setText(getString(R.string.playlist_tab));
 
-        try {
-            mede8erCommander = Mede8erCommander.getInstance(this);
-        }
-        catch (FileNotFoundException e) {
-            showInitDialog();
-        }
-        catch (Exception ex) {
-            Toast toast = Toast.makeText(getApplicationContext(), "Error on initialization: " + ex.getMessage(), Toast.LENGTH_LONG);
-            toast.show();
-            ex.printStackTrace();
-        }
+        Fragment moviesFragment = new MoviesFragment();
+        Fragment musicFragment = new MusicFragment();
+        Fragment playlistFragment = new PlaylistFragment();
 
-        imageAdapter = new ImageAdapter(this, mede8erCommander);
-        ArrayAdapter adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, mede8erCommander.getMoviesManager().getMovieGenres());
+        moviesTab.setTabListener(new MyTabsListener(moviesFragment));
+        musicTab.setTabListener(new MyTabsListener(musicFragment));
+        playlistTab.setTabListener(new MyTabsListener(playlistFragment));
 
-        moviesGenresListView = (ListView) findViewById(R.id.listView);
-        moviesGenresListView.setAdapter(adapter);
-        moviesGenresListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                mede8erCommander.getMoviesManager().setMovieGenreFilter(moviesGenresListView.getAdapter().getItem(i).toString());
-                imageAdapter.notifyDataSetChanged();
-            }
-        });
-
-        moviesGridView = (GridView) findViewById(R.id.gridView);
-        moviesGridView.setAdapter(imageAdapter);
-        moviesGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
-            @Override
-            public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-
-                Intent fullScreenIntent = new Intent(v.getContext(), MovieDetailActivity.class);
-                fullScreenIntent.putExtra(MovieDetailActivity.class.getName(), position);
-                startActivity(fullScreenIntent);
-            }
-        });
+        actionBar.addTab(moviesTab);
+        actionBar.addTab(musicTab);
+        actionBar.addTab(playlistTab);
     }
 
     private void showInitDialog() {
@@ -148,14 +119,17 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
                 scanMediaPlayer();
                 return true;
 
+            case R.id.menu_reset:
+                return true;
+
             case R.id.menuSortByTitle:
-                mede8erCommander.getMoviesManager().setMovieSortField("title");
-                imageAdapter.notifyDataSetChanged();
+                mede8erCommander.getMoviesManager().setSortField("title");
+                movieGridAdapter.notifyDataSetChanged();
                 return true;
 
             case R.id.menuSortByDate:
-                mede8erCommander.getMoviesManager().setMovieSortField("date");
-                imageAdapter.notifyDataSetChanged();
+                mede8erCommander.getMoviesManager().setSortField("date");
+                movieGridAdapter.notifyDataSetChanged();
                 return true;
 
             case R.id.menu_mediaplayer_info:
@@ -184,8 +158,8 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
         if (newText.length() == 0) {
             searchView.clearFocus();
         }
-        mede8erCommander.getMoviesManager().setMovieGenericFilter(newText);
-        imageAdapter.notifyDataSetChanged();
+        mede8erCommander.getMoviesManager().setGenericFilter(newText);
+        movieGridAdapter.notifyDataSetChanged();
 
         return true;
     }
@@ -193,36 +167,72 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
     @Override
     public boolean onQueryTextSubmit(String query) {
 
-        mede8erCommander.getMoviesManager().setMovieGenericFilter(query);
-        imageAdapter.notifyDataSetChanged();
+        mede8erCommander.getMoviesManager().setGenericFilter(query);
+        movieGridAdapter.notifyDataSetChanged();
         searchView.clearFocus();
 
         return true;
     }
 
-    @Override
-    public void onTabSelected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
-        switch (tab.getPosition()) {
-            case 0:
-                setContentView(R.layout.movies_main);
-                break;
-            case 1:
-                setContentView(R.layout.music_main);
-                break;
-            case 2:
-                break;
-        }
-    }
-
-    @Override
-    public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
-    }
-
-    @Override
-    public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
-    }
 
     public void imageSaved() {
         savedImageCounter ++;
+    }
+
+    /**
+     * this method is called from the mede8erconnector when has loaded all the data
+     */
+    public void dataReady() {
+    }
+
+    public class MoviesFragment extends Fragment {
+
+        @Override
+        public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+            return inflater.inflate(R.layout.movies_main, container, false);
+        }
+
+    }
+
+    public class MusicFragment extends Fragment {
+
+        @Override
+        public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+            return inflater.inflate(R.layout.music_main, container, false);
+        }
+
+    }
+
+    public class PlaylistFragment extends Fragment {
+
+        @Override
+        public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+            return inflater.inflate(R.layout.playlist_main, container, false);
+        }
+
+    }
+
+
+    class MyTabsListener implements ActionBar.TabListener {
+        public Fragment fragment;
+
+        public MyTabsListener(Fragment fragment) {
+            this.fragment = fragment;
+        }
+
+        @Override
+        public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
+        }
+
+        @Override
+        public void onTabSelected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
+            fragmentTransaction.replace(R.id.fragment_container, fragment);
+        }
+
+        @Override
+        public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
+            fragmentTransaction.remove(fragment);
+        }
+
     }
 }

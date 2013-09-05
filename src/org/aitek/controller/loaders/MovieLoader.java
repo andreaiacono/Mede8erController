@@ -1,6 +1,6 @@
 package org.aitek.controller.loaders;
 
-import android.app.Activity;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import org.aitek.controller.activities.MainActivity;
@@ -28,27 +28,25 @@ import java.util.List;
  */
 public class MovieLoader extends GenericProgressIndicator {
     BitmapFactory.Options options;
-    private Activity activity;
     private List<String> genres;
     private BufferedReader bufferedReader;
     private int fileLength;
     private int read = 0;
     private Mede8erCommander mede8erCommander;
 
-    public MovieLoader(Activity activity) throws Exception {
-        super(activity);
-        this.activity = activity;
+    public MovieLoader(Context context) throws Exception {
+        super(context);
     }
 
     @Override
     public void setup() throws Exception {
 
-        mede8erCommander = Mede8erCommander.getInstance(activity);
+        mede8erCommander = Mede8erCommander.getInstance(context);
         options = new BitmapFactory.Options();
         options.inSampleSize = 2;
 
         try {
-            FileInputStream in = activity.openFileInput(Constants.MOVIES_FILE);
+            FileInputStream in = context.openFileInput(Constants.MOVIES_FILE);
             fileLength = in.available();
             Logger.log("fileLength=" + fileLength);
             InputStreamReader inputStreamReader = new InputStreamReader(in);
@@ -57,7 +55,7 @@ public class MovieLoader extends GenericProgressIndicator {
             String line = bufferedReader.readLine();
             Logger.log("line=" + line);
             genres = Arrays.asList(line.split(", "));
-            mede8erCommander.getMoviesManager().setMovieGenres(genres);
+            mede8erCommander.getMoviesManager().setGenres(genres);
         }
         catch (FileNotFoundException e) {
             Logger.log("Error: " + e.getMessage());
@@ -80,7 +78,7 @@ public class MovieLoader extends GenericProgressIndicator {
             InputStream inputStream = (InputStream) url.getContent();
             Bitmap thumbnail = BitmapFactory.decodeStream(inputStream, null, options);
             Movie movie = new Movie(filePath, title, thumbnail, movieGenres, persons);
-            mede8erCommander.getMoviesManager().insertMovie(movie);
+            mede8erCommander.getMoviesManager().insert(movie);
             read += line.length();
         }
         else {
@@ -93,7 +91,7 @@ public class MovieLoader extends GenericProgressIndicator {
     public void finish() throws Exception {
         bufferedReader.close();
         mede8erCommander.getMoviesManager().sortMovies();
-        mede8erCommander.getMoviesManager().sortMovieGenres();
-        MainActivity.imageAdapter.notifyDataSetChanged();
+        mede8erCommander.getMoviesManager().sortGenres();
+        MainActivity.movieGridAdapter.notifyDataSetChanged();
     }
 }

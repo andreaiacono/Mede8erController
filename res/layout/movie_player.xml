@@ -7,11 +7,14 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:layout_width="wrap_content"
-            android:padding="25dp"></ImageButton>
+            android:src="@drawable/play"
+            android:padding="25dp">
+            </ImageButton>
     <ImageButton
             android:id="@+id/PauseButton"
             android:layout_height="wrap_content"
             android:gravity="center"
+            android:src="@drawable/pause"
             android:layout_width="wrap_content"
             android:layout_centerHorizontal="true"
             android:padding="25dp"></ImageButton>
@@ -19,6 +22,7 @@
             android:id="@+id/StopButton"
             android:layout_height="wrap_content"
             android:gravity="center"
+            android:src="@drawable/stop"
             android:textColor="#000"
             android:layout_width="wrap_content"
             android:layout_alignParentRight="true"
@@ -27,6 +31,7 @@
             android:id="@+id/PrevTrackButton"
             android:layout_height="wrap_content"
             android:gravity="center"
+            android:src="@drawable/skip_to_start"
             android:layout_width="wrap_content"
             android:padding="25dp"
             android:contentDescription="Previous Track"
@@ -36,6 +41,7 @@
             android:id="@+id/FastReverseButton"
             android:layout_height="wrap_content"
             android:gravity="center"
+            android:src="@drawable/rewind"
             android:layout_width="wrap_content"
             android:layout_toRightOf="@+id/PrevTrackButton"
             android:padding="25dp"
@@ -52,6 +58,7 @@
     <ImageButton
             android:id="@+id/FastForwardButton"
             android:layout_height="wrap_content"
+            android:src="@drawable/fast_forward"
             android:gravity="center"
             android:layout_width="wrap_content"
             android:layout_toLeftOf="@+id/NextTrackButton"
@@ -62,6 +69,7 @@
             android:id="@+id/NextTrackButton"
             android:layout_height="wrap_content"
             android:gravity="center"
+            android:src="@drawable/end"
             android:layout_width="wrap_content"
             android:layout_alignParentRight="true"
             android:padding="25dp"

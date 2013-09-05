@@ -7,7 +7,7 @@
     <ListView
             android:layout_width="150dp"
             android:layout_height="191dp"
-            android:id="@+id/listView"
+            android:id="@+id/musicListView"
             android:layout_alignParentLeft="true"
             android:layout_alignParentTop="true"
             android:layout_alignParentBottom="true"/>
@@ -16,12 +16,12 @@
             android:layout_width="fill_parent"
             android:layout_height="191dp"
             android:columnWidth="150dp"
-            android:id="@+id/gridView"
+            android:id="@+id/musicGridView"
             android:numColumns="auto_fit"
-            android:layout_toRightOf="@+id/listView"
+            android:layout_toRightOf="@+id/musicListView"
             android:layout_alignParentTop="true"
             android:layout_above="@+id/status_text"
-            android:layout_alignBottom="@+id/listView"/>
+            android:layout_alignBottom="@+id/musicListView"/>
 
     <!--
             -->
