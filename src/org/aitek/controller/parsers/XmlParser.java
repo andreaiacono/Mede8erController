@@ -29,7 +29,7 @@ public class XmlParser {
      * @return
      * @throws Exception
      */
-    public static Movie parse(InputStream inputStream, Context context) throws Exception {
+    public static Movie parseMovie(InputStream inputStream, Context context) throws Exception {
 
         Mede8erCommander mede8erCommander = Mede8erCommander.getInstance(context);
 

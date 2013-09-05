@@ -61,13 +61,13 @@ public class Jukebox {
             return -1;
         }
 
-        // TODO parse json
+        // TODO parseMovie json
         return 10;
     }
 
     public String getElement(int counter) {
 
-    // TODO parse json
+    // TODO parseMovie json
         return null;
 
     }
