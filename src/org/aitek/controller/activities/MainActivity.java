@@ -2,31 +2,31 @@ package org.aitek.controller.activities;
 
 import android.app.*;
 import android.content.DialogInterface;
-import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.*;
-import android.widget.*;
+import android.widget.SearchView;
+import android.widget.Toast;
 import org.aitek.controller.R;
-import org.aitek.controller.ui.ImageAdapter;
+import org.aitek.controller.activities.fragment.MoviesFragment;
+import org.aitek.controller.activities.fragment.MusicFragment;
+import org.aitek.controller.activities.fragment.PlaylistFragment;
+import org.aitek.controller.activities.fragment.TabFragment;
 import org.aitek.controller.loaders.Mede8erScanner;
-import org.aitek.controller.ui.GenericProgressIndicator;
 import org.aitek.controller.mede8er.Mede8erCommander;
+import org.aitek.controller.ui.GenericProgressIndicator;
 import org.aitek.controller.ui.ProgressIndicator;
+import org.aitek.controller.utils.Constants;
+
+import java.io.File;
 
 public class MainActivity extends Activity implements SearchView.OnQueryTextListener {
-
-    public static ImageAdapter movieGridAdapter;
-    public static ImageAdapter musicGridAdapter;
-    private GridView moviesGridView;
-    private ListView moviesGenresListView;
-    private GridView musicGridView;
-    private ListView musicGenresListView;
 
     private SearchView searchView;
     private ActionBar actionBar;
     private Mede8erCommander mede8erCommander;
-    private boolean areAllImagesSaved = false;
-    private int savedImageCounter;
+    private TabFragment currentTabFragment;
 
     /**
      * Called when the activity is first created.
@@ -120,16 +120,23 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
                 return true;
 
             case R.id.menu_reset:
+                File movieFile = getApplicationContext().getFileStreamPath(Constants.MOVIES_FILE);
+                movieFile.delete();
+                File musicFile = getApplicationContext().getFileStreamPath(Constants.MUSIC_FILE);
+                musicFile.delete();
+                SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                preferences.edit().remove(Constants.PREFERENCES_MEDE8ER_IPADDRESS);
+                preferences.edit().commit();
                 return true;
 
             case R.id.menuSortByTitle:
                 mede8erCommander.getMoviesManager().setSortField("title");
-                movieGridAdapter.notifyDataSetChanged();
+                currentTabFragment.notifyChangedGridData();
                 return true;
 
             case R.id.menuSortByDate:
                 mede8erCommander.getMoviesManager().setSortField("date");
-                movieGridAdapter.notifyDataSetChanged();
+                currentTabFragment.notifyChangedGridData();
                 return true;
 
             case R.id.menu_mediaplayer_info:
@@ -159,7 +166,7 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
             searchView.clearFocus();
         }
         mede8erCommander.getMoviesManager().setGenericFilter(newText);
-        movieGridAdapter.notifyDataSetChanged();
+        updateSearch(newText);
 
         return true;
     }
@@ -167,16 +174,23 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
     @Override
     public boolean onQueryTextSubmit(String query) {
 
-        mede8erCommander.getMoviesManager().setGenericFilter(query);
-        movieGridAdapter.notifyDataSetChanged();
+        updateSearch(query);
         searchView.clearFocus();
-
         return true;
     }
 
+    private void updateSearch(String query) {
 
-    public void imageSaved() {
-        savedImageCounter ++;
+        String tabName = getString(R.string.movies_tab);
+        if (tabName.equals(actionBar.getSelectedTab().getText())) {
+            mede8erCommander.getMoviesManager().setGenericFilter(query);
+            currentTabFragment.notifyChangedGridData();
+        } else if (tabName.equals(actionBar.getSelectedTab().getText())) {
+            mede8erCommander.getMusicManager().setGenericFilter(query);
+            currentTabFragment.notifyChangedGridData();
+        }
+
+
     }
 
     /**
@@ -184,34 +198,6 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
      */
     public void dataReady() {
     }
-
-    public class MoviesFragment extends Fragment {
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-            return inflater.inflate(R.layout.movies_main, container, false);
-        }
-
-    }
-
-    public class MusicFragment extends Fragment {
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-            return inflater.inflate(R.layout.music_main, container, false);
-        }
-
-    }
-
-    public class PlaylistFragment extends Fragment {
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-            return inflater.inflate(R.layout.playlist_main, container, false);
-        }
-
-    }
-
 
     class MyTabsListener implements ActionBar.TabListener {
         public Fragment fragment;
@@ -227,6 +213,7 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
         @Override
         public void onTabSelected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
             fragmentTransaction.replace(R.id.fragment_container, fragment);
+            currentTabFragment = (TabFragment) fragment;
         }
 
         @Override

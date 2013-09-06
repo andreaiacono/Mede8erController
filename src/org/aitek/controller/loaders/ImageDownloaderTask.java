@@ -1,12 +1,11 @@
-package org.aitek.controller.utils;
+package org.aitek.controller.loaders;
 
-import android.app.Activity;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.http.AndroidHttpClient;
-import android.widget.ImageView;
+import android.os.AsyncTask;
 import org.aitek.controller.activities.MainActivity;
-import org.aitek.controller.loaders.BitmapDownloaderTask;
 import org.aitek.controller.utils.Constants;
 import org.aitek.controller.utils.Logger;
 import org.apache.http.HttpEntity;
@@ -14,20 +13,61 @@ import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpGet;
 
-import java.io.FilterInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 
 /**
  * Created with IntelliJ IDEA.
  * User: andrea
  * Date: 9/3/13
- * Time: 3:24 PM
+ * Time: 3:54 PM
  */
-public class ImageDownloader {
+
+public class ImageDownloaderTask extends AsyncTask<String, Void, Bitmap> {
+
+    private MainActivity activity;
+    private String fileName;
+
+    public ImageDownloaderTask(MainActivity activity, String fileName) {
+
+        this.activity = activity;
+        this.fileName = fileName;
+    }
+
+    @Override
+    protected Bitmap doInBackground(String... params) {
+        return downloadBitmap(params[0]);
+    }
+
+    @Override
+    protected void onPostExecute(Bitmap bitmap) {
+        if (isCancelled()) {
+            bitmap = null;
+        }
+
+        FileOutputStream outputStream = null;
+        try {
+            outputStream = activity.openFileOutput(fileName, Context.MODE_PRIVATE);
+            bitmap.compress(Bitmap.CompressFormat.PNG, 90, outputStream);
+        }
+        catch (FileNotFoundException e) {
+            Logger.log("An error has occurred saving image " + fileName + ": " + e.getMessage());
+            e.printStackTrace();
+        }
+        finally {
+            if (outputStream != null) {
+
+                try {
+                    outputStream.close();
+                }
+                catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
 
     public static Bitmap downloadBitmap(String url) {
-        final AndroidHttpClient client = AndroidHttpClient.newInstance(Constants.APP + " Android");
+        final AndroidHttpClient client = AndroidHttpClient.newInstance(Constants.APP_VERSION + " Android");
         final HttpGet getRequest = new HttpGet(url);
 
         try {
@@ -89,12 +129,6 @@ public class ImageDownloader {
                 totalBytesSkipped += bytesSkipped;
             }
             return totalBytesSkipped;
-        }
-
-
-        static public void downloadAndSave(String url, MainActivity activity, String fileName) {
-            BitmapDownloaderTask task = new BitmapDownloaderTask(activity, fileName);
-            task.execute(url);
         }
     }
 }

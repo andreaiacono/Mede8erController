@@ -11,9 +11,7 @@ import org.aitek.controller.R;
  */
 public class Constants {
 
-    static public final String APP_NAME = Resources.getSystem().getString(R.string.app_name);
     static public final String APP_VERSION = "0.1";
-    static public final String APP = R.string.app_name + " v" + APP_VERSION;
 
     static public final String ROOT_DIRECTORY = "/sdcard/MoviePlayer";
 

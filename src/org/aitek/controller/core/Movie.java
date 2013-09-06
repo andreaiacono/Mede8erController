@@ -1,11 +1,7 @@
 package org.aitek.controller.core;
 
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import org.aitek.controller.utils.ImageDownloader;
-
-import java.io.InputStream;
-import java.net.URL;
+import org.aitek.controller.loaders.ImageDownloader;
 
 /**
  * Created with IntelliJ IDEA.
