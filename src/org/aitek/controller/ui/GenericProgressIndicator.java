@@ -22,11 +22,12 @@ public abstract class GenericProgressIndicator {
 
     /**
      * setups the indicator
-     * @return
+     * @return true if setup was ok and process has to continue; false if process has not to go on.
      * @throws Exception
      */
-    public void setup() throws Exception {
+    public boolean setup() {
         counter = 0;
+        return true;
     }
 
     /**

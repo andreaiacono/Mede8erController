@@ -32,6 +32,7 @@ public class MoviesManager {
     private Context context;
 
     public MoviesManager(Context context) throws Exception {
+        Logger.log("Starting MovieManager");
         this.context = context;
 
         genreFilter = null;
@@ -42,12 +43,14 @@ public class MoviesManager {
 
         if (movies == null) {
 
+            Logger.log("Creating MovieManager");
             genres = new ArrayList<>();
             movies = new ArrayList<>();
 
             GenericProgressIndicator genericProgressIndicator = new MovieLoader(context);
-            genericProgressIndicator.setup();
-            new ProgressIndicator().progress("Loading controller..", genericProgressIndicator);
+            if (genericProgressIndicator.setup()) {
+                new ProgressIndicator().progress("Loading controller..", genericProgressIndicator);
+            }
         }
     }
 

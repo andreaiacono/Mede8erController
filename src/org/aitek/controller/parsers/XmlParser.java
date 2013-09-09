@@ -84,7 +84,8 @@ public class XmlParser {
             e.printStackTrace();
         }
 
-        Movie movie = new Movie(null, title, null, genres.toString(), names.toString());
+        // TODO add xml (last paraneter of movie constructor) to data file
+        Movie movie = new Movie(null, title, null, genres.toString(), names.toString(), "");
         mede8erCommander.getMoviesManager().insert(movie);
         return movie;
     }

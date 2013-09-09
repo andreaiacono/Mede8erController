@@ -17,8 +17,8 @@ public class Movie extends Element implements Comparable {
     private String genres;
     private String names;
 
-    public Movie(String movieDirectory, String title, Bitmap thumbnail, String genres, String names) {
-        super(Type.MOVIE_FOLDER, movieDirectory);
+    public Movie(String movieDirectory, String title, Bitmap thumbnail, String genres, String names, String xml) {
+        super(Type.MOVIE_FOLDER, movieDirectory, xml);
         this.title = title;
         this.thumbnail = thumbnail;
         this.genres = genres;
@@ -47,7 +47,7 @@ public class Movie extends Element implements Comparable {
     public Bitmap getImage() throws Exception {
 
         if (image == null) {
-            image = ImageDownloader.downloadBitmap(getBasePath() + "/" + getImageName());
+            //image = ImageDownloader.downloadBitmap(getBasePath() + "/" + getImageName());
         }
         return image;
     }

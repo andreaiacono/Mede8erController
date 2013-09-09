@@ -44,8 +44,9 @@ public class MusicManager {
             music = new ArrayList<>();
 
             GenericProgressIndicator genericProgressIndicator = new MovieLoader(context);
-            genericProgressIndicator.setup();
-            new ProgressIndicator().progress("Loading controller..", genericProgressIndicator);
+            if (genericProgressIndicator.setup()) {
+                new ProgressIndicator().progress("Loading controller..", genericProgressIndicator);
+            }
         }
     }
 
@@ -59,11 +60,9 @@ public class MusicManager {
         sortDescending = false;
     }
 
-
-
     public String[] getGenres() {
         List<String> allGenresList = new ArrayList<>();
-        allGenresList.add(Constants.ALL_MOVIES);
+        allGenresList.add(Constants.ALL_MUSIC);
         allGenresList.addAll(genres);
         String genresArray[] = new String[allGenresList.size()];
         return allGenresList.toArray(genresArray);

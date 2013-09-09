@@ -1,21 +1,21 @@
 package org.aitek.controller.mede8er.net;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.res.Resources;
 import android.net.DhcpInfo;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
-import org.aitek.controller.R;
-import org.aitek.controller.activities.MainActivity;
 import org.aitek.controller.mede8er.Command;
 import org.aitek.controller.utils.Constants;
 import org.aitek.controller.utils.Logger;
+import org.json.JSONException;
+import org.json.JSONObject;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.*;
+import java.util.Enumeration;
 
 /**
  * Created with IntelliJ IDEA.
@@ -65,81 +65,146 @@ public class Mede8erConnector {
         return InetAddress.getByAddress(quads);
     }
 
-    public String getMede8erIpAddress() throws Exception {
+    public String retrieveMede8erIpAddress() throws IOException {
 
-        String helloCommand = Command.HELLO.toString().toLowerCase() + " thisis " + " v" + Constants.APP_VERSION;
-        Logger.log("sending [" + helloCommand + "]");
-        DatagramSocket socket = new DatagramSocket(Constants.UDP_PORT);
-        socket.setBroadcast(true);
-        InetAddress address = getBroadcastAddress();
-        DatagramPacket packet = new DatagramPacket(helloCommand.getBytes(), helloCommand.length(), address, Constants.UDP_PORT);
-        Logger.log("sending [" + helloCommand + "] to " + address.getHostAddress());
+        String mede8erAddress = null;
+        DatagramSocket socket = null;
+        DatagramPacket packet;
 
-        socket.send(packet);
-        Logger.log("sent [" + helloCommand + "]");
+        try {
+            String helloCommand = Command.HELLO.toString().toLowerCase() + " thisis " + " v" + Constants.APP_VERSION;
+            socket = new DatagramSocket(Constants.UDP_PORT);
+            socket.setBroadcast(true);
+            socket.setSoTimeout(10000);
+            packet = new DatagramPacket(helloCommand.getBytes(), helloCommand.length(), getBroadcastAddress(), Constants.UDP_PORT);
+            Logger.log("sending [" + helloCommand + "] to broadcast");
+            socket.send(packet);
+            Logger.log("sent [" + helloCommand + "] ");
+            try {
+                while (true) {
+                    byte[] buf = new byte[1024];
+                    packet = new DatagramPacket(buf, buf.length);
+                    socket.receive(packet);
+                    mede8erAddress = ((InetSocketAddress) packet.getSocketAddress()).getAddress().getHostAddress();
+                    String localAddress = getLocalIP();
+                    Logger.log("local:" + localAddress + " mede:" + mede8erAddress);
 
-        byte[] buf = new byte[1024];
-        packet = new DatagramPacket(buf, buf.length);
-        socket.receive(packet);
-        Logger.log("IP: " + packet.getAddress().getHostAddress() + " response=" + new String(packet.getData()));
-        return "192.168.1.104";
-//        return packet.getAddress().getHostAddress();
+                    if (!mede8erAddress.equals(localAddress)) {
+                        Logger.log("Mede8er IP sock:" + packet.getSocketAddress());
+                        return mede8erAddress;
+                    }
+                }
+            }
+            catch (SocketTimeoutException ste) {
+                Logger.log("Receive timed out");
+                throw new IOException("Mede8er not found on the network.");
+            }
+        }
+        finally {
+            Logger.log("finally executed.");
+            if (socket != null) {
+                socket.disconnect();
+                socket.close();
+            }
+        }
     }
 
-    public Response send(Command command, String content) throws Exception {
+    public String getInetAddress() {
+        return inetAddress;
+    }
+
+    public Response send(Command command, String content) throws IOException {
 
         String request = command.toString().toLowerCase() + " " + content;
-        return getResponseFromMessage(tcpClient.sendMessage(request));
+        if (tcpClient == null) {
+            tcpClient = new TcpClient(inetAddress, Constants.TCP_PORT);
+        }
+        Response response = getResponseFromMessage(tcpClient.sendMessage(request));
+        Logger.log("Request: [" + request + "]");
+        Logger.log("Response: [" + response.getContent() + "]");
+        return response;
     }
 
-    private Response getResponseFromMessage(String message) throws Exception {
+    private String getLocalIP() {
+        try {
+            for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements(); ) {
+                NetworkInterface networkInterface = en.nextElement();
+                for (Enumeration<InetAddress> address = networkInterface.getInetAddresses(); address.hasMoreElements(); ) {
+                    InetAddress inetAddress = address.nextElement();
+                    if (!inetAddress.isLoopbackAddress() && inetAddress.getHostAddress().length() <= 15) {
+                        return inetAddress.getHostAddress();
+                    }
+                }
+            }
+        }
+        catch (SocketException ex) {
+            Logger.log(ex.toString());
+        }
+        return "";
+
+    }
+
+    private Response getResponseFromMessage(String message) throws IOException {
 
         Response.Value value = Response.Value.OK;
-        if (message.startsWith("err_") || message.equals("empty")) {
+        if (message.startsWith("err_") || message.equals("empty") || message.startsWith("fail")) {
             value = Response.Value.valueOf(message.toUpperCase());
-        }
-        else {
+        } else {
             message = getHttpResource(message);
         }
         return new Response(value, message);
     }
 
-    private String getHttpResource(String uri) throws Exception {
+    private String getHttpResource(String uri) throws IOException {
 
         URL url = new URL("http://" + inetAddress + "/" + uri);
+        Logger.log("Getting URL " + "http://" + inetAddress + "/" + uri);
+        StringBuffer content = new StringBuffer();
         HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
         try {
-            InputStream in = new BufferedInputStream(urlConnection.getInputStream());
-            return readStream(in);
+            InputStreamReader inputStreamReader = new InputStreamReader(urlConnection.getInputStream());
+            boolean completed = false;
+            while (!completed) {
+                char[] buffer = new char[10 * 1024];
+                int length = inputStreamReader.read(buffer);
+                Logger.log("read " + length + " bytes.");
+                content.append(new String(buffer).substring(0, length));
+                try {
+                    new JSONObject(content.toString());
+                    completed = true;
+                }
+                catch (JSONException e) {
+
+                }
+            }
+            Logger.log("Http content: [" + content.toString() + "]");
+            return content.toString();
         }
         finally {
             urlConnection.disconnect();
         }
     }
 
-    private String readStream(InputStream inputStream) {
-        BufferedReader bufferedReader = null;
-        StringBuilder streamContent = new StringBuilder();
-
-        try {
-            bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-            while ((streamContent.append(bufferedReader.readLine())) != null) ;
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
-        finally {
-            if (bufferedReader != null) {
-                try {
-                    bufferedReader.close();
-                }
-                catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-        return streamContent.toString();
-    }
+//    private String readStream(InputStream inputStream) {
+//        BufferedReader bufferedReader = null;
+//        StringBuilder streamContent = new StringBuilder();
+//
+//        try {
+//            bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+//            while ((streamContent.append(bufferedReader.readLine())) != null) ;
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        } finally {
+//            if (bufferedReader != null) {
+//                try {
+//                    bufferedReader.close();
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        }
+//        return streamContent.toString();
+//    }
 
     private class NetworkConnectorTask extends AsyncTask<String, Void, String> {
 
@@ -151,7 +216,7 @@ public class Mede8erConnector {
                 if (inetAddress == null) {
 
                     Logger.log("getting IP address");
-                    inetAddress = getMede8erIpAddress();
+                    inetAddress = retrieveMede8erIpAddress();
                     Logger.log("Inet address=" + inetAddress);
                     saveMede8erIpAddress(inetAddress);
                 }

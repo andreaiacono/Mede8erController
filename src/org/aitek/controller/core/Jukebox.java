@@ -1,5 +1,9 @@
 package org.aitek.controller.core;
 
+import org.aitek.controller.parsers.JsonParser;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 /**
  * Created with IntelliJ IDEA.
  * User: andrea
@@ -21,7 +25,7 @@ public class Jukebox {
     String name;
     Type type;
     Media media;
-    String jsonContent;
+    JSONObject jsonContent;
 
 
     public Jukebox(String id, String name, Type type, Media media) {
@@ -48,28 +52,30 @@ public class Jukebox {
         return media;
     }
 
-    public String getJsonContent() {
+    public JSONObject getJsonContent() {
         return jsonContent;
     }
 
-    public void setJsonContent(String jsonContent) {
+    public void setJsonContent(JSONObject jsonContent) {
         this.jsonContent = jsonContent;
     }
 
-    public int getLength() {
+    public int getLength() throws Exception {
         if (jsonContent == null) {
-            return -1;
+            return 0;
         }
 
-        // TODO parseMovie json
-        return 10;
+        return JsonParser.getElementLength(jsonContent);
     }
 
-    public String getElement(int counter) {
+    public JSONObject getElement(int counter) throws Exception {
 
-    // TODO parseMovie json
-        return null;
+        JSONArray files = jsonContent.optJSONArray("files");
+        if (files != null) {
+            return (JSONObject) files.get(counter);
+        }
 
+        return new JSONObject();
     }
 
 

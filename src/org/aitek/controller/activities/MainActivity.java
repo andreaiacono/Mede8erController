@@ -3,9 +3,11 @@ package org.aitek.controller.activities;
 import android.app.*;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
-import android.os.Bundle;
+import android.os.*;
 import android.preference.PreferenceManager;
-import android.view.*;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.widget.SearchView;
 import android.widget.Toast;
 import org.aitek.controller.R;
@@ -18,6 +20,7 @@ import org.aitek.controller.mede8er.Mede8erCommander;
 import org.aitek.controller.ui.GenericProgressIndicator;
 import org.aitek.controller.ui.ProgressIndicator;
 import org.aitek.controller.utils.Constants;
+import org.aitek.controller.utils.Logger;
 
 import java.io.File;
 
@@ -27,6 +30,20 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
     private ActionBar actionBar;
     private Mede8erCommander mede8erCommander;
     private TabFragment currentTabFragment;
+    private Handler dialogHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case Constants.MEDE8ER_NOT_CONNECTED:
+
+                    AlertDialog noMede8erDialog = new AlertDialog.Builder(MainActivity.this).create();
+                    noMede8erDialog.setTitle(getString(R.string.no_mede8er));
+                    noMede8erDialog.setMessage(getString(R.string.no_mede8er_message));
+                    noMede8erDialog.show();
+                    break;
+            }
+        }
+    };
 
     /**
      * Called when the activity is first created.
@@ -57,41 +74,6 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
         actionBar.addTab(playlistTab);
     }
 
-    private void showInitDialog() {
-
-        AlertDialog.Builder firstTimeDialog = new AlertDialog.Builder(MainActivity.this);
-        firstTimeDialog.setTitle(getString(R.string.first_time_run));
-        firstTimeDialog.setMessage(getString(R.string.first_time_run_message));
-
-        // YES button
-        firstTimeDialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-
-                scanMediaPlayer();
-            }
-        });
-
-        // NO button
-        firstTimeDialog.setNegativeButton("NO",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-
-                        AlertDialog noDataDialog = new AlertDialog.Builder(MainActivity.this).create();
-                        noDataDialog.setTitle(getString(R.string.no_data));
-                        noDataDialog.setMessage(getString(R.string.no_data_message));
-
-                        noDataDialog.setButton(which, "OK", new DialogInterface.OnClickListener() {
-
-                            public void onClick(DialogInterface dialog, int which) {
-                            }
-                        });
-                        noDataDialog.show();
-                    }
-                });
-
-        firstTimeDialog.show();
-    }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
@@ -115,8 +97,8 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
                 return true;
 
             case R.id.menu_scan_mediaplayer:
-
-                scanMediaPlayer();
+                Mede8erScannerTask task = new Mede8erScannerTask();
+                task.execute(new String[]{});
                 return true;
 
             case R.id.menu_reset:
@@ -127,6 +109,7 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
                 SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
                 preferences.edit().remove(Constants.PREFERENCES_MEDE8ER_IPADDRESS);
                 preferences.edit().commit();
+                Logger.log("Data reset successful.");
                 return true;
 
             case R.id.menuSortByTitle:
@@ -148,14 +131,11 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
     }
 
     private void scanMediaPlayer() {
-        try {
-            mede8erCommander.getMoviesManager().clear();
-            GenericProgressIndicator genericProgressIndicator = new Mede8erScanner(this);
-            genericProgressIndicator.setup();
+        mede8erCommander.getMoviesManager().clear();
+        mede8erCommander.getMusicManager().clear();
+        GenericProgressIndicator genericProgressIndicator = new Mede8erScanner(this);
+        if (genericProgressIndicator.setup()) {
             new ProgressIndicator().progress("Scanning media player..", genericProgressIndicator);
-        }
-        catch (Exception e) {
-            e.printStackTrace();
         }
     }
 
@@ -221,5 +201,33 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
             fragmentTransaction.remove(fragment);
         }
 
+    }
+
+    private class Mede8erScannerTask extends AsyncTask<String, Void, String> {
+
+        @Override
+        protected String doInBackground(String... params) {
+
+            try {
+                Looper.prepare();
+                Logger.log("Checking Mede8er on the network..");
+                if (mede8erCommander.isMede8erConnected()){
+                    Logger.log("Mede8er found!!");
+                    scanMediaPlayer();
+                } else {
+                    Logger.log("Mede8er not found!!");
+                    dialogHandler.sendMessage(Message.obtain(dialogHandler, Constants.MEDE8ER_NOT_CONNECTED));
+                }
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            return "boh..";
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+        }
     }
 }

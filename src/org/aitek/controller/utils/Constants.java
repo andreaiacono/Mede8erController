@@ -16,7 +16,7 @@ public class Constants {
     static public final String ROOT_DIRECTORY = "/sdcard/MoviePlayer";
 
     static public final String ALL_MOVIES = "ALL MOVIES";
-    static public final String ALL_MUSIC = "ALL TYPES";
+    static public final String ALL_MUSIC = "ALL MUSIC";
     static public final String MOVIES_FILE = "movies.dat";
     static public final String MUSIC_FILE = "music.dat";
 
@@ -24,4 +24,6 @@ public class Constants {
     static public final int TCP_PORT = 1187;
 
     static public final String PREFERENCES_MEDE8ER_IPADDRESS = "mede8er_ipaddress";
+    public static final int MEDE8ER_CONNECTED = 1;
+    public static final int MEDE8ER_NOT_CONNECTED = 0;
 }

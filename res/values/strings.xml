@@ -13,4 +13,6 @@
     <string name="no_data">No data</string>
     <string name="no_data_message">The app contains no data. You can scan the media player using the menu.</string>
     <string name="mediaplayer_info">Mediaplayer Info</string>
+    <string name="no_mede8er">No connection</string>
+    <string name="no_mede8er_message">No mede8er was found on the wifi network. Please check that mede8er is on and connected to the network.</string>
 </resources>

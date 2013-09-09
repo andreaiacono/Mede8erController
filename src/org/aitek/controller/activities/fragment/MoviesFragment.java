@@ -5,15 +5,13 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.GridView;
-import android.widget.ListView;
+import android.widget.*;
 import org.aitek.controller.R;
 import org.aitek.controller.activities.MovieDetailActivity;
 import org.aitek.controller.core.MoviesManager;
 import org.aitek.controller.mede8er.Mede8erCommander;
 import org.aitek.controller.ui.ImageAdapter;
+import org.aitek.controller.utils.Logger;
 
 
 public class MoviesFragment extends TabFragment {
@@ -21,13 +19,17 @@ public class MoviesFragment extends TabFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        final MoviesManager moviesManager = Mede8erCommander.getInstance(getActivity().getApplicationContext()).getMoviesManager();
+        RelativeLayout relativeLayout = (RelativeLayout)inflater.inflate(R.layout.movies_main, container, false);
 
+        final MoviesManager moviesManager = Mede8erCommander.getInstance(getActivity().getApplicationContext()).getMoviesManager();
+        Logger.log("activity= " + getActivity());
         imageAdapter = new ImageAdapter(getActivity());
         ArrayAdapter adapter = new ArrayAdapter<>(this.getActivity(), android.R.layout.simple_list_item_1, moviesManager.getGenres());
 
 
-        genresListView = (ListView) getActivity().findViewById(R.id.moviesListView);
+        genresListView = (ListView) relativeLayout.findViewById(R.id.moviesListView);
+        Logger.log("adapter= " + adapter);
+        Logger.log("litview= " + genresListView);
         genresListView.setAdapter(adapter);
         genresListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
@@ -38,7 +40,7 @@ public class MoviesFragment extends TabFragment {
             }
         });
 
-        gridView = (GridView) getActivity().findViewById(R.id.moviesGridView);
+        gridView = (GridView) relativeLayout.findViewById(R.id.moviesGridView);
         gridView.setAdapter(imageAdapter);
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
@@ -51,7 +53,7 @@ public class MoviesFragment extends TabFragment {
             }
         });
 
-        return inflater.inflate(R.layout.movies_main, container, false);
+        return relativeLayout;
     }
 
 }

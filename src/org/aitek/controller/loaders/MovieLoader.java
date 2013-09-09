@@ -3,7 +3,6 @@ package org.aitek.controller.loaders;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import org.aitek.controller.activities.MainActivity;
 import org.aitek.controller.core.Movie;
 import org.aitek.controller.ui.GenericProgressIndicator;
 import org.aitek.controller.utils.Constants;
@@ -12,6 +11,8 @@ import org.aitek.controller.mede8er.Mede8erCommander;
 
 import java.io.*;
 import java.net.URL;
+import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -28,6 +29,7 @@ import java.util.List;
  */
 public class MovieLoader extends GenericProgressIndicator {
     BitmapFactory.Options options;
+
     private List<String> genres;
     private BufferedReader bufferedReader;
     private int fileLength;
@@ -39,11 +41,11 @@ public class MovieLoader extends GenericProgressIndicator {
     }
 
     @Override
-    public void setup() throws Exception {
+    public boolean setup() {
 
         mede8erCommander = Mede8erCommander.getInstance(context);
         options = new BitmapFactory.Options();
-        options.inSampleSize = 2;
+        options.inSampleSize = 4;
 
         try {
             FileInputStream in = context.openFileInput(Constants.MOVIES_FILE);
@@ -55,11 +57,18 @@ public class MovieLoader extends GenericProgressIndicator {
             String line = bufferedReader.readLine();
             Logger.log("line=" + line);
             genres = Arrays.asList(line.split(", "));
-            mede8erCommander.getMoviesManager().setGenres(genres);
+
         }
         catch (FileNotFoundException e) {
             Logger.log("Error: " + e.getMessage());
+            return false;
         }
+        catch (IOException e) {
+            Logger.log("Error: " + e.getMessage());
+            return false;
+        }
+
+        return true;
     }
 
     @Override
@@ -71,14 +80,22 @@ public class MovieLoader extends GenericProgressIndicator {
             String[] movieLine = line.split("\\|\\|");
             String title = movieLine[0] != null ? movieLine[0] : "NO TITLE";
             String filePath = movieLine[1];
-            String movieGenres = movieLine[2];
-            String persons = movieLine[3];
-
-            URL url = new URL("file://" + filePath + "/folder.jpg");
-            InputStream inputStream = (InputStream) url.getContent();
-            Bitmap thumbnail = BitmapFactory.decodeStream(inputStream, null, options);
-            Movie movie = new Movie(filePath, title, thumbnail, movieGenres, persons);
-            mede8erCommander.getMoviesManager().insert(movie);
+            String movieGenres = movieLine.length > 2 ? movieLine[2] : "";
+            String persons = movieLine.length > 3 ? movieLine[3] : "";
+            // save xml to datafile
+            String xml = "";
+            String dirUri = URLEncoder.encode(filePath.substring(1), "utf-8").replace("+", "%20");
+            int jukeboxNumber = 0;
+            URL url = new URL("http://" + Mede8erCommander.getInstance(context).getMede8erIpAddress() + "/jukebox/" + jukeboxNumber  + "/" + dirUri + "/folder.jpg");
+            try {
+                InputStream inputStream = (InputStream) url.getContent();
+                Bitmap thumbnail = BitmapFactory.decodeStream(inputStream, null, options);
+                Movie movie = new Movie(filePath, title, thumbnail, movieGenres, persons, xml);
+                mede8erCommander.getMoviesManager().insert(movie);
+            }
+            catch (FileNotFoundException e) {
+                // if the image is not present, just skips the movie
+            }
             read += line.length();
         }
         else {
@@ -92,6 +109,12 @@ public class MovieLoader extends GenericProgressIndicator {
         bufferedReader.close();
         mede8erCommander.getMoviesManager().sortMovies();
         mede8erCommander.getMoviesManager().sortGenres();
-        MainActivity.movieGridAdapter.notifyDataSetChanged();
+        //MainActivity.movieGridAdapter.notifyDataSetChanged();
     }
+
+    public List<String> getGenres() {
+        return genres;
+    }
+
+
 }

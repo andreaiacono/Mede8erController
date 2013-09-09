@@ -30,9 +30,10 @@ public class FileSystemScanner extends GenericProgressIndicator {
     }
 
     @Override
-    public void setup() {
+    public boolean setup() {
         list = new File(Constants.ROOT_DIRECTORY).listFiles();
         fileNumber = list.length;
+        return true;
     }
 
     @Override

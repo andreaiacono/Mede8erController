@@ -14,12 +14,14 @@ public class Element {
     }
     private Type type;
     private String basePath;
+    private String xml;
     private String thumbnailName;
     private String imageName;
 
-    public Element(Type type, String path) {
+    public Element(Type type, String path, String xml) {
         this.type = type;
         this.basePath = path;
+        this.xml = xml;
         thumbnailName = "folder.jpg";
         imageName = "about.jpg";
     }
@@ -30,6 +32,10 @@ public class Element {
 
     public String getBasePath() {
         return basePath;
+    }
+
+    public String getXml() {
+        return xml;
     }
 
     public String getThumbnailName() {
