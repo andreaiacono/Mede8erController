@@ -160,7 +160,7 @@ public class Mede8erCommander {
         return 100;
     }
 
-    private void insertElement(Element element) throws Exception {
+    public void insertElement(Element element) throws Exception {
 
         switch (element.getType()) {
             case MOVIE_FOLDER:

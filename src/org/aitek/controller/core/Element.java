@@ -49,4 +49,15 @@ public class Element {
     public void setBasePath(String basePath) {
         this.basePath = basePath;
     }
+
+    @Override
+    public String toString() {
+        return "Element{" +
+                "type=" + type +
+                ", basePath='" + basePath + '\'' +
+                ", xml='" + xml + '\'' +
+                ", thumbnailName='" + thumbnailName + '\'' +
+                ", imageName='" + imageName + '\'' +
+                '}';
+    }
 }

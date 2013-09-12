@@ -78,5 +78,14 @@ public class Jukebox {
         return new JSONObject();
     }
 
-
+    @Override
+    public String toString() {
+        return "Jukebox{" +
+                "id='" + id + '\'' +
+                ", name='" + name + '\'' +
+                ", type=" + type +
+                ", media=" + media +
+                ", jsonContent=" + jsonContent +
+                '}';
+    }
 }
