@@ -1,6 +1,7 @@
 package org.aitek.controller.activities;
 
 import android.app.*;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.*;
 import android.preference.PreferenceManager;
@@ -35,14 +36,25 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
             switch (msg.what) {
                 case Constants.MEDE8ER_NOT_CONNECTED:
 
-                    AlertDialog noMede8erDialog = new AlertDialog.Builder(MainActivity.this).create();
-                    noMede8erDialog.setTitle(getString(R.string.no_mede8er));
-                    noMede8erDialog.setMessage(getString(R.string.no_mede8er_message));
-                    noMede8erDialog.show();
-                    break;
+                    AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                    builder.setMessage("Look at this dialog!")
+                            .setCancelable(false)
+                            .setTitle(getString(R.string.no_mede8er))
+                            .setMessage(getString(R.string.no_mede8er_message))
+                            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                }
+                            });
+                    AlertDialog alert = builder.create();
+                    alert.show();
             }
         }
     };
+    private ProgressDialog searchingMede8erProgress;
+
+    public Handler getDialogHandler() {
+        return dialogHandler;
+    }
 
     /**
      * Called when the activity is first created.
@@ -96,6 +108,7 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
                 return true;
 
             case R.id.menu_scan_mediaplayer:
+                searchingMede8erProgress = ProgressDialog.show(MainActivity.this, "", "Searching mede8er on wifi network..");
                 Mede8erScannerTask task = new Mede8erScannerTask();
                 task.execute(new String[]{});
                 return true;
@@ -138,7 +151,7 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
     }
 
     private void scanMediaPlayer() {
-        mede8erCommander.getMoviesManager().clear();
+         mede8erCommander.getMoviesManager().clear();
         mede8erCommander.getMusicManager().clear();
         GenericProgressIndicator genericProgressIndicator = new Mede8erScanner(this);
         if (genericProgressIndicator.setup()) {
@@ -180,6 +193,7 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
 
     }
 
+
     class MyTabsListener implements ActionBar.TabListener {
         public Fragment fragment;
 
@@ -211,12 +225,15 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
 
             try {
                 Looper.prepare();
+
                 Logger.log("Checking Mede8er on the network..");
-                if (mede8erCommander.isMede8erConnected()) {
+                if (mede8erCommander.isMede8erUp()) {
                     Logger.log("Mede8er found!!");
+                    searchingMede8erProgress.dismiss();
                     scanMediaPlayer();
                 } else {
                     Logger.log("Mede8er not found!!");
+                    searchingMede8erProgress.dismiss();
                     dialogHandler.sendMessage(Message.obtain(dialogHandler, Constants.MEDE8ER_NOT_CONNECTED));
                 }
             }

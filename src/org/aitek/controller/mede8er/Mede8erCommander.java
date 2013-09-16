@@ -47,7 +47,7 @@ public class Mede8erCommander {
         return mede8erCommander;
     }
 
-    public boolean isMede8erConnected() {
+    public boolean isMede8erUp() {
         try {
             mede8erConnector.retrieveMede8erIpAddress();
             return true;

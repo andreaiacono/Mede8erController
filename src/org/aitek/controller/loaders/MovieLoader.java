@@ -12,7 +12,6 @@ import org.aitek.controller.mede8er.Mede8erCommander;
 import java.io.*;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -45,6 +44,9 @@ public class MovieLoader extends GenericProgressIndicator {
     public boolean setup() {
 
         mede8erCommander = Mede8erCommander.getInstance(context);
+        if (!mede8erCommander.isMede8erUp()) {
+            return false;
+        }
         options = new BitmapFactory.Options();
         options.inSampleSize = 8;
         text = "Loading genres..";

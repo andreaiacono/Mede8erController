@@ -1,11 +1,17 @@
 package org.aitek.controller.mede8er.net;
 
+import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.DhcpInfo;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
+import android.os.Handler;
+import android.os.Message;
 import android.preference.PreferenceManager;
+import org.aitek.controller.R;
+import org.aitek.controller.activities.MainActivity;
 import org.aitek.controller.mede8er.Command;
 import org.aitek.controller.utils.Constants;
 import org.aitek.controller.utils.Logger;
@@ -208,10 +214,17 @@ public class Mede8erConnector {
 
     private class NetworkConnectorTask extends AsyncTask<String, Void, String> {
 
+        private ProgressDialog searchingMede8erProgress;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            searchingMede8erProgress = ProgressDialog.show(context, "", "Searching mede8er on wifi network..");
+        }
+
         @Override
         protected String doInBackground(String... params) {
 
-            Logger.log("starting net in backgorund");
             try {
                 if (inetAddress == null) {
 
@@ -223,21 +236,15 @@ public class Mede8erConnector {
                 Logger.log("alreay Inet address=" + inetAddress);
 
                 tcpClient = new TcpClient(inetAddress, Constants.TCP_PORT);
-            }
-            catch (ConnectException ce) {
-                if (ce.getMessage().indexOf("ECONNREFUSED") >= 0) {
-
-                }
+                searchingMede8erProgress.dismiss();
             }
             catch (Exception e) {
-                e.printStackTrace();
+                searchingMede8erProgress.dismiss();
+                Handler dialogHandler = ((MainActivity) context).getDialogHandler();
+                dialogHandler.sendMessage(Message.obtain(dialogHandler, Constants.MEDE8ER_NOT_CONNECTED));
             }
 
             return "working..";
-        }
-
-        @Override
-        protected void onPostExecute(String result) {
         }
     }
 }
