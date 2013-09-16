@@ -1,8 +1,11 @@
 package org.aitek.controller.activities;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -11,6 +14,7 @@ import android.widget.ListView;
 import org.aitek.controller.R;
 import org.aitek.controller.mede8er.Mede8erCommander;
 import org.aitek.controller.ui.ImageAdapter;
+import org.aitek.controller.utils.Constants;
 
 public class MovieActivity extends Activity {
 
@@ -48,7 +52,6 @@ public class MovieActivity extends Activity {
 
             @Override
             public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-
                 Intent fullScreenIntent = new Intent(v.getContext(), MovieDetailActivity.class);
                 fullScreenIntent.putExtra(MovieDetailActivity.class.getName(), position);
                 startActivity(fullScreenIntent);

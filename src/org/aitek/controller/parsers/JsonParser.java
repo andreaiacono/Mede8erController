@@ -1,13 +1,20 @@
 package org.aitek.controller.parsers;
 
+import android.content.Context;
 import org.aitek.controller.core.Element;
 import org.aitek.controller.core.Jukebox;
 import org.aitek.controller.core.Movie;
+import org.aitek.controller.loaders.ImageSaverTask;
+import org.aitek.controller.utils.Constants;
 import org.aitek.controller.utils.Logger;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.net.URL;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,6 +29,7 @@ public class JsonParser {
     public static List<Jukebox> getJukeboxes(String json) throws JSONException {
 
         int counter = 0;
+        Logger.log("JSON=" + json);
         JSONArray jboxes = new JSONObject(json).optJSONArray("jukeboxes");
         int length = jboxes.length();
         List<Jukebox> jukeboxes = new ArrayList<>();
@@ -33,20 +41,45 @@ public class JsonParser {
         return jukeboxes;
     }
 
-    public static Element getElement(JSONObject jsonObject) {
+    public static Element getElement(Context context, JSONObject jsonObject, String baseUrl, String fanArt, String thumb) throws Exception {
 
         Element.Type type;
-        String name;
+        String folder;
         String xml;
 
         if (jsonObject.optString("folder") != null) {
             type = Element.Type.MOVIE_FOLDER;
-            name = jsonObject.optString("folder");
+            folder = jsonObject.optString("folder");
             xml = jsonObject.optString("xml");
+            if (xml.equals("")) {
+                xml = folder.substring(1) + ".xml";
+            }
 
             JSONArray video = jsonObject.optJSONArray("video");
-            Logger.log("inserting " + name);
-            return new Movie(name, name, null, "", "", "");
+            for (int j = 0; j < video.length(); j++) {
+                JSONObject item = video.getJSONObject(j);
+                Element.Type elementType = Element.Type.valueOf(item.optString("type").toUpperCase());
+                String innerFolder;
+                switch (elementType) {
+                    case FOLDER:
+                        innerFolder = item.optString("name");
+                        try {
+                            InputStream xmlInputStream = (InputStream) new URL(baseUrl + "/" + URLEncoder.encode(folder.substring(1), "utf-8").replace("+", "%20") + "/" + URLEncoder.encode(xml, "utf-8").replace("+", "%20")).getContent();
+                            Movie movie = XmlParser.parseMovie(xmlInputStream, context);
+                            movie.setImageName(fanArt);
+                            System.out.println("baseUrl==" + baseUrl + " - folder =" + folder + " - inner:" + innerFolder + " - thumb=" + thumb);
+                            String url = baseUrl + URLEncoder.encode(folder + innerFolder + thumb, "utf-8").replace("+", "%20");
+                            ImageSaverTask.downloadAndSave(url, context, innerFolder+ "/" + fanArt, Constants.THUMBNAIL_WIDTH, Constants.THUMBNAIL_HEIGHT);
+                            System.out.println("type=" + elementType + " - name=" + folder + " - watched:" + item.optString("watched"));
+                            return movie;
+                        }
+                        catch (FileNotFoundException e) {
+                            Logger.log("Error: " + e.getMessage());
+                        }
+                }
+
+            }
+//            Logger.log("inserting " + name);
         }
 
         return null;
@@ -65,7 +98,7 @@ public class JsonParser {
     public static int getElementLength(JSONObject jsonContent) throws Exception {
         JSONArray files = jsonContent.optJSONArray("files");
         if (files != null) {
-            Logger.log("Files length= " + files.length());
+//            Logger.log("Files length= " + files.length());
             return files.length();
         }
         Logger.log("Files length= returning 0");

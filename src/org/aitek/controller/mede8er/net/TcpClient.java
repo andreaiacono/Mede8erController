@@ -2,7 +2,9 @@ package org.aitek.controller.mede8er.net;
 
 import org.aitek.controller.utils.Logger;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.net.Socket;
 
 /**
@@ -41,7 +43,10 @@ public class TcpClient {
         // reads the response
         char[] buffer = new char[1024];
         int length = inputStream.read(buffer);
-        String response = new String(buffer).substring(0, length);
+        String response = "";
+        if (length > 0) {
+            response = new String(buffer).substring(0, length);
+        }
         Logger.log("Mede8er response: [" + response + "]");
 
         return response;
@@ -53,7 +58,7 @@ public class TcpClient {
         if (outputStream != null) {
             outputStream.close();
         }
-        if (inputStream!= null) {
+        if (inputStream != null) {
             inputStream.close();
         }
         if (socket != null) {

@@ -8,7 +8,6 @@ import android.content.Context;
  * User: andrea
  * Date: 8/24/13
  * Time: 12:06 AM
- * To change this template use File | Settings | File Templates.
  */
 public abstract class GenericProgressIndicator {
 

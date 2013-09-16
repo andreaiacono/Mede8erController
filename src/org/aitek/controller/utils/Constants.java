@@ -24,6 +24,10 @@ public class Constants {
     static public final int TCP_PORT = 1187;
 
     static public final String PREFERENCES_MEDE8ER_IPADDRESS = "mede8er_ipaddress";
+
     public static final int MEDE8ER_CONNECTED = 1;
     public static final int MEDE8ER_NOT_CONNECTED = 0;
+    public static final int IMAGE_LOADED = 2;
+    public static final int THUMBNAIL_WIDTH = 90;
+    public static final int THUMBNAIL_HEIGHT = 180;
 }

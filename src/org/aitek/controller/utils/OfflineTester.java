@@ -3,6 +3,7 @@ package org.aitek.controller.utils;
 import org.aitek.controller.core.Element;
 import org.aitek.controller.core.Jukebox;
 import org.aitek.controller.parsers.JsonParser;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.List;
@@ -15,7 +16,8 @@ import java.util.List;
  */
 public class OfflineTester {
 
-    public static final String ROOT_DIR = "file:///home/andrea/Dropbox/workspace/Mede8erController/";
+    public static final String ROOT_DIR = "/home/andrea/Dropbox/workspace/Mede8erController/";
+    private static String mede8erIp = "192.168.1.5";
 
     public static void main(String[] args) throws Exception {
         List<Jukebox> jukeboxes = JsonParser.getJukeboxes(IoUtils.readFile(ROOT_DIR + "jukeboxes.json"));
@@ -28,10 +30,13 @@ public class OfflineTester {
 
             int jukeboxLength = jukebox.getLength();
             for (int j = 0; j < jukeboxLength; j++) {
-                Element element = JsonParser.getElement(jukebox.getElement(elementCounter));
+                String url = "http://" + mede8erIp;
+                JSONObject meta = new JSONObject(json).optJSONObject("meta");
+                url = url + meta.optString("subdir");
+                Element element = JsonParser.getElement(null, jukebox.getElement(elementCounter++), url, meta.optString("fanart"), meta.optString("thumb"));
                 System.out.print(element);
                 int percent = 10 + ((int) (90 * ((double) elementCounter / jukeboxLength)));
-                System.out.print("\t percent=" + percent + " parsed=" + elementCounter + " total=" + jukeboxLength);
+                System.out.println("\t percent=" + percent + " parsed=" + elementCounter + " total=" + jukeboxLength);
             }
         }
     }

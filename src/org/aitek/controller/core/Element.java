@@ -9,21 +9,17 @@ package org.aitek.controller.core;
 public class Element {
 
     public enum Type {
-        MOVIE_FOLDER, MOVIE_FILE, MUSIC_FOLDER, MUSIC_FILE, PLAYLIST;
+        MOVIE_FOLDER, MOVIE_FILE, MUSIC_FOLDER, MUSIC_FILE, PLAYLIST, FOLDER, FILELINK;
 
     }
     private Type type;
     private String basePath;
     private String xml;
-    private String thumbnailName;
-    private String imageName;
 
     public Element(Type type, String path, String xml) {
         this.type = type;
         this.basePath = path;
         this.xml = xml;
-        thumbnailName = "folder.jpg";
-        imageName = "about.jpg";
     }
 
     public Type getType() {
@@ -38,14 +34,6 @@ public class Element {
         return xml;
     }
 
-    public String getThumbnailName() {
-        return thumbnailName;
-    }
-
-    public String getImageName() {
-        return imageName;
-    }
-
     public void setBasePath(String basePath) {
         this.basePath = basePath;
     }
@@ -56,8 +44,6 @@ public class Element {
                 "type=" + type +
                 ", basePath='" + basePath + '\'' +
                 ", xml='" + xml + '\'' +
-                ", thumbnailName='" + thumbnailName + '\'' +
-                ", imageName='" + imageName + '\'' +
                 '}';
     }
 }

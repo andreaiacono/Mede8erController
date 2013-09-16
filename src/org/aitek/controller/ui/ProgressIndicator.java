@@ -2,13 +2,13 @@ package org.aitek.controller.ui;
 
 import android.app.ProgressDialog;
 import android.os.Handler;
+import org.aitek.controller.utils.Logger;
 
 /**
  * Created with IntelliJ IDEA.
  * User: andrea
  * Date: 8/24/13
  * Time: 12:05 AM
- * To change this template use File | Settings | File Templates.
  */
 public class ProgressIndicator {
 
@@ -23,17 +23,19 @@ public class ProgressIndicator {
         progressBar.setMessage(message);
         progressBar.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
         progressBar.setProgress(0);
-        progressBar.setMax(genericProgressIndicator.getMax());
-        progressBar.show();
         progressBarStatus = 0;
+        progressBar.show();
 
         final Handler progressBarHandler = new Handler();
 
         new Thread(new Runnable() {
             public void run() {
 
+
                 try {
                     genericProgressIndicator.setup();
+                    progressBar.setMax(genericProgressIndicator.getMax());
+
 
                     while (progressBarStatus < 100) {
 
@@ -53,6 +55,7 @@ public class ProgressIndicator {
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
+                    Logger.log(e.getMessage());
                 }
             }
         }).start();

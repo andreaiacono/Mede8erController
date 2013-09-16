@@ -1,7 +1,11 @@
 package org.aitek.controller.core;
 
 import android.graphics.Bitmap;
-import org.aitek.controller.loaders.ImageDownloader;
+import android.widget.ImageView;
+import org.aitek.controller.loaders.ImageShowerTask;
+import org.aitek.controller.utils.Logger;
+
+import java.net.URLEncoder;
 
 /**
  * Created with IntelliJ IDEA.
@@ -11,14 +15,17 @@ import org.aitek.controller.loaders.ImageDownloader;
  */
 public class Movie extends Element implements Comparable {
 
+    private String address;
     private String title;
     private Bitmap thumbnail;
     private Bitmap image;
     private String genres;
     private String names;
+    private String imageName = "about.jpg";
 
-    public Movie(String movieDirectory, String title, Bitmap thumbnail, String genres, String names, String xml) {
+    public Movie(String address, String movieDirectory, String title, Bitmap thumbnail, String genres, String names, String xml) {
         super(Type.MOVIE_FOLDER, movieDirectory, xml);
+        this.address = address;
         this.title = title;
         this.thumbnail = thumbnail;
         this.genres = genres;
@@ -44,12 +51,16 @@ public class Movie extends Element implements Comparable {
         this.thumbnail = thumbnail;
     }
 
-    public Bitmap getImage() throws Exception {
+    public void showImage(ImageView imageView, int width, int height) throws Exception {
 
         if (image == null) {
-            //image = ImageDownloader.downloadBitmap(getBasePath() + "/" + getImageName());
+            String url = address + URLEncoder.encode(getBasePath() + "/" + imageName, "utf-8").replace("+", "%20");
+            Logger.log("showing image from URL:"  + url);
+            imageView.setTag(0, width);
+            imageView.setTag(1, height);
+            ImageShowerTask task = new ImageShowerTask(imageView);
+            task.execute(url);
         }
-        return image;
     }
 
     public String getGenres() {
@@ -58,5 +69,9 @@ public class Movie extends Element implements Comparable {
 
     public String getNames() {
         return names;
+    }
+
+    public void setImageName(String imageName) {
+        this.imageName = imageName;
     }
 }

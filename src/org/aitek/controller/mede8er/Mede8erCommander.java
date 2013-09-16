@@ -104,8 +104,8 @@ public class Mede8erCommander {
             case 0:
                 Logger.log("Step 0");
                 Response response = jukeboxCommand(JukeboxCommand.QUERY);
-                if (response.getContent().equals("EMPTY")) {
-                    return -1;
+                if (response.getContent().toUpperCase().equals("EMPTY")) {
+                    throw new Exception("Mede8er says there are no jukeboxes. Maybe the NAS is not connected?");
                 }
                 jukeboxes = JsonParser.getJukeboxes(response.getContent());
                 scanStep++;
@@ -138,8 +138,13 @@ public class Mede8erCommander {
                 Jukebox jukebox = jukeboxes.get(jukeboxCounter);
 
                 // creates the element
-                Element element = JsonParser.getElement(jukebox.getElement(elementCounter));
-                insertElement(element);
+                String url = "http://" + Mede8erCommander.getInstance(context).getMede8erIpAddress();
+                JSONObject meta = jukebox.getJsonContent().optJSONObject("meta");
+                url = url + meta.optString("subdir");
+                Element element = JsonParser.getElement(context, jukebox.getElement(elementCounter), url, meta.optString("fanart"), meta.optString("thumb"));
+                if (element != null) {
+                    insertElement(element);
+                }
 
                 if (elementCounter == jukebox.getLength() - 1) {
                     Logger.log("finished jukebox " + jukeboxCounter);

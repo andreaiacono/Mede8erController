@@ -1,7 +1,6 @@
 package org.aitek.controller.activities;
 
 import android.app.*;
-import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.*;
 import android.preference.PreferenceManager;
@@ -123,7 +122,15 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
                 return true;
 
             case R.id.menu_mediaplayer_info:
+                Logger.log("Showing file listing: ");
+                File dir = getFilesDir();
+                File[] subFiles = dir.listFiles();
 
+                if (subFiles != null) {
+                    for (File file : subFiles) {
+                        Logger.log(file.getAbsolutePath());
+                    }
+                }
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -173,12 +180,6 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
 
     }
 
-    /**
-     * this method is called from the mede8erconnector when has loaded all the data
-     */
-    public void dataReady() {
-    }
-
     class MyTabsListener implements ActionBar.TabListener {
         public Fragment fragment;
 
@@ -211,7 +212,7 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
             try {
                 Looper.prepare();
                 Logger.log("Checking Mede8er on the network..");
-                if (mede8erCommander.isMede8erConnected()){
+                if (mede8erCommander.isMede8erConnected()) {
                     Logger.log("Mede8er found!!");
                     scanMediaPlayer();
                 } else {

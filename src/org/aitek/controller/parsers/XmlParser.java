@@ -85,7 +85,9 @@ public class XmlParser {
         }
 
         // TODO add xml (last paraneter of movie constructor) to data file
-        Movie movie = new Movie(null, title, null, genres.toString(), names.toString(), "");
+        // TODO here how can it know which jukebox is from? (save in datafile)
+        String address = "http://" + Mede8erCommander.getInstance(context).getMede8erIpAddress() + "/jukebox/" + "0";
+        Movie movie = new Movie(address, null, title, null, genres.toString(), names.toString(), "");
         mede8erCommander.getMoviesManager().insert(movie);
         return movie;
     }

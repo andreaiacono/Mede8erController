@@ -35,6 +35,7 @@ public class MovieLoader extends GenericProgressIndicator {
     private int fileLength;
     private int read = 0;
     private Mede8erCommander mede8erCommander;
+    private String text;
 
     public MovieLoader(Context context) throws Exception {
         super(context);
@@ -45,7 +46,8 @@ public class MovieLoader extends GenericProgressIndicator {
 
         mede8erCommander = Mede8erCommander.getInstance(context);
         options = new BitmapFactory.Options();
-        options.inSampleSize = 4;
+        options.inSampleSize = 8;
+        text = "Loading genres..";
 
         try {
             FileInputStream in = context.openFileInput(Constants.MOVIES_FILE);
@@ -74,6 +76,7 @@ public class MovieLoader extends GenericProgressIndicator {
     @Override
     public int next() throws Exception {
 
+        text = "Loading movies..";
         String line = bufferedReader.readLine();
 
         if (line != null) {
@@ -86,11 +89,12 @@ public class MovieLoader extends GenericProgressIndicator {
             String xml = "";
             String dirUri = URLEncoder.encode(filePath.substring(1), "utf-8").replace("+", "%20");
             int jukeboxNumber = 0;
-            URL url = new URL("http://" + Mede8erCommander.getInstance(context).getMede8erIpAddress() + "/jukebox/" + jukeboxNumber  + "/" + dirUri + "/folder.jpg");
+            String address = "http://" + Mede8erCommander.getInstance(context).getMede8erIpAddress() + "/jukebox/" + jukeboxNumber + "/";
+            URL url = new URL(address + dirUri + "/folder.jpg");
             try {
                 InputStream inputStream = (InputStream) url.getContent();
                 Bitmap thumbnail = BitmapFactory.decodeStream(inputStream, null, options);
-                Movie movie = new Movie(filePath, title, thumbnail, movieGenres, persons, xml);
+                Movie movie = new Movie(address, filePath, title, thumbnail, movieGenres, persons, xml);
                 mede8erCommander.getMoviesManager().insert(movie);
             }
             catch (FileNotFoundException e) {
@@ -112,9 +116,8 @@ public class MovieLoader extends GenericProgressIndicator {
         //MainActivity.movieGridAdapter.notifyDataSetChanged();
     }
 
-    public List<String> getGenres() {
-        return genres;
+    @Override
+    public CharSequence getText() {
+        return text;
     }
-
-
 }

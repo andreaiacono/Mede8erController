@@ -10,6 +10,7 @@ import android.widget.ImageView;
 import org.aitek.controller.R;
 import org.aitek.controller.core.Movie;
 import org.aitek.controller.mede8er.Mede8erCommander;
+import org.aitek.controller.utils.Constants;
 import org.aitek.controller.utils.Logger;
 
 /**
@@ -32,7 +33,7 @@ public class MusicDetailActivity extends Activity {
 
         try {
             movie = Mede8erCommander.getInstance(this.getApplicationContext()).getMoviesManager().getMovie(position);
-            imageView.setImageBitmap(movie.getImage());
+            movie.showImage(imageView, Constants.THUMBNAIL_WIDTH, Constants.THUMBNAIL_HEIGHT);
         }
         catch (Exception e) {
             Logger.toast("Error: " + e.getMessage(), this);
