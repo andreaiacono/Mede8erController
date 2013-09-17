@@ -69,7 +69,7 @@ public class JsonParser {
                             movie.setImageName(fanArt);
                             System.out.println("baseUrl==" + baseUrl + " - folder =" + folder + " - inner:" + innerFolder + " - thumb=" + thumb);
                             String url = baseUrl + URLEncoder.encode(folder + innerFolder + thumb, "utf-8").replace("+", "%20");
-                            ImageSaverTask.downloadAndSave(url, context, innerFolder+ "/" + fanArt, Constants.THUMBNAIL_WIDTH, Constants.THUMBNAIL_HEIGHT);
+                            ImageSaverTask.downloadAndSave(url, context, (folder + innerFolder + fanArt).replace("/", "_"), Constants.THUMBNAIL_WIDTH, Constants.THUMBNAIL_HEIGHT);
                             System.out.println("type=" + elementType + " - name=" + folder + " - watched:" + item.optString("watched"));
                             return movie;
                         }

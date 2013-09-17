@@ -1,6 +1,5 @@
 package org.aitek.controller.mede8er.net;
 
-import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -10,7 +9,6 @@ import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
-import org.aitek.controller.R;
 import org.aitek.controller.activities.MainActivity;
 import org.aitek.controller.mede8er.Command;
 import org.aitek.controller.utils.Constants;
@@ -23,6 +21,8 @@ import java.io.InputStreamReader;
 import java.net.*;
 import java.util.Enumeration;
 
+import static org.aitek.controller.mede8er.Status.DOWN;
+
 /**
  * Created with IntelliJ IDEA.
  * User: andrea
@@ -34,11 +34,17 @@ public class Mede8erConnector {
     private TcpClient tcpClient;
     private String inetAddress;
     private Context context;
+    private boolean isUp;
+    private boolean isConnected;
+
 
     public Mede8erConnector(Context context) {
         this.context = context;
         this.inetAddress = getMede8erAddressFromPreferences();
+        connectToMede8er();
+    }
 
+    public void connectToMede8er() {
         NetworkConnectorTask task = new NetworkConnectorTask();
         task.execute(new String[]{});
     }
@@ -97,12 +103,14 @@ public class Mede8erConnector {
 
                     if (!mede8erAddress.equals(localAddress)) {
                         Logger.log("Mede8er IP sock:" + packet.getSocketAddress());
+                        isUp = true;
                         return mede8erAddress;
                     }
                 }
             }
             catch (SocketTimeoutException ste) {
                 Logger.log("Receive timed out");
+                isUp = false;
                 throw new IOException("Mede8er not found on the network.");
             }
         }
@@ -191,6 +199,14 @@ public class Mede8erConnector {
         }
     }
 
+    public boolean isUp() {
+        return isUp;
+    }
+
+    public boolean isConnected() {
+        return isConnected;
+    }
+
 //    private String readStream(InputStream inputStream) {
 //        BufferedReader bufferedReader = null;
 //        StringBuilder streamContent = new StringBuilder();
@@ -219,7 +235,7 @@ public class Mede8erConnector {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            searchingMede8erProgress = ProgressDialog.show(context, "", "Searching mede8er on wifi network..");
+            searchingMede8erProgress = ProgressDialog.show(context, "Network discovery", "Searching mede8er on wifi network..");
         }
 
         @Override
@@ -236,12 +252,14 @@ public class Mede8erConnector {
                 Logger.log("alreay Inet address=" + inetAddress);
 
                 tcpClient = new TcpClient(inetAddress, Constants.TCP_PORT);
+                isConnected = true;
                 searchingMede8erProgress.dismiss();
             }
             catch (Exception e) {
                 searchingMede8erProgress.dismiss();
+                isConnected = false;
                 Handler dialogHandler = ((MainActivity) context).getDialogHandler();
-                dialogHandler.sendMessage(Message.obtain(dialogHandler, Constants.MEDE8ER_NOT_CONNECTED));
+                dialogHandler.sendMessage(Message.obtain(dialogHandler, DOWN));
             }
 
             return "working..";

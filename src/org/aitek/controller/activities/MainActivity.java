@@ -24,33 +24,42 @@ import org.aitek.controller.utils.Logger;
 
 import java.io.File;
 
+import static org.aitek.controller.mede8er.Status.*;
+
 public class MainActivity extends Activity implements SearchView.OnQueryTextListener {
 
     private SearchView searchView;
     private ActionBar actionBar;
     private Mede8erCommander mede8erCommander;
+    private ProgressDialog searchingMede8erProgress;
     private TabFragment currentTabFragment;
     private Handler dialogHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what) {
-                case Constants.MEDE8ER_NOT_CONNECTED:
-
-                    AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-                    builder.setMessage("Look at this dialog!")
-                            .setCancelable(false)
-                            .setTitle(getString(R.string.no_mede8er))
-                            .setMessage(getString(R.string.no_mede8er_message))
-                            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int id) {
-                                }
-                            });
-                    AlertDialog alert = builder.create();
-                    alert.show();
+                case DOWN:
+                    showAlertDialog(getString(R.string.no_mede8er), getString(R.string.no_mede8er_message));
+                    break;
+                case NO_JUKEBOX:
+                    showAlertDialog(getString(R.string.nas_not_found), getString(R.string.nas_not_found_message));
+                    break;
             }
         }
+
+        private void showAlertDialog(String title, String message) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+            builder.setMessage("Look at this dialog!")
+                    .setCancelable(false)
+                    .setTitle(title)
+                    .setMessage(message)
+                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                        }
+                    });
+            AlertDialog alert = builder.create();
+            alert.show();
+        }
     };
-    private ProgressDialog searchingMede8erProgress;
 
     public Handler getDialogHandler() {
         return dialogHandler;
@@ -108,7 +117,7 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
                 return true;
 
             case R.id.menu_scan_mediaplayer:
-                searchingMede8erProgress = ProgressDialog.show(MainActivity.this, "", "Searching mede8er on wifi network..");
+                searchingMede8erProgress = ProgressDialog.show(MainActivity.this,getString(R.string.network_discovery), getString(R.string.network_discovery_message));
                 Mede8erScannerTask task = new Mede8erScannerTask();
                 task.execute(new String[]{});
                 return true;
@@ -151,7 +160,7 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
     }
 
     private void scanMediaPlayer() {
-         mede8erCommander.getMoviesManager().clear();
+        mede8erCommander.getMoviesManager().clear();
         mede8erCommander.getMusicManager().clear();
         GenericProgressIndicator genericProgressIndicator = new Mede8erScanner(this);
         if (genericProgressIndicator.setup()) {
@@ -193,7 +202,6 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
 
     }
 
-
     class MyTabsListener implements ActionBar.TabListener {
         public Fragment fragment;
 
@@ -227,14 +235,13 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
                 Looper.prepare();
 
                 Logger.log("Checking Mede8er on the network..");
-                if (mede8erCommander.isMede8erUp()) {
-                    Logger.log("Mede8er found!!");
+                if (mede8erCommander.isUp()) {
                     searchingMede8erProgress.dismiss();
                     scanMediaPlayer();
                 } else {
-                    Logger.log("Mede8er not found!!");
+                    mede8erCommander.connectToMede8er();
                     searchingMede8erProgress.dismiss();
-                    dialogHandler.sendMessage(Message.obtain(dialogHandler, Constants.MEDE8ER_NOT_CONNECTED));
+                    dialogHandler.sendMessage(Message.obtain(dialogHandler, DOWN));
                 }
             }
             catch (Exception e) {

@@ -62,6 +62,7 @@ public class ImageSaverTask extends AsyncTask<String, Void, Bitmap> {
 
         FileOutputStream outputStream = null;
         try {
+            Logger.log("filename="  + fileName);
             outputStream = context.openFileOutput(fileName, Context.MODE_PRIVATE);
             result.compress(Bitmap.CompressFormat.PNG, 90, outputStream);
         }

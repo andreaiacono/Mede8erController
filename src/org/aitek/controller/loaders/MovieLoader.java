@@ -44,7 +44,7 @@ public class MovieLoader extends GenericProgressIndicator {
     public boolean setup() {
 
         mede8erCommander = Mede8erCommander.getInstance(context);
-        if (!mede8erCommander.isMede8erUp()) {
+        if (!mede8erCommander.isUp()) {
             return false;
         }
         options = new BitmapFactory.Options();
@@ -54,12 +54,10 @@ public class MovieLoader extends GenericProgressIndicator {
         try {
             FileInputStream in = context.openFileInput(Constants.MOVIES_FILE);
             fileLength = in.available();
-            Logger.log("fileLength=" + fileLength);
             InputStreamReader inputStreamReader = new InputStreamReader(in);
 
             bufferedReader = new BufferedReader(inputStreamReader);
             String line = bufferedReader.readLine();
-            Logger.log("line=" + line);
             genres = Arrays.asList(line.split(", "));
 
         }
