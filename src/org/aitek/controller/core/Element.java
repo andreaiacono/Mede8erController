@@ -12,13 +12,16 @@ public class Element {
         MOVIE_FOLDER, MOVIE_FILE, MUSIC_FOLDER, MUSIC_FILE, PLAYLIST, FOLDER, FILELINK;
 
     }
-    private Type type;
-    private String basePath;
-    private String xml;
 
-    public Element(Type type, String path, String xml) {
+    private String baseUrl;
+    private String folder;
+    private String xml;
+    private Type type;
+
+    public Element(Type type, String baseUrl, String folder, String xml) {
         this.type = type;
-        this.basePath = path;
+        this.baseUrl = baseUrl;
+        this.folder = folder;
         this.xml = xml;
     }
 
@@ -26,23 +29,27 @@ public class Element {
         return type;
     }
 
-    public String getBasePath() {
-        return basePath;
+    public String getFolder() {
+        return folder;
+    }
+
+    public String getBaseUrl() {
+        return baseUrl;
     }
 
     public String getXml() {
         return xml;
     }
 
-    public void setBasePath(String basePath) {
-        this.basePath = basePath;
+    public void setBaseUrl(String baseUrl) {
+        this.baseUrl = baseUrl;
     }
 
     @Override
     public String toString() {
         return "Element{" +
                 "type=" + type +
-                ", basePath='" + basePath + '\'' +
+                ", baseUrl='" + baseUrl + '\'' +
                 ", xml='" + xml + '\'' +
                 '}';
     }

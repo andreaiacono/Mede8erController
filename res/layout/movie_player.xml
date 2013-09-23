@@ -3,29 +3,28 @@
         android:layout_height="fill_parent"
         android:layout_width="fill_parent">
     <ImageButton
-            android:id="@+id/PlayButton"
+            android:id="@+id/PauseButton"
             android:layout_height="wrap_content"
-            android:gravity="center"
+            android:layout_toLeftOf="@+id/PlayButton"
             android:layout_width="wrap_content"
-            android:src="@drawable/play"
+            android:src="@drawable/pause"
             android:padding="25dp">
             </ImageButton>
     <ImageButton
-            android:id="@+id/PauseButton"
+            android:id="@+id/PlayButton"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:src="@drawable/pause"
+            android:src="@drawable/play"
             android:layout_width="wrap_content"
             android:layout_centerHorizontal="true"
             android:padding="25dp"></ImageButton>
     <ImageButton
             android:id="@+id/StopButton"
             android:layout_height="wrap_content"
-            android:gravity="center"
+            android:layout_toRightOf="@+id/PlayButton"
             android:src="@drawable/stop"
             android:textColor="#000"
             android:layout_width="wrap_content"
-            android:layout_alignParentRight="true"
             android:padding="25dp"></ImageButton>
     <ImageButton
             android:id="@+id/PrevTrackButton"
@@ -47,8 +46,10 @@
             android:padding="25dp"
             android:layout_centerVertical="true"></ImageButton>
     <ImageView
-            android:id="@+id/thumbnail"
+            android:id="@+id/movieplayer_thumbnail"
             android:gravity="center"
+            android:layout_toRightOf="@+id/FastReverseButton"
+            android:layout_toLeftOf="@+id/FastForwardButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"

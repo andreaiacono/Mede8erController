@@ -1,9 +1,17 @@
 package org.aitek.controller.mede8er;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.os.AsyncTask;
+import android.widget.ImageView;
 import org.aitek.controller.core.*;
+import org.aitek.controller.loaders.ImageShowerTask;
 import org.aitek.controller.mede8er.net.Mede8erConnector;
 import org.aitek.controller.mede8er.net.Response;
+import org.aitek.controller.utils.BitmapUtils;
+import org.aitek.controller.utils.Logger;
+
+import java.io.IOException;
 
 /**
  * Created with IntelliJ IDEA.
@@ -41,12 +49,14 @@ public class Mede8erCommander {
         return mede8erConnector.isConnected();
     }
 
-    public Response playMovieDir(String movieDir) throws Exception {
-        return mede8erConnector.send(Command.PLAY, "<moviedir>" + movieDir + "</movieDir>");
+    public void playMovieDir(String movieDir) throws Exception {
+        String command = Command.PLAY.toString().toLowerCase() + " <moviedir>" + movieDir + "</movieDir>";
+        new CommandLauncher().execute(command);
     }
 
-    public Response playFile(String file) throws Exception {
-        return mede8erConnector.send(Command.PLAY, "<file>" + file + "</file>");
+    public void playFile(String file) throws Exception {
+        String command = Command.PLAY.toString().toLowerCase() + " <file>" + file + "</file>";
+        new CommandLauncher().execute(command);
     }
 
     public Response playFiles(String[] files) throws Exception {
@@ -54,7 +64,7 @@ public class Mede8erCommander {
         for (String file : files) {
             argument.append("<file>").append(file).append("</file>");
         }
-        return mede8erConnector.send(Command.PLAY, argument.toString());
+        return mede8erConnector.send(Command.PLAY.toString().toLowerCase() + " " + argument.toString());
     }
 
     public Response jukeboxCommand(JukeboxCommand jukeboxCommand) throws Exception {
@@ -62,11 +72,11 @@ public class Mede8erCommander {
     }
 
     public Response jukeboxCommand(JukeboxCommand jukeboxCommand, String id) throws Exception {
-        return mede8erConnector.send(Command.JUKEBOX, jukeboxCommand.toString().toLowerCase() + " " + id);
+        return mede8erConnector.send(Command.JUKEBOX.toString().toLowerCase() + " " + jukeboxCommand.toString().toLowerCase() + " " + id);
     }
 
     public Response remoteCommand(RemoteCommand remoteCommand) throws Exception {
-        return mede8erConnector.send(Command.RC, remoteCommand.getRemoteCommand());
+        return mede8erConnector.send(Command.RC.toString().toLowerCase() + " " + remoteCommand.getRemoteCommand());
     }
 
     public MoviesManager getMoviesManager() {
@@ -97,7 +107,27 @@ public class Mede8erCommander {
         return mede8erConnector.getInetAddress();
     }
 
-    public void connectToMede8er() {
-        mede8erConnector.connectToMede8er();
+    public void connectToMede8er(boolean asNewThread) {
+        mede8erConnector.connectToMede8er(asNewThread);
+    }
+
+    public class CommandLauncher extends AsyncTask<String, Void, Response> {
+
+        @Override
+        protected Response doInBackground(String... strings) {
+            try {
+                Logger.log("Launched command [" + strings[0] + "].");
+                return mede8erConnector.send(strings[0]);
+            }
+            catch (IOException e) {
+                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Response response) {
+            super.onPostExecute(response);
+        }
     }
 }

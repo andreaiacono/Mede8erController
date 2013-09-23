@@ -15,6 +15,7 @@ import org.aitek.controller.R;
 import org.aitek.controller.mede8er.Mede8erCommander;
 import org.aitek.controller.ui.ImageAdapter;
 import org.aitek.controller.utils.Constants;
+import org.aitek.controller.utils.Logger;
 
 public class MovieActivity extends Activity {
 

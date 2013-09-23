@@ -20,11 +20,13 @@ import org.aitek.controller.mede8er.Mede8erCommander;
 import org.aitek.controller.ui.GenericProgressIndicator;
 import org.aitek.controller.ui.ProgressIndicator;
 import org.aitek.controller.utils.Constants;
+import org.aitek.controller.utils.IoUtils;
 import org.aitek.controller.utils.Logger;
 
 import java.io.File;
 
-import static org.aitek.controller.mede8er.Status.*;
+import static org.aitek.controller.mede8er.Status.DOWN;
+import static org.aitek.controller.mede8er.Status.NO_JUKEBOX;
 
 public class MainActivity extends Activity implements SearchView.OnQueryTextListener {
 
@@ -74,6 +76,7 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
         setContentView(R.layout.main);
 
         mede8erCommander = Mede8erCommander.getInstance(this);
+        mede8erCommander.getMoviesManager();
 
         actionBar = getActionBar();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
@@ -117,19 +120,17 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
                 return true;
 
             case R.id.menu_scan_mediaplayer:
-                searchingMede8erProgress = ProgressDialog.show(MainActivity.this,getString(R.string.network_discovery), getString(R.string.network_discovery_message));
+//                searchingMede8erProgress = ProgressDialog.show(MainActivity.this, getString(R.string.network_discovery), getString(R.string.network_discovery_message));
                 Mede8erScannerTask task = new Mede8erScannerTask();
                 task.execute(new String[]{});
                 return true;
 
             case R.id.menu_reset:
-                File movieFile = getApplicationContext().getFileStreamPath(Constants.MOVIES_FILE);
-                movieFile.delete();
-                File musicFile = getApplicationContext().getFileStreamPath(Constants.MUSIC_FILE);
-                musicFile.delete();
+
                 SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
                 preferences.edit().remove(Constants.PREFERENCES_MEDE8ER_IPADDRESS);
                 preferences.edit().commit();
+                readPrivateDir(true);
                 Logger.log("Data reset successful.");
                 return true;
 
@@ -145,18 +146,37 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
 
             case R.id.menu_mediaplayer_info:
                 Logger.log("Showing file listing: ");
-                File dir = getFilesDir();
-                File[] subFiles = dir.listFiles();
-
-                if (subFiles != null) {
-                    for (File file : subFiles) {
-                        Logger.log(file.getAbsolutePath());
-                    }
+                readPrivateDir(false);
+                Logger.log("Movies file: ");
+                try {
+                    Logger.log(IoUtils.readPrivateFile(Constants.MOVIES_FILE, this));
                 }
+                catch (Exception e) {
+                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                }
+
+
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void readPrivateDir(boolean deleteFiles) {
+        File dir = getFilesDir();
+        File[] subFiles = dir.listFiles();
+
+        if (subFiles != null) {
+            for (File file : subFiles) {
+                if (deleteFiles) {
+                    file.delete();
+                } else {
+                    Logger.log(file.getAbsolutePath());
+                }
+            }
+        }
+
+
     }
 
     private void scanMediaPlayer() {
@@ -236,11 +256,11 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
 
                 Logger.log("Checking Mede8er on the network..");
                 if (mede8erCommander.isUp()) {
-                    searchingMede8erProgress.dismiss();
+//                    searchingMede8erProgress.dismiss();
                     scanMediaPlayer();
                 } else {
-                    mede8erCommander.connectToMede8er();
-                    searchingMede8erProgress.dismiss();
+                    mede8erCommander.connectToMede8er(false);
+//                    searchingMede8erProgress.dismiss();
                     dialogHandler.sendMessage(Message.obtain(dialogHandler, DOWN));
                 }
             }

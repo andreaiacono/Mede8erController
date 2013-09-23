@@ -63,8 +63,8 @@ public class FileSystemScanner extends GenericProgressIndicator {
 
                 String xmlFilename = "file://" + Constants.ROOT_DIRECTORY + "/" + f.getName() + f.getName() + ".xml";
                 InputStream xmlInputStream = (InputStream) new URL(xmlFilename).getContent();
-                Movie movie = XmlParser.parseMovie(xmlInputStream, context);
-                movie.setBasePath(f.getAbsolutePath());
+                Movie movie = XmlParser.parseMovie(xmlInputStream, "", context);
+                movie.setBaseUrl(f.getAbsolutePath());
 
                 BitmapFactory.Options options = new BitmapFactory.Options();
                 options.inSampleSize = 2;

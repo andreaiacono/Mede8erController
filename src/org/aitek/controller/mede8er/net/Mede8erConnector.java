@@ -41,12 +41,21 @@ public class Mede8erConnector {
     public Mede8erConnector(Context context) {
         this.context = context;
         this.inetAddress = getMede8erAddressFromPreferences();
-        connectToMede8er();
+        connectToMede8er(true);
     }
 
-    public void connectToMede8er() {
-        NetworkConnectorTask task = new NetworkConnectorTask();
-        task.execute(new String[]{});
+    public void connectToMede8er(boolean asNewThread) {
+        if (asNewThread) {
+            NetworkConnectorTask task = new NetworkConnectorTask();
+            task.execute(new String[]{});
+        } else {
+            try {
+                connect();
+            }
+            catch (Exception e) {
+                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            }
+        }
     }
 
     private void saveMede8erIpAddress(String inetAddress) {
@@ -127,9 +136,9 @@ public class Mede8erConnector {
         return inetAddress;
     }
 
-    public Response send(Command command, String content) throws IOException {
+    public Response send(String command) throws IOException {
 
-        String request = command.toString().toLowerCase() + " " + content;
+        String request = command;
         if (tcpClient == null) {
             tcpClient = new TcpClient(inetAddress, Constants.TCP_PORT);
         }
@@ -228,6 +237,20 @@ public class Mede8erConnector {
 //        return streamContent.toString();
 //    }
 
+    private void connect() throws Exception {
+        if (inetAddress == null) {
+
+            Logger.log("getting IP address");
+            inetAddress = retrieveMede8erIpAddress();
+            Logger.log("Inet address=" + inetAddress);
+            saveMede8erIpAddress(inetAddress);
+        }
+        Logger.log("alreay Inet address=" + inetAddress);
+
+        tcpClient = new TcpClient(inetAddress, Constants.TCP_PORT);
+        isConnected = true;
+    }
+
     private class NetworkConnectorTask extends AsyncTask<String, Void, String> {
 
         private ProgressDialog searchingMede8erProgress;
@@ -242,17 +265,7 @@ public class Mede8erConnector {
         protected String doInBackground(String... params) {
 
             try {
-                if (inetAddress == null) {
-
-                    Logger.log("getting IP address");
-                    inetAddress = retrieveMede8erIpAddress();
-                    Logger.log("Inet address=" + inetAddress);
-                    saveMede8erIpAddress(inetAddress);
-                }
-                Logger.log("alreay Inet address=" + inetAddress);
-
-                tcpClient = new TcpClient(inetAddress, Constants.TCP_PORT);
-                isConnected = true;
+                connect();
                 searchingMede8erProgress.dismiss();
             }
             catch (Exception e) {

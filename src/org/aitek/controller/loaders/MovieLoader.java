@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import org.aitek.controller.core.Movie;
 import org.aitek.controller.ui.GenericProgressIndicator;
+import org.aitek.controller.utils.BitmapUtils;
 import org.aitek.controller.utils.Constants;
 import org.aitek.controller.utils.Logger;
 import org.aitek.controller.mede8er.Mede8erCommander;
@@ -44,11 +45,12 @@ public class MovieLoader extends GenericProgressIndicator {
     public boolean setup() {
 
         mede8erCommander = Mede8erCommander.getInstance(context);
+        Logger.log("checking for mede8er up");
         if (!mede8erCommander.isUp()) {
-            return false;
+            mede8erCommander.connectToMede8er(true);
         }
         options = new BitmapFactory.Options();
-        options.inSampleSize = 8;
+        options.inSampleSize = 4;
         text = "Loading genres..";
 
         try {
@@ -58,7 +60,25 @@ public class MovieLoader extends GenericProgressIndicator {
 
             bufferedReader = new BufferedReader(inputStreamReader);
             String line = bufferedReader.readLine();
-            genres = Arrays.asList(line.split(", "));
+
+            // first reads the file for having the movies number
+            int counter =-1;
+            while (bufferedReader.readLine() != null) {
+                counter ++;
+            }
+            bufferedReader.close();
+            inputStreamReader.close();
+            in.close();
+            max = counter;
+
+            in = context.openFileInput(Constants.MOVIES_FILE);
+            fileLength = in.available();
+            inputStreamReader = new InputStreamReader(in);
+
+            bufferedReader = new BufferedReader(inputStreamReader);
+            line = bufferedReader.readLine();
+            Logger.log("read genres: " + line);
+            genres = Arrays.asList(line.split(","));
 
         }
         catch (FileNotFoundException e) {
@@ -82,30 +102,36 @@ public class MovieLoader extends GenericProgressIndicator {
         if (line != null) {
             String[] movieLine = line.split("\\|\\|");
             String title = movieLine[0] != null ? movieLine[0] : "NO TITLE";
-            String filePath = movieLine[1];
-            String movieGenres = movieLine.length > 2 ? movieLine[2] : "";
-            String persons = movieLine.length > 3 ? movieLine[3] : "";
+            String baseUrl =  movieLine.length > 1 ? movieLine[1] : " ";
+            String dir =  movieLine.length > 2 ? movieLine[2] : " ";
+            String folder =  movieLine.length > 3 ? movieLine[3] : "";
+            String movieGenres = movieLine.length > 4 ? movieLine[4] : "";
+            String persons = movieLine.length > 5 ? movieLine[5] : "";
             // save xml to datafile
             String xml = "";
-            String dirUri = URLEncoder.encode(filePath.substring(1), "utf-8").replace("+", "%20");
+            String dirUri = URLEncoder.encode(folder, "utf-8").replace("+", "%20");
             int jukeboxNumber = 0;
             String address = "http://" + Mede8erCommander.getInstance(context).getMede8erIpAddress() + "/jukebox/" + jukeboxNumber + "/";
             URL url = new URL(address + dirUri + "/folder.jpg");
             try {
-                InputStream inputStream = (InputStream) url.getContent();
-                Bitmap thumbnail = BitmapFactory.decodeStream(inputStream, null, options);
-                Movie movie = new Movie(address, filePath, title, thumbnail, movieGenres, persons, xml);
+
+//                InputStream inputStream = (InputStream) url.getContent();
+                Bitmap thumbnail = BitmapUtils.decodeBitmap(url, 100, 210); //BitmapFactory.decodeStream(inputStream, null, options);
+                Movie movie = new Movie(address, baseUrl, folder, title, thumbnail, movieGenres, persons, xml);
+                movie.setDir(dir);
                 mede8erCommander.getMoviesManager().insert(movie);
             }
             catch (FileNotFoundException e) {
+                Logger.log("Skipping " + title + ": " + e.getMessage());
                 // if the image is not present, just skips the movie
             }
-            read += line.length();
+//            read += line.length();
+            read ++;
         }
-        else {
-            read = fileLength;
-        }
-        return (int) (100 * ((double) read / fileLength));
+//        else {
+//            read = fileLength;
+//        }
+        return read; // (int) (100 * ((double) read / fileLength));
     }
 
     @Override

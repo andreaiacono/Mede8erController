@@ -15,7 +15,6 @@ import java.io.InputStream;
  * User: andrea
  * Date: 8/18/13
  * Time: 3:53 PM
- * To change this template use File | Settings | File Templates.
  */
 public class XmlParser {
 
@@ -29,7 +28,7 @@ public class XmlParser {
      * @return
      * @throws Exception
      */
-    public static Movie parseMovie(InputStream inputStream, Context context) throws Exception {
+    public static Movie parseMovie(InputStream inputStream, String jukeboxId, Context context) throws Exception {
 
         Mede8erCommander mede8erCommander = Mede8erCommander.getInstance(context);
 
@@ -37,8 +36,8 @@ public class XmlParser {
         XmlPullParser parser;
 
         String title = "";
-        StringBuffer names = new StringBuffer();
-        StringBuffer genres = new StringBuffer();
+        StringBuilder names = new StringBuilder();
+        StringBuilder genres = new StringBuilder();
 
         try {
 
@@ -80,15 +79,13 @@ public class XmlParser {
 
         } catch (XmlPullParserException e) {
             e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
         }
 
         // TODO add xml (last paraneter of movie constructor) to data file
         // TODO here how can it know which jukebox is from? (save in datafile)
-        String address = "http://" + Mede8erCommander.getInstance(context).getMede8erIpAddress() + "/jukebox/" + "0";
-        Movie movie = new Movie(address, null, title, null, genres.toString(), names.toString(), "");
-        mede8erCommander.getMoviesManager().insert(movie);
+        String address = "http://" + Mede8erCommander.getInstance(context).getMede8erIpAddress() + "/jukebox/" + jukeboxId;
+        Movie movie = new Movie(address, null, null, title, null, genres.toString(), names.toString(), "");
+//        mede8erCommander.getMoviesManager().insert(movie);
         return movie;
     }
 }

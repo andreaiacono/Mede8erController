@@ -37,7 +37,7 @@ public class ProgressIndicator {
                     progressBar.setMax(genericProgressIndicator.getMax());
 
 
-                    while (progressBarStatus < 100) {
+                    while (progressBarStatus < genericProgressIndicator.getMax()) {
 
                         progressBarStatus = genericProgressIndicator.next();
                         progressBarHandler.post(new Runnable() {
@@ -48,7 +48,7 @@ public class ProgressIndicator {
                         });
                     }
 
-                    if (progressBarStatus >= 100) {
+                    if (progressBarStatus >= genericProgressIndicator.getMax()) {
 
                         progressBar.dismiss();
                         genericProgressIndicator.finish();

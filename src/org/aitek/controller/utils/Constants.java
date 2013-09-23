@@ -27,6 +27,6 @@ public class Constants {
 
     public static final int IMAGE_LOADED = 2;
 
-    public static final int THUMBNAIL_WIDTH = 90;
-    public static final int THUMBNAIL_HEIGHT = 180;
+    public static final int THUMBNAIL_WIDTH = 180;
+    public static final int THUMBNAIL_HEIGHT = 360;
 }

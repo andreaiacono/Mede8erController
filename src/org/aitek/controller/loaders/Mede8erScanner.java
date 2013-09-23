@@ -49,8 +49,8 @@ public class Mede8erScanner extends GenericProgressIndicator {
     public int next() throws Exception {
 
         if (!initialized) {
-
             mede8erCommander = Mede8erCommander.getInstance(context);
+            mede8erCommander.getMoviesManager().clear();
             initialized = true;
             return 1;
         } else {
@@ -100,22 +100,19 @@ public class Mede8erScanner extends GenericProgressIndicator {
 
             // STEP 2: processes every element of all the jukeboxes
             case 2:
-                Logger.log("Step 2");
-                Logger.log("getting jukebox " + jukeboxCounter);
-
                 if (jukeboxCounter >= jukeboxes.size()) {
                     return 100;
                 }
-
                 Jukebox jukebox = jukeboxes.get(jukeboxCounter);
 
                 // creates the element
                 String url = "http://" + Mede8erCommander.getInstance(context).getMede8erIpAddress();
                 JSONObject meta = jukebox.getJsonContent().optJSONObject("meta");
                 url = url + meta.optString("subdir");
-                Element element = JsonParser.getElement(context, jukebox.getElement(elementCounter), url, meta.optString("fanart"), meta.optString("thumb"));
-                if (element != null) {
-                    insertElement(element);
+                String dir = meta.optString("absolute_path") + meta.optString("subdir");
+                Movie movie = JsonParser.getMovie(context, jukebox.getElement(elementCounter), url, meta.optString("fanart"), meta.optString("thumb"), "" + jukeboxCounter, dir);
+                if (movie != null) {
+                    insertElement(movie);
                 }
 
                 if (elementCounter == jukebox.getLength() - 1) {
@@ -156,6 +153,7 @@ public class Mede8erScanner extends GenericProgressIndicator {
     @Override
     public void finish() throws Exception {
 
+        Logger.log("saving movie file");
         mede8erCommander.getMoviesManager().save();
     }
 

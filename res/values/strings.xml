@@ -14,7 +14,7 @@
     <string name="no_data_message">The app contains no data. You can scan the media player using the menu.</string>
     <string name="mediaplayer_info">Mediaplayer Info</string>
     <string name="no_mede8er">No connection</string>
-    <string name="no_mede8er_message">No mede8er was found on the wifi network. Please check that mede8er is on and connected to the network.</string>
+    <string name="no_mede8er_message">No mede8er was found on the wifi network. Please check that mede8er is swicthed on and connected to the network.</string>
     <string name="nas_not_found">No jukeboxes</string>
     <string name="nas_not_found_message">No jukeboxes were found on the mede8er. Maybe a NAS is not connected?</string>
     <string name="network_discovery">Network discovery</string>

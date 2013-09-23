@@ -3,6 +3,8 @@ package org.aitek.controller.ui;
 import android.app.Activity;
 import android.content.Context;
 
+import java.util.List;
+
 /**
  * Created with IntelliJ IDEA.
  * User: andrea
@@ -14,6 +16,8 @@ public abstract class GenericProgressIndicator {
 
     protected Context context;
     private int counter;
+    protected int max = 100;
+    private List<String> genres;
 
     public GenericProgressIndicator(Context context) {
         this.context = context;
@@ -34,7 +38,7 @@ public abstract class GenericProgressIndicator {
      * @return
      */
     public int getMax() {
-        return 100;
+        return max;
     }
 
 
@@ -62,5 +66,9 @@ public abstract class GenericProgressIndicator {
 
     public CharSequence getText() {
         return "Message for item " + counter;
+    }
+
+    public List<String> getGenres() {
+        return genres;
     }
 }

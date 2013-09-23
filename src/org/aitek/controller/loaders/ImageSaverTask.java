@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory;
 import android.net.http.AndroidHttpClient;
 import android.os.AsyncTask;
 import org.aitek.controller.activities.MainActivity;
+import org.aitek.controller.core.Movie;
 import org.aitek.controller.utils.BitmapUtils;
 import org.aitek.controller.utils.Constants;
 import org.aitek.controller.utils.Logger;
@@ -56,7 +57,7 @@ public class ImageSaverTask extends AsyncTask<String, Void, Bitmap> {
 
     @Override
     protected void onPostExecute(Bitmap result) {
-        if (isCancelled()) {
+        if (isCancelled() || result == null) {
             return;
         }
 
@@ -64,7 +65,6 @@ public class ImageSaverTask extends AsyncTask<String, Void, Bitmap> {
         try {
             Logger.log("filename="  + fileName);
             outputStream = context.openFileOutput(fileName, Context.MODE_PRIVATE);
-            result.compress(Bitmap.CompressFormat.PNG, 90, outputStream);
         }
         catch (FileNotFoundException e) {
             Logger.log("An error has occurred saving image " + fileName + ": " + e.getMessage());

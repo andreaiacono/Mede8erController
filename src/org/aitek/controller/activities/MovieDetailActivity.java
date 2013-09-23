@@ -54,14 +54,12 @@ public class MovieDetailActivity extends Activity {
             Logger.toast("Error: " + e.getMessage(), this);
             e.printStackTrace();
         }
-        Logger.toast("Created detail", this);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
 
         super.onCreateOptionsMenu(menu);
-        Logger.toast("Starting movie detail act23", this);
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_movie_detail, menu);
         return true;
@@ -70,14 +68,12 @@ public class MovieDetailActivity extends Activity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
-        Logger.toast("Starting movie detail act2", this);
         if (item.getItemId() == R.id.action_play) {
 
             try {
-                Logger.toast("Starting movie detail act", this);
-                Intent mediaPLayerIntent = new Intent(this, MoviePlayerActivity.class);
-                mediaPLayerIntent.putExtra(MoviePlayerActivity.class.getName(), position);
-                startActivity(mediaPLayerIntent);
+                Intent moviePlayerIntent = new Intent(this, MoviePlayerActivity.class);
+                moviePlayerIntent.putExtra(MoviePlayerActivity.class.getName(), position);
+                startActivity(moviePlayerIntent);
             }
             catch (Exception e) {
                 Logger.toast("An error occurred trying to play the movie: " + e.getMessage(), getApplicationContext());

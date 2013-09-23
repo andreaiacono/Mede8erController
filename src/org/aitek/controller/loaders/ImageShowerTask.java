@@ -35,8 +35,10 @@ public class ImageShowerTask extends AsyncTask<String, Void, Bitmap> {
 
     @Override
     protected Bitmap doInBackground(String... strings) {
-        Integer width = (Integer) imageView.getTag(0);
-        Integer height = (Integer) imageView.getTag(1);
+        String size = (String) imageView.getTag();
+
+        Integer width = Integer.parseInt(size.substring(0, size.indexOf("x")));
+        Integer height = Integer.parseInt(size.substring(size.indexOf("x")+1));
 
         try {
             return BitmapUtils.decodeBitmap(strings[0], width, height);

@@ -3,7 +3,6 @@ package org.aitek.controller.utils;
 import org.aitek.controller.core.Element;
 import org.aitek.controller.core.Jukebox;
 import org.aitek.controller.parsers.JsonParser;
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.List;
@@ -33,7 +32,7 @@ public class OfflineTester {
                 String url = "http://" + mede8erIp;
                 JSONObject meta = new JSONObject(json).optJSONObject("meta");
                 url = url + meta.optString("subdir");
-                Element element = JsonParser.getElement(null, jukebox.getElement(elementCounter++), url, meta.optString("fanart"), meta.optString("thumb"));
+                Element element = JsonParser.getMovie(null, jukebox.getElement(elementCounter++), url, meta.optString("fanart"), meta.optString("thumb"), "", "");
                 System.out.print(element);
                 int percent = 10 + ((int) (90 * ((double) elementCounter / jukeboxLength)));
                 System.out.println("\t percent=" + percent + " parsed=" + elementCounter + " total=" + jukeboxLength);

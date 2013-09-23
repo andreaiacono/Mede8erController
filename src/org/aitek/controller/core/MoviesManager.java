@@ -1,6 +1,5 @@
 package org.aitek.controller.core;
 
-import android.app.Activity;
 import android.content.Context;
 import org.aitek.controller.ui.GenericProgressIndicator;
 import org.aitek.controller.loaders.MovieLoader;
@@ -51,7 +50,10 @@ public class MoviesManager {
             if (genericProgressIndicator.setup()) {
                 new ProgressIndicator().progress("Loading controller..", genericProgressIndicator);
             }
+//            Thread.sleep(1000);
+//            setGenres(genericProgressIndicator.getGenres());
         }
+
     }
 
     public void clear() {
@@ -77,6 +79,7 @@ public class MoviesManager {
 
     public Movie insert(Movie movie) {
 
+        Logger.log("called insertMovie with " + movie.getTitle());
         movies.add(movie);
 
         return movie;
@@ -191,12 +194,14 @@ public class MoviesManager {
         for (Movie movie : movies) {
 
             fileContent.append(movie.getTitle()).append("||");
-            fileContent.append(movie.getBasePath()).append("||");
+            fileContent.append(movie.getBaseUrl()).append("||");
+            fileContent.append(movie.getDir()).append("||");
+            fileContent.append(movie.getFolder()).append("||");
             fileContent.append(movie.getGenres()).append("||");
             fileContent.append(movie.getNames()).append(NEWLINE);
         }
 
-        Logger.log("file: " + fileContent.toString());
+        Logger.log("saving file: " + fileContent.toString());
 
         FileOutputStream outputStream = context.openFileOutput(Constants.MOVIES_FILE, Context.MODE_PRIVATE);
         outputStream.write(fileContent.toString().getBytes());

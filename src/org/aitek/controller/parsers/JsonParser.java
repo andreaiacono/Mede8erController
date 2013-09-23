@@ -41,7 +41,7 @@ public class JsonParser {
         return jukeboxes;
     }
 
-    public static Element getElement(Context context, JSONObject jsonObject, String baseUrl, String fanArt, String thumb) throws Exception {
+    public static Movie getMovie(Context context, JSONObject jsonObject, String baseUrl, String fanArt, String thumb, String jukeboxId, String dir) throws Exception {
 
         Element.Type type;
         String folder;
@@ -65,12 +65,11 @@ public class JsonParser {
                         innerFolder = item.optString("name");
                         try {
                             InputStream xmlInputStream = (InputStream) new URL(baseUrl + "/" + URLEncoder.encode(folder.substring(1), "utf-8").replace("+", "%20") + "/" + URLEncoder.encode(xml, "utf-8").replace("+", "%20")).getContent();
-                            Movie movie = XmlParser.parseMovie(xmlInputStream, context);
+                            Movie movie = XmlParser.parseMovie(xmlInputStream, jukeboxId, context);
                             movie.setImageName(fanArt);
-                            System.out.println("baseUrl==" + baseUrl + " - folder =" + folder + " - inner:" + innerFolder + " - thumb=" + thumb);
-                            String url = baseUrl + URLEncoder.encode(folder + innerFolder + thumb, "utf-8").replace("+", "%20");
-                            ImageSaverTask.downloadAndSave(url, context, (folder + innerFolder + fanArt).replace("/", "_"), Constants.THUMBNAIL_WIDTH, Constants.THUMBNAIL_HEIGHT);
-                            System.out.println("type=" + elementType + " - name=" + folder + " - watched:" + item.optString("watched"));
+                            movie.setBaseUrl(baseUrl);
+                            movie.setFolder(folder + innerFolder);
+                            movie.setDir(dir + jukeboxId);
                             return movie;
                         }
                         catch (FileNotFoundException e) {
