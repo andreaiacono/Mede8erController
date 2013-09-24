@@ -49,17 +49,17 @@ public class Mede8erCommander {
         return mede8erConnector.isConnected();
     }
 
-    public void playMovieDir(String movieDir) throws Exception {
+    public void playMovieDir(String movieDir) throws IOException {
         String command = Command.PLAY.toString().toLowerCase() + " <moviedir>" + movieDir + "</movieDir>";
         new CommandLauncher().execute(command);
     }
 
-    public void playFile(String file) throws Exception {
+    public void playFile(String file) throws IOException {
         String command = Command.PLAY.toString().toLowerCase() + " <file>" + file + "</file>";
         new CommandLauncher().execute(command);
     }
 
-    public Response playFiles(String[] files) throws Exception {
+    public Response playFiles(String[] files) throws IOException {
         StringBuilder argument = new StringBuilder();
         for (String file : files) {
             argument.append("<file>").append(file).append("</file>");
@@ -67,15 +67,15 @@ public class Mede8erCommander {
         return mede8erConnector.send(Command.PLAY.toString().toLowerCase() + " " + argument.toString());
     }
 
-    public Response jukeboxCommand(JukeboxCommand jukeboxCommand) throws Exception {
-        return jukeboxCommand(jukeboxCommand, "entry 0");
+    public Response jukeboxCommand(JukeboxCommand jukeboxCommand, boolean inBackground) throws IOException {
+        return jukeboxCommand(Command.JUKEBOX.toString().toLowerCase() + " " + jukeboxCommand.toString().toLowerCase() + " entry 0", inBackground);
     }
 
-    public Response jukeboxCommand(JukeboxCommand jukeboxCommand, String id) throws Exception {
-        return mede8erConnector.send(Command.JUKEBOX.toString().toLowerCase() + " " + jukeboxCommand.toString().toLowerCase() + " " + id);
+    public Response jukeboxCommand(JukeboxCommand jukeboxCommand, String id, boolean inBackground) throws IOException {
+        return jukeboxCommand(Command.JUKEBOX.toString().toLowerCase() + " " + jukeboxCommand.toString().toLowerCase() + " " + id, inBackground);
     }
 
-    public Response remoteCommand(RemoteCommand remoteCommand) throws Exception {
+    public Response remoteCommand(RemoteCommand remoteCommand) throws IOException {
         return mede8erConnector.send(Command.RC.toString().toLowerCase() + " " + remoteCommand.getRemoteCommand());
     }
 
@@ -109,6 +109,16 @@ public class Mede8erCommander {
 
     public void connectToMede8er(boolean asNewThread) {
         mede8erConnector.connectToMede8er(asNewThread);
+    }
+
+    public Response jukeboxCommand(String command, boolean inBackground) throws IOException {
+        if (inBackground) {
+            new CommandLauncher().execute(command);
+            return null;
+        }
+        else {
+            return mede8erConnector.send(command);
+        }
     }
 
     public class CommandLauncher extends AsyncTask<String, Void, Response> {

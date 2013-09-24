@@ -1,8 +1,14 @@
 package org.aitek.controller.core;
 
 import org.aitek.controller.parsers.JsonParser;
+import org.aitek.controller.utils.Constants;
 import org.json.JSONArray;
 import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.
@@ -12,33 +18,94 @@ import org.json.JSONObject;
  */
 public class Jukebox {
 
+
     public enum Type {
         MOVIE, MUSIC, SHARE, SERIES, UNKNOWN;
 
     }
+
     public enum Media {
-        USB,HDD,NFS,SMB;
+        USB, HDD, NFS, SMB;
 
     }
-    String id;
 
-    String name;
-    Type type;
-    Media media;
-    JSONObject jsonContent;
+    private String id;
+    private String name;
+    private String ipAddress;
+    private Type type;
+    private Media media;
+    private JSONObject jsonContent;
+    private String fanart;
+    private String thumb;
+    private String absolutePath;
+    private String subdir;
 
-
-    public Jukebox(String id, String name, Type type, Media media) {
+    public Jukebox(String id, String name, String ipAddress, Type type, Media media) {
         this.id = id;
         this.name = name;
+        this.ipAddress = ipAddress;
         this.type = type;
         this.media = media;
+    }
+
+    public static Jukebox createFromDataFile(String line, String ipAddress) {
+
+        String[] fields = line.split(Constants.DATAFILE_FIELD_SEPARATOR);
+        if (fields.length < 8) {
+            return null;
+        }
+
+        String id = fields[0];
+        String name = fields[1];
+        Type type = Type.valueOf(fields[2]);
+        Media media = Media.valueOf(fields[3]);
+        String fanart = fields[4];
+        String thumb = fields[5];
+        String absolutePath = fields[6];
+        String subDir = fields[7];
+
+        Jukebox jukebox = new Jukebox(id, name, ipAddress, type, media);
+        jukebox.setFanart(fanart);
+        jukebox.setThumb(thumb);
+        jukebox.setAbsolutePath(absolutePath);
+        jukebox.setSubdir(subDir);
+
+        return jukebox;
+    }
+
+    public static Map<String, Jukebox> getJukeboxMap(BufferedReader bufferedReader, String ipAddress) throws IOException {
+
+        Map<String, Jukebox> jukeboxes = new HashMap();
+        while (true) {
+            String line = bufferedReader.readLine();
+            if (line.equals("\n") || line == null) {
+                return jukeboxes;
+            }
+            Jukebox jukebox = createFromDataFile(line, ipAddress);
+            jukeboxes.put(jukebox.getId(), jukebox);
+        }
+    }
+
+    public String toDataFormat() {
+        return new StringBuilder(id).append(Constants.DATAFILE_FIELD_SEPARATOR)
+                .append(name).append(Constants.DATAFILE_FIELD_SEPARATOR)
+                .append(type).append(Constants.DATAFILE_FIELD_SEPARATOR)
+                .append(media).append(Constants.DATAFILE_FIELD_SEPARATOR)
+                .append(fanart).append(Constants.DATAFILE_FIELD_SEPARATOR)
+                .append(thumb).append(Constants.DATAFILE_FIELD_SEPARATOR)
+                .append(absolutePath).append(Constants.DATAFILE_FIELD_SEPARATOR)
+                .append(subdir)
+                .append("\n")
+                .toString();
+    }
+
+    public String getIpAddress() {
+        return ipAddress;
     }
 
     public String getId() {
         return id;
     }
-
 
     public String getName() {
         return name;
@@ -88,4 +155,37 @@ public class Jukebox {
                 ", jsonContent=" + jsonContent +
                 '}';
     }
+
+    public String getFanart() {
+        return fanart;
+    }
+
+    public void setFanart(String fanart) {
+        this.fanart = fanart;
+    }
+
+    public String getThumb() {
+        return thumb;
+    }
+
+    public void setThumb(String thumb) {
+        this.thumb = thumb;
+    }
+
+    public String getAbsolutePath() {
+        return absolutePath;
+    }
+
+    public void setAbsolutePath(String absolutePath) {
+        this.absolutePath = absolutePath;
+    }
+
+    public String getSubdir() {
+        return subdir;
+    }
+
+    public void setSubdir(String subdir) {
+        this.subdir = subdir;
+    }
+
 }

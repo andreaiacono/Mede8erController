@@ -114,7 +114,7 @@ public class MusicManager {
         filteredMusic = new ArrayList<>();
         for (Movie movie : music) {
 
-            if ((genericFilter == null || movie.getTitle().toLowerCase().indexOf(genericFilter) >= 0 || movie.getNames().toLowerCase().indexOf(genericFilter) >= 0) &&
+            if ((genericFilter == null || movie.getTitle().toLowerCase().indexOf(genericFilter) >= 0 || movie.getPersons().toLowerCase().indexOf(genericFilter) >= 0) &&
                     (genreFilter == null || movie.getGenres().indexOf(genreFilter) >= 0)) {
                 filteredMusic.add(movie);
             } else {

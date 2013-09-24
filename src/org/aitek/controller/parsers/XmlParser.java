@@ -1,13 +1,10 @@
 package org.aitek.controller.parsers;
 
-import android.content.Context;
 import org.aitek.controller.core.Movie;
-import org.aitek.controller.mede8er.Mede8erCommander;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
 
-import java.io.IOException;
 import java.io.InputStream;
 
 /**
@@ -23,14 +20,13 @@ public class XmlParser {
     /**
      * reads an XML file as an input stream and returns the movie object
      * mapped by the file
+     *
      * @param inputStream
      * @param context
      * @return
      * @throws Exception
      */
-    public static Movie parseMovie(InputStream inputStream, String jukeboxId, Context context) throws Exception {
-
-        Mede8erCommander mede8erCommander = Mede8erCommander.getInstance(context);
+    public static void parseMovie(InputStream inputStream, Movie movie) throws Exception {
 
         XmlPullParserFactory factory;
         XmlPullParser parser;
@@ -63,7 +59,6 @@ public class XmlParser {
                             title = text;
                         } else if (tagName.equalsIgnoreCase("genre")) {
                             genres.append(text).append(" ");
-                            mede8erCommander.getMoviesManager().insertGenre(text);
                         } else if (tagName.equalsIgnoreCase("name")) {
                             names.append(text).append(" ");
                         } else if (tagName.equalsIgnoreCase("actor")) {
@@ -77,15 +72,14 @@ public class XmlParser {
                 eventType = parser.next();
             }
 
-        } catch (XmlPullParserException e) {
+        }
+        catch (XmlPullParserException e) {
             e.printStackTrace();
         }
 
-        // TODO add xml (last paraneter of movie constructor) to data file
-        // TODO here how can it know which jukebox is from? (save in datafile)
-        String address = "http://" + Mede8erCommander.getInstance(context).getMede8erIpAddress() + "/jukebox/" + jukeboxId;
-        Movie movie = new Movie(address, null, null, title, null, genres.toString(), names.toString(), "");
-//        mede8erCommander.getMoviesManager().insert(movie);
-        return movie;
+        movie.setGenres(genres.toString());
+        movie.setPersons(names.toString());
+        movie.setTitle(title);
+        movie.setSortingTitle(title);
     }
 }

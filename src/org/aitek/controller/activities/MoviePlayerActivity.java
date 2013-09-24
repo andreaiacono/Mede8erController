@@ -45,7 +45,7 @@ public class MoviePlayerActivity extends Activity {
             public void onClick(View view) {
                 try {
                     if (movie.getType() == Element.Type.MOVIE_FOLDER) {
-                        mede8erCommander.playMovieDir(movie.getDir() + movie.getFolder().substring(0, movie.getFolder().length()-1));
+                        mede8erCommander.playMovieDir(movie.getJukebox().getAbsolutePath() + movie.getFolder().substring(0, movie.getFolder().length()-1));
                     }
                 }
                 catch (Exception e) {

@@ -26,50 +26,39 @@ import java.util.List;
  */
 public class JsonParser {
 
-    public static List<Jukebox> getJukeboxes(String json) throws JSONException {
+    public static List<Jukebox> getJukeboxes(String json, String ipAddress) throws JSONException {
 
-        int counter = 0;
-        Logger.log("JSON=" + json);
-        JSONArray jboxes = new JSONObject(json).optJSONArray("jukeboxes");
-        int length = jboxes.length();
+        JSONArray jukeboxesJson = new JSONObject(json).optJSONArray("jukeboxes");
+        int length = jukeboxesJson.length();
         List<Jukebox> jukeboxes = new ArrayList<>();
 
         for (int i = 0; i < length; i++) {
-            jukeboxes.add(getJukebox(jboxes.getJSONObject(i)));
+            jukeboxes.add(getJukebox(jukeboxesJson.getJSONObject(i), ipAddress));
         }
 
         return jukeboxes;
     }
 
-    public static Movie getMovie(Context context, JSONObject jsonObject, String baseUrl, String fanArt, String thumb, String jukeboxId, String dir) throws Exception {
+    public static Movie getMovie(Jukebox jukebox, int elementCounter) throws Exception {
 
-        Element.Type type;
-        String folder;
-        String xml;
-
+        JSONObject jsonObject = jukebox.getElement(elementCounter);
         if (jsonObject.optString("folder") != null) {
-            type = Element.Type.MOVIE_FOLDER;
-            folder = jsonObject.optString("folder");
-            xml = jsonObject.optString("xml");
-            if (xml.equals("")) {
-                xml = folder.substring(1) + ".xml";
-            }
 
             JSONArray video = jsonObject.optJSONArray("video");
             for (int j = 0; j < video.length(); j++) {
                 JSONObject item = video.getJSONObject(j);
                 Element.Type elementType = Element.Type.valueOf(item.optString("type").toUpperCase());
-                String innerFolder;
                 switch (elementType) {
                     case FOLDER:
-                        innerFolder = item.optString("name");
                         try {
-                            InputStream xmlInputStream = (InputStream) new URL(baseUrl + "/" + URLEncoder.encode(folder.substring(1), "utf-8").replace("+", "%20") + "/" + URLEncoder.encode(xml, "utf-8").replace("+", "%20")).getContent();
-                            Movie movie = XmlParser.parseMovie(xmlInputStream, jukeboxId, context);
-                            movie.setImageName(fanArt);
-                            movie.setBaseUrl(baseUrl);
-                            movie.setFolder(folder + innerFolder);
-                            movie.setDir(dir + jukeboxId);
+
+                            // first creates the movie from mede8er data (in JSON)
+                            Movie movie = Movie.createFromJson(jsonObject, jukebox);
+
+                            // then completes its data with movie info from XML
+                            InputStream xmlInputStream = (InputStream) new URL(movie.getNameHttpAddress() + URLEncoder.encode(movie.getXml(), "utf-8").replace("+", "%20")).getContent();
+                            XmlParser.parseMovie(xmlInputStream, movie);
+
                             return movie;
                         }
                         catch (FileNotFoundException e) {
@@ -78,20 +67,19 @@ public class JsonParser {
                 }
 
             }
-//            Logger.log("inserting " + name);
         }
 
         return null;
     }
 
-    public static Jukebox getJukebox(JSONObject jsonObject) {
+    public static Jukebox getJukebox(JSONObject jsonObject, String ipAddress) {
 
         String id = jsonObject.optString("id");
         String name = jsonObject.optString("name");
         Jukebox.Type type = Jukebox.Type.valueOf(jsonObject.optString("type").toUpperCase());
         Jukebox.Media media = Jukebox.Media.valueOf(jsonObject.optString("media").toUpperCase());
 
-        return new Jukebox(id, name, type, media);
+        return new Jukebox(id, name, ipAddress, type, media);
     }
 
     public static int getElementLength(JSONObject jsonContent) throws Exception {

@@ -13,44 +13,27 @@ public class Element {
 
     }
 
-    private String baseUrl;
     private String folder;
     private String xml;
-    private Type type;
 
-    public Element(Type type, String baseUrl, String folder, String xml) {
-        this.type = type;
-        this.baseUrl = baseUrl;
+    protected Jukebox jukebox;
+
+    public Element(Jukebox jukebox, String folder, String xml) {
+        this.jukebox = jukebox;
         this.folder = folder;
         this.xml = xml;
-    }
-
-    public Type getType() {
-        return type;
-    }
-
-    public String getFolder() {
-        return folder;
-    }
-
-    public String getBaseUrl() {
-        return baseUrl;
     }
 
     public String getXml() {
         return xml;
     }
 
-    public void setBaseUrl(String baseUrl) {
-        this.baseUrl = baseUrl;
+//    public void setBaseUrl(String baseUrl) {
+//        this.baseUrl = baseUrl;
+//    }
+
+    public Jukebox getJukebox() {
+        return jukebox;
     }
 
-    @Override
-    public String toString() {
-        return "Element{" +
-                "type=" + type +
-                ", baseUrl='" + baseUrl + '\'' +
-                ", xml='" + xml + '\'' +
-                '}';
-    }
 }

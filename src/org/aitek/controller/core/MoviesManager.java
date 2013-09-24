@@ -1,11 +1,11 @@
 package org.aitek.controller.core;
 
 import android.content.Context;
-import org.aitek.controller.ui.GenericProgressIndicator;
 import org.aitek.controller.loaders.MovieLoader;
+import org.aitek.controller.ui.GenericProgressIndicator;
+import org.aitek.controller.ui.ProgressIndicator;
 import org.aitek.controller.utils.Constants;
 import org.aitek.controller.utils.Logger;
-import org.aitek.controller.ui.ProgressIndicator;
 
 import java.io.FileOutputStream;
 import java.util.ArrayList;
@@ -26,6 +26,7 @@ public class MoviesManager {
     private List<String> genres;
     private List<Movie> movies;
     private List<Movie> filteredMovies = null;
+    private List<Jukebox> jukeboxes;
     private String sortField;
     private boolean sortDescending;
     private Context context;
@@ -47,9 +48,9 @@ public class MoviesManager {
             movies = new ArrayList<>();
 
             GenericProgressIndicator genericProgressIndicator = new MovieLoader(context);
-            if (genericProgressIndicator.setup()) {
-                new ProgressIndicator().progress("Loading controller..", genericProgressIndicator);
-            }
+//            if (genericProgressIndicator.setup()) {
+            new ProgressIndicator().progress("Loading controller..", genericProgressIndicator);
+//            }
 //            Thread.sleep(1000);
 //            setGenres(genericProgressIndicator.getGenres());
         }
@@ -59,6 +60,7 @@ public class MoviesManager {
     public void clear() {
         genres = new ArrayList<>();
         movies = new ArrayList<>();
+        jukeboxes = new ArrayList<>();
         genreFilter = null;
         genericFilter = null;
         filteredMovies = null;
@@ -79,7 +81,7 @@ public class MoviesManager {
 
     public Movie insert(Movie movie) {
 
-        Logger.log("called insertMovie with " + movie.getTitle());
+        Logger.log("called insertMovie with " + movie.getFolder());
         movies.add(movie);
 
         return movie;
@@ -139,7 +141,7 @@ public class MoviesManager {
         filteredMovies = new ArrayList<>();
         for (Movie movie : movies) {
 
-            if ((genericFilter == null || movie.getTitle().toLowerCase().indexOf(genericFilter) >= 0 || movie.getNames().toLowerCase().indexOf(genericFilter) >= 0) &&
+            if ((genericFilter == null || movie.getFolder().toLowerCase().indexOf(genericFilter) >= 0 || movie.getPersons().toLowerCase().indexOf(genericFilter) >= 0) &&
                     (genreFilter == null || movie.getGenres().indexOf(genreFilter) >= 0)) {
                 filteredMovies.add(movie);
             } else {
@@ -186,21 +188,19 @@ public class MoviesManager {
 
     public void save() throws Exception {
 
-        final String NEWLINE = "\n";
-        StringBuffer fileContent = new StringBuffer();
-        String genresArray[] = new String[genres.size()];
-        String genresValues = Arrays.toString(genres.toArray(genresArray));
-        fileContent.append(genresValues.substring(1, genresValues.length() - 1)).append(NEWLINE);
-        for (Movie movie : movies) {
-
-            fileContent.append(movie.getTitle()).append("||");
-            fileContent.append(movie.getBaseUrl()).append("||");
-            fileContent.append(movie.getDir()).append("||");
-            fileContent.append(movie.getFolder()).append("||");
-            fileContent.append(movie.getGenres()).append("||");
-            fileContent.append(movie.getNames()).append(NEWLINE);
+        StringBuilder fileContent = new StringBuilder();
+        for (Jukebox jukebox: jukeboxes) {
+            fileContent.append(jukebox.toDataFormat());
         }
 
+        // separates jukeboxes from genres/movies
+        fileContent.append("\n");
+        String genresArray[] = new String[genres.size()];
+        String genresValues = Arrays.toString(genres.toArray(genresArray));
+        fileContent.append(genresValues.substring(1, genresValues.length() - 1)).append("\\n");
+        for (Movie movie : movies) {
+            fileContent.append(movie.toDataFormat());
+        }
         Logger.log("saving file: " + fileContent.toString());
 
         FileOutputStream outputStream = context.openFileOutput(Constants.MOVIES_FILE, Context.MODE_PRIVATE);

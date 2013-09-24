@@ -3,18 +3,21 @@ package org.aitek.controller.loaders;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import org.aitek.controller.core.Jukebox;
 import org.aitek.controller.core.Movie;
+import org.aitek.controller.mede8er.JukeboxCommand;
+import org.aitek.controller.mede8er.Mede8erCommander;
 import org.aitek.controller.ui.GenericProgressIndicator;
 import org.aitek.controller.utils.BitmapUtils;
 import org.aitek.controller.utils.Constants;
 import org.aitek.controller.utils.Logger;
-import org.aitek.controller.mede8er.Mede8erCommander;
 
 import java.io.*;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.
@@ -29,10 +32,9 @@ import java.util.List;
  */
 public class MovieLoader extends GenericProgressIndicator {
     BitmapFactory.Options options;
-
     private List<String> genres;
+    private Map<String, Jukebox> jukeboxes;
     private BufferedReader bufferedReader;
-    private int fileLength;
     private int read = 0;
     private Mede8erCommander mede8erCommander;
     private String text;
@@ -51,20 +53,24 @@ public class MovieLoader extends GenericProgressIndicator {
         }
         options = new BitmapFactory.Options();
         options.inSampleSize = 4;
-        text = "Loading genres..";
+        text = "Counting movies..";
 
         try {
+            // first, opens the jukebox
+            mede8erCommander.jukeboxCommand(JukeboxCommand.QUERY, false);
+            mede8erCommander.jukeboxCommand(JukeboxCommand.OPEN, "0", false);
+
             FileInputStream in = context.openFileInput(Constants.MOVIES_FILE);
-            fileLength = in.available();
             InputStreamReader inputStreamReader = new InputStreamReader(in);
-
             bufferedReader = new BufferedReader(inputStreamReader);
-            String line = bufferedReader.readLine();
 
-            // first reads the file for having the movies number
-            int counter =-1;
+            // the first rows contain the jukeboxes followed by te genres, so has to be skipped for counting
+            while (!bufferedReader.readLine().equals("\n")) ;
+
+            // now just read the whole file for counting the movies
+            int counter = -1;
             while (bufferedReader.readLine() != null) {
-                counter ++;
+                counter++;
             }
             bufferedReader.close();
             inputStreamReader.close();
@@ -72,21 +78,22 @@ public class MovieLoader extends GenericProgressIndicator {
             max = counter;
 
             in = context.openFileInput(Constants.MOVIES_FILE);
-            fileLength = in.available();
             inputStreamReader = new InputStreamReader(in);
-
             bufferedReader = new BufferedReader(inputStreamReader);
-            line = bufferedReader.readLine();
+            jukeboxes = Jukebox.getJukeboxMap(bufferedReader, mede8erCommander.getMede8erIpAddress());
+
+            String line = bufferedReader.readLine();
             Logger.log("read genres: " + line);
             genres = Arrays.asList(line.split(","));
-
         }
         catch (FileNotFoundException e) {
             Logger.log("Error: " + e.getMessage());
+            read = -1;
             return false;
         }
         catch (IOException e) {
             Logger.log("Error: " + e.getMessage());
+            read = -1;
             return false;
         }
 
@@ -96,42 +103,28 @@ public class MovieLoader extends GenericProgressIndicator {
     @Override
     public int next() throws Exception {
 
+        if (read == -1) {
+            return Integer.MAX_VALUE;
+        }
+
         text = "Loading movies..";
         String line = bufferedReader.readLine();
 
         if (line != null) {
-            String[] movieLine = line.split("\\|\\|");
-            String title = movieLine[0] != null ? movieLine[0] : "NO TITLE";
-            String baseUrl =  movieLine.length > 1 ? movieLine[1] : " ";
-            String dir =  movieLine.length > 2 ? movieLine[2] : " ";
-            String folder =  movieLine.length > 3 ? movieLine[3] : "";
-            String movieGenres = movieLine.length > 4 ? movieLine[4] : "";
-            String persons = movieLine.length > 5 ? movieLine[5] : "";
-            // save xml to datafile
-            String xml = "";
-            String dirUri = URLEncoder.encode(folder, "utf-8").replace("+", "%20");
-            int jukeboxNumber = 0;
-            String address = "http://" + Mede8erCommander.getInstance(context).getMede8erIpAddress() + "/jukebox/" + jukeboxNumber + "/";
-            URL url = new URL(address + dirUri + "/folder.jpg");
-            try {
 
-//                InputStream inputStream = (InputStream) url.getContent();
-                Bitmap thumbnail = BitmapUtils.decodeBitmap(url, 100, 210); //BitmapFactory.decodeStream(inputStream, null, options);
-                Movie movie = new Movie(address, baseUrl, folder, title, thumbnail, movieGenres, persons, xml);
-                movie.setDir(dir);
-                mede8erCommander.getMoviesManager().insert(movie);
-            }
-            catch (FileNotFoundException e) {
-                Logger.log("Skipping " + title + ": " + e.getMessage());
-                // if the image is not present, just skips the movie
-            }
-//            read += line.length();
-            read ++;
+            // creates the movie
+            Movie movie = Movie.createFromDataFile(line, jukeboxes);
+
+            // loads the thumbnail
+            String address = movie.getNameHttpAddress() + movie.getJukebox().getThumb();
+            URL url = new URL(address);
+            Bitmap thumbnail = BitmapUtils.decodeBitmap(url, 100, 210);
+
+            movie.setThumbnail(thumbnail);
+            mede8erCommander.getMoviesManager().insert(movie);
+            read++;
         }
-//        else {
-//            read = fileLength;
-//        }
-        return read; // (int) (100 * ((double) read / fileLength));
+        return read;
     }
 
     @Override

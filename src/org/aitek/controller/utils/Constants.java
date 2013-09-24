@@ -29,4 +29,5 @@ public class Constants {
 
     public static final int THUMBNAIL_WIDTH = 180;
     public static final int THUMBNAIL_HEIGHT = 360;
+    public static final String DATAFILE_FIELD_SEPARATOR = "|";
 }

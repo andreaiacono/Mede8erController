@@ -75,11 +75,11 @@ public class Mede8erScanner extends GenericProgressIndicator {
             // STEP 0: queries the mede8er for jukeboxes
             case 0:
                 Logger.log("Step 0");
-                Response response = mede8erCommander.jukeboxCommand(JukeboxCommand.QUERY);
+                Response response = mede8erCommander.jukeboxCommand(JukeboxCommand.QUERY, false);
                 if (response.getContent().toUpperCase().equals("EMPTY")) {
                     throw new StatusException(Status.NO_JUKEBOX);
                 }
-                jukeboxes = JsonParser.getJukeboxes(response.getContent());
+                jukeboxes = JsonParser.getJukeboxes(response.getContent(), mede8erCommander.getMede8erIpAddress());
                 scanStep++;
                 return 5;
 
@@ -88,7 +88,7 @@ public class Mede8erScanner extends GenericProgressIndicator {
                 Logger.log("Step 1");
                 totalElements = 0;
                 for (Jukebox jukebox : jukeboxes) {
-                    response = mede8erCommander.jukeboxCommand(JukeboxCommand.OPEN, jukebox.getId());
+                    response = mede8erCommander.jukeboxCommand(JukeboxCommand.OPEN, jukebox.getId(), false);
                     jukebox.setJsonContent(new JSONObject(response.getContent()));
                     totalElements += jukebox.getLength();
                 }
@@ -101,18 +101,29 @@ public class Mede8erScanner extends GenericProgressIndicator {
             // STEP 2: processes every element of all the jukeboxes
             case 2:
                 if (jukeboxCounter >= jukeboxes.size()) {
+
                     return 100;
                 }
                 Jukebox jukebox = jukeboxes.get(jukeboxCounter);
-
-                // creates the element
-                String url = "http://" + Mede8erCommander.getInstance(context).getMede8erIpAddress();
                 JSONObject meta = jukebox.getJsonContent().optJSONObject("meta");
-                url = url + meta.optString("subdir");
-                String dir = meta.optString("absolute_path") + meta.optString("subdir");
-                Movie movie = JsonParser.getMovie(context, jukebox.getElement(elementCounter), url, meta.optString("fanart"), meta.optString("thumb"), "" + jukeboxCounter, dir);
-                if (movie != null) {
-                    insertElement(movie);
+
+                // if not complete, completes the jukebox object
+                if (jukebox.getFanart() == null) {
+                    jukebox.setFanart(meta.optString("fanart"));
+                    jukebox.setThumb(meta.optString("thumb"));
+                    jukebox.setAbsolutePath(meta.optString("absolute_path"));
+                    jukebox.setSubdir(meta.optString("subdir"));
+                }
+
+                // it's a movie
+                if (jukebox.getElement(elementCounter).optJSONArray("video").length() > 0) {
+
+                    Movie movie = JsonParser.getMovie(jukebox, elementCounter);
+
+                    if (movie != null) {
+                        mede8erCommander.getMoviesManager().insertGenre(movie.getGenres());
+                        mede8erCommander.getMoviesManager().insert(movie);
+                    }
                 }
 
                 if (elementCounter == jukebox.getLength() - 1) {
@@ -123,22 +134,13 @@ public class Mede8erScanner extends GenericProgressIndicator {
                     elementCounter++;
                 }
                 parsedElements++;
+
                 int percent = 10 + ((int) (90 * ((double) parsedElements / totalElements)));
-                Logger.log("percent=" + percent + " parsed=" + parsedElements + " total=" + totalElements);
                 return percent;
         }
 
         Logger.log("should not arrive here.");
         return 100;
-    }
-
-    public void insertElement(Element element) throws Exception {
-
-        switch (element.getType()) {
-            case MOVIE_FOLDER:
-                mede8erCommander.getMoviesManager().insert((Movie) element);
-                break;
-        }
     }
 
     @Override

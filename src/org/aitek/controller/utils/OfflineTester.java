@@ -19,7 +19,7 @@ public class OfflineTester {
     private static String mede8erIp = "192.168.1.5";
 
     public static void main(String[] args) throws Exception {
-        List<Jukebox> jukeboxes = JsonParser.getJukeboxes(IoUtils.readFile(ROOT_DIR + "jukeboxes.json"));
+        List<Jukebox> jukeboxes = JsonParser.getJukeboxes(IoUtils.readFile(ROOT_DIR + "jukeboxes.json"), mede8erIp);
         int elementCounter = 0;
 
         for (Jukebox jukebox : jukeboxes) {
@@ -29,10 +29,7 @@ public class OfflineTester {
 
             int jukeboxLength = jukebox.getLength();
             for (int j = 0; j < jukeboxLength; j++) {
-                String url = "http://" + mede8erIp;
-                JSONObject meta = new JSONObject(json).optJSONObject("meta");
-                url = url + meta.optString("subdir");
-                Element element = JsonParser.getMovie(null, jukebox.getElement(elementCounter++), url, meta.optString("fanart"), meta.optString("thumb"), "", "");
+                Element element = JsonParser.getMovie(jukebox, elementCounter);
                 System.out.print(element);
                 int percent = 10 + ((int) (90 * ((double) elementCounter / jukeboxLength)));
                 System.out.println("\t percent=" + percent + " parsed=" + elementCounter + " total=" + jukeboxLength);
