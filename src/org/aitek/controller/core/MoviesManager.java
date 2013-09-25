@@ -207,4 +207,15 @@ public class MoviesManager {
         outputStream.write(fileContent.toString().getBytes());
         outputStream.close();
     }
+
+    public void setJukeboxes(List<Jukebox> jukeboxes) {
+        this.jukeboxes = jukeboxes;
+    }
+
+    public void insertGenres(String genresString) {
+        String[] genres = genresString.split(" ");
+        for (String genre: genres) {
+            insertGenre(genre);
+        }
+    }
 }

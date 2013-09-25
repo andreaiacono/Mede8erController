@@ -121,7 +121,7 @@ public class Mede8erScanner extends GenericProgressIndicator {
                     Movie movie = JsonParser.getMovie(jukebox, elementCounter);
 
                     if (movie != null) {
-                        mede8erCommander.getMoviesManager().insertGenre(movie.getGenres());
+                        mede8erCommander.getMoviesManager().insertGenres(movie.getGenres());
                         mede8erCommander.getMoviesManager().insert(movie);
                     }
                 }
@@ -156,6 +156,7 @@ public class Mede8erScanner extends GenericProgressIndicator {
     public void finish() throws Exception {
 
         Logger.log("saving movie file");
+        mede8erCommander.getMoviesManager().setJukeboxes(jukeboxes);
         mede8erCommander.getMoviesManager().save();
     }
 

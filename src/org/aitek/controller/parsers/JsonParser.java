@@ -56,7 +56,7 @@ public class JsonParser {
                             Movie movie = Movie.createFromJson(jsonObject, jukebox);
 
                             // then completes its data with movie info from XML
-                            InputStream xmlInputStream = (InputStream) new URL(movie.getNameHttpAddress() + URLEncoder.encode(movie.getXml(), "utf-8").replace("+", "%20")).getContent();
+                            InputStream xmlInputStream = (InputStream) new URL(movie.getNameHttpAddress() + URLEncoder.encode(movie.getName() + movie.getXml(), "utf-8").replace("+", "%20")).getContent();
                             XmlParser.parseMovie(xmlInputStream, movie);
 
                             return movie;

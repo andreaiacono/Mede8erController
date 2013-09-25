@@ -14,7 +14,6 @@ import org.aitek.controller.utils.Logger;
 
 import java.io.*;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -63,9 +62,14 @@ public class MovieLoader extends GenericProgressIndicator {
             FileInputStream in = context.openFileInput(Constants.MOVIES_FILE);
             InputStreamReader inputStreamReader = new InputStreamReader(in);
             bufferedReader = new BufferedReader(inputStreamReader);
+            String line;
 
-            // the first rows contain the jukeboxes followed by te genres, so has to be skipped for counting
-            while (!bufferedReader.readLine().equals("\n")) ;
+            // the first rows contain the jukeboxes followed by a newline and then the genres, so has to be skipped for counting
+            while ((line = bufferedReader.readLine()) != null) {
+                if (line.equals("\n")) {
+                    break;
+                }
+            }
 
             // now just read the whole file for counting the movies
             int counter = -1;
@@ -82,7 +86,7 @@ public class MovieLoader extends GenericProgressIndicator {
             bufferedReader = new BufferedReader(inputStreamReader);
             jukeboxes = Jukebox.getJukeboxMap(bufferedReader, mede8erCommander.getMede8erIpAddress());
 
-            String line = bufferedReader.readLine();
+            line = bufferedReader.readLine();
             Logger.log("read genres: " + line);
             genres = Arrays.asList(line.split(","));
         }

@@ -41,7 +41,7 @@ public class Movie extends Element implements Comparable {
         String folder = jsonObject.optString("folder");
         String xml = jsonObject.optString("xml");
         if (xml.equals("")) {
-            xml = new String(folder);
+            xml = new String(folder) +".xml";
         }
 
         JSONArray video = jsonObject.optJSONArray("video");

@@ -82,7 +82,9 @@ public class Jukebox {
                 return jukeboxes;
             }
             Jukebox jukebox = createFromDataFile(line, ipAddress);
-            jukeboxes.put(jukebox.getId(), jukebox);
+            if (jukebox != null) {
+                jukeboxes.put(jukebox.getId(), jukebox);
+            }
         }
     }
 
