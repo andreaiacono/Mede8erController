@@ -43,9 +43,9 @@ public class MusicManager {
             genres = new ArrayList<>();
             music = new ArrayList<>();
 
-            GenericProgressIndicator genericProgressIndicator = new MovieLoader(context);
+            GenericProgressIndicator genericProgressIndicator = new MovieLoader(context, null);
             if (genericProgressIndicator.setup()) {
-                new ProgressIndicator().progress("Loading controller..", genericProgressIndicator);
+                new ProgressIndicator().progress("Loading controller..", genericProgressIndicator, false);
             }
         }
     }

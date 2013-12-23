@@ -6,5 +6,5 @@
     <ImageView android:id="@+id/movie_fullscreen_view"
                android:layout_width="fill_parent"
                android:layout_height="fill_parent"
-               android:layout_centerInParent="true" />
+               android:layout_centerInParent="true"/>
 </LinearLayout>

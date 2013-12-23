@@ -12,7 +12,7 @@ public class Response {
     private String content;
 
     public enum Value {
-        OK, FAIL, ERR_UNKNOWN_TAG, ERR_NO_MEDIA, ERR_OPEN_DIR, ERR_FAIL, ERR_PLAYING, EMPTY;
+        OK, FAIL, ERR_UNKNOWN_TAG, ERR_NO_MEDIA, ERR_OPEN_DIR, ERR_FAIL, ERR_PLAYING, ERR_RC_UNKNOWN, EMPTY;
     }
 
     public Response(Value value, String content) {

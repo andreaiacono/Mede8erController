@@ -1,14 +1,11 @@
 package org.aitek.controller.mede8er;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.os.AsyncTask;
-import android.widget.ImageView;
-import org.aitek.controller.core.*;
-import org.aitek.controller.loaders.ImageShowerTask;
+import org.aitek.controller.core.MoviesManager;
+import org.aitek.controller.core.MusicManager;
 import org.aitek.controller.mede8er.net.Mede8erConnector;
 import org.aitek.controller.mede8er.net.Response;
-import org.aitek.controller.utils.BitmapUtils;
 import org.aitek.controller.utils.Logger;
 
 import java.io.IOException;
@@ -50,7 +47,7 @@ public class Mede8erCommander {
     }
 
     public void playMovieDir(String movieDir) throws IOException {
-        String command = Command.PLAY.toString().toLowerCase() + " <moviedir>" + movieDir + "</movieDir>";
+        String command = Command.PLAY.toString().toLowerCase() + " <moviedir>" + movieDir + "</moviedir>";
         new CommandLauncher().execute(command);
     }
 
@@ -75,8 +72,9 @@ public class Mede8erCommander {
         return jukeboxCommand(Command.JUKEBOX.toString().toLowerCase() + " " + jukeboxCommand.toString().toLowerCase() + " " + id, inBackground);
     }
 
-    public Response remoteCommand(RemoteCommand remoteCommand) throws IOException {
-        return mede8erConnector.send(Command.RC.toString().toLowerCase() + " " + remoteCommand.getRemoteCommand());
+    public void remoteCommand(RemoteCommand remoteCommand) throws IOException {
+        String command = Command.RC.toString().toLowerCase() + " " + remoteCommand.getRemoteCommand();
+        new CommandLauncher().execute(command);
     }
 
     public MoviesManager getMoviesManager() {
@@ -115,8 +113,7 @@ public class Mede8erCommander {
         if (inBackground) {
             new CommandLauncher().execute(command);
             return null;
-        }
-        else {
+        } else {
             return mede8erConnector.send(command);
         }
     }

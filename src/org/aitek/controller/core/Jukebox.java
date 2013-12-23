@@ -2,6 +2,7 @@ package org.aitek.controller.core;
 
 import org.aitek.controller.parsers.JsonParser;
 import org.aitek.controller.utils.Constants;
+import org.aitek.controller.utils.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -50,15 +51,31 @@ public class Jukebox {
 
     public static Jukebox createFromDataFile(String line, String ipAddress) {
 
-        String[] fields = line.split(Constants.DATAFILE_FIELD_SEPARATOR);
+        String[] fields = line.split("\\" + Constants.DATAFILE_FIELD_SEPARATOR);
         if (fields.length < 8) {
             return null;
         }
 
         String id = fields[0];
         String name = fields[1];
-        Type type = Type.valueOf(fields[2]);
-        Media media = Media.valueOf(fields[3]);
+        Type type = Type.MOVIE;
+        if (fields[2].indexOf("|") < 0) {
+            try {
+                type = Type.valueOf(fields[2]);
+            }
+            catch (Exception ex) {
+                Logger.log("type: [" + fields[2] + "]");
+            }
+        }
+        Media media = Media.NFS;
+        if (fields[3].length() == 3) {
+            try {
+                media = Media.valueOf(fields[3]);
+            }
+            catch (Exception ex) {
+                Logger.log("media: [" + fields[3] + "] on " + fields[1]);
+            }
+        };
         String fanart = fields[4];
         String thumb = fields[5];
         String absolutePath = fields[6];
@@ -69,7 +86,6 @@ public class Jukebox {
         jukebox.setThumb(thumb);
         jukebox.setAbsolutePath(absolutePath);
         jukebox.setSubdir(subDir);
-
         return jukebox;
     }
 
@@ -78,10 +94,11 @@ public class Jukebox {
         Map<String, Jukebox> jukeboxes = new HashMap();
         while (true) {
             String line = bufferedReader.readLine();
-            if (line.equals("\n") || line == null) {
+            if (line.equals("") || line == null) {
                 return jukeboxes;
             }
             Jukebox jukebox = createFromDataFile(line, ipAddress);
+            Logger.log("Created jukebox: " + jukebox + " jukebox == null " + (jukebox == null) + " - Line: [" + line + "]");
             if (jukebox != null) {
                 jukeboxes.put(jukebox.getId(), jukebox);
             }
@@ -147,17 +164,6 @@ public class Jukebox {
         return new JSONObject();
     }
 
-    @Override
-    public String toString() {
-        return "Jukebox{" +
-                "id='" + id + '\'' +
-                ", name='" + name + '\'' +
-                ", type=" + type +
-                ", media=" + media +
-                ", jsonContent=" + jsonContent +
-                '}';
-    }
-
     public String getFanart() {
         return fanart;
     }
@@ -190,4 +196,19 @@ public class Jukebox {
         this.subdir = subdir;
     }
 
+    @Override
+    public String toString() {
+        return "Jukebox{" +
+                "id='" + id + '\'' +
+                ", name='" + name + '\'' +
+                ", ipAddress='" + ipAddress + '\'' +
+                ", type=" + type +
+                ", media=" + media +
+                ", jsonContent=" + jsonContent +
+                ", fanart='" + fanart + '\'' +
+                ", thumb='" + thumb + '\'' +
+                ", absolutePath='" + absolutePath + '\'' +
+                ", subdir='" + subdir + '\'' +
+                '}';
+    }
 }

@@ -3,6 +3,7 @@ package org.aitek.controller.activities.fragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
@@ -13,6 +14,8 @@ import org.aitek.controller.mede8er.Mede8erCommander;
 import org.aitek.controller.ui.ImageAdapter;
 import org.aitek.controller.utils.Logger;
 
+import java.util.Arrays;
+
 
 public class MoviesFragment extends TabFragment {
 
@@ -20,16 +23,14 @@ public class MoviesFragment extends TabFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         RelativeLayout relativeLayout = (RelativeLayout)inflater.inflate(R.layout.movies_main, container, false);
-
         final MoviesManager moviesManager = Mede8erCommander.getInstance(getActivity().getApplicationContext()).getMoviesManager();
-        Logger.log("activity= " + getActivity());
         imageAdapter = new ImageAdapter(getActivity());
         ArrayAdapter adapter = new ArrayAdapter<>(this.getActivity(), android.R.layout.simple_list_item_1, moviesManager.getGenres());
 
+        Logger.log("henres=" + Arrays.toString(moviesManager.getGenres()));
+        Logger.log("adapter=" + adapter + ":" + adapter.getCount());
 
         genresListView = (ListView) relativeLayout.findViewById(R.id.moviesListView);
-        Logger.log("adapter= " + adapter);
-        Logger.log("litview= " + genresListView);
         genresListView.setAdapter(adapter);
         genresListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
@@ -56,4 +57,8 @@ public class MoviesFragment extends TabFragment {
         return relativeLayout;
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        return false;
+    }
 }

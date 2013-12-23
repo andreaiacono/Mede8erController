@@ -32,6 +32,7 @@ public class XmlParser {
         XmlPullParser parser;
 
         String title = "";
+        String sortingTitle = null;
         StringBuilder names = new StringBuilder();
         StringBuilder genres = new StringBuilder();
 
@@ -57,7 +58,9 @@ public class XmlParser {
                     case XmlPullParser.END_TAG:
                         if (tagName.equalsIgnoreCase("title")) {
                             title = text;
-                        } else if (tagName.equalsIgnoreCase("genre")) {
+                        } else if (tagName.equalsIgnoreCase("sorting_title")) {
+                            sortingTitle = text;
+                        }else if (tagName.equalsIgnoreCase("genre")) {
                             genres.append(text).append(" ");
                         } else if (tagName.equalsIgnoreCase("name")) {
                             names.append(text).append(" ");
@@ -80,6 +83,7 @@ public class XmlParser {
         movie.setGenres(genres.toString());
         movie.setPersons(names.toString());
         movie.setTitle(title);
+        movie.setSortingTitle(sortingTitle != null ? sortingTitle : title);
         movie.setSortingTitle(title);
     }
 }

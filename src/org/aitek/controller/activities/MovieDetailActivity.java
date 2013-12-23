@@ -2,31 +2,16 @@ package org.aitek.controller.activities;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.net.http.AndroidHttpClient;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.ImageView;
 import org.aitek.controller.R;
 import org.aitek.controller.core.Movie;
-import org.aitek.controller.loaders.ImageShowerTask;
 import org.aitek.controller.mede8er.Mede8erCommander;
 import org.aitek.controller.utils.Constants;
 import org.aitek.controller.utils.Logger;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.client.methods.HttpGet;
-
-import java.io.FilterInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 
 /**
  * Created with IntelliJ IDEA.

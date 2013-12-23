@@ -3,13 +3,15 @@ package org.aitek.controller.loaders;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Message;
+import org.aitek.controller.activities.MainActivity;
 import org.aitek.controller.core.Jukebox;
 import org.aitek.controller.core.Movie;
-import org.aitek.controller.mede8er.JukeboxCommand;
 import org.aitek.controller.mede8er.Mede8erCommander;
 import org.aitek.controller.ui.GenericProgressIndicator;
 import org.aitek.controller.utils.BitmapUtils;
 import org.aitek.controller.utils.Constants;
+import org.aitek.controller.utils.IoUtils;
 import org.aitek.controller.utils.Logger;
 
 import java.io.*;
@@ -17,6 +19,9 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+
+import static org.aitek.controller.mede8er.Status.ERROR;
+import static org.aitek.controller.mede8er.Status.FULLY_OPERATIONAL;
 
 /**
  * Created with IntelliJ IDEA.
@@ -30,6 +35,8 @@ import java.util.Map;
  * The MovieLoader class is responsible for loading the controller info from the datafile.
  */
 public class MovieLoader extends GenericProgressIndicator {
+    private Context context;
+    private final MainActivity mainActivity;
     BitmapFactory.Options options;
     private List<String> genres;
     private Map<String, Jukebox> jukeboxes;
@@ -38,17 +45,20 @@ public class MovieLoader extends GenericProgressIndicator {
     private Mede8erCommander mede8erCommander;
     private String text;
 
-    public MovieLoader(Context context) throws Exception {
+
+    public MovieLoader(Context context, MainActivity mainActivity) throws Exception {
         super(context);
+        this.context = context;
+        this.mainActivity = mainActivity;
     }
 
     @Override
     public boolean setup() {
+        Logger.log("Setting up MovieLoader (max=" + max + ")");
 
         mede8erCommander = Mede8erCommander.getInstance(context);
-        Logger.log("checking for mede8er up");
         if (!mede8erCommander.isUp()) {
-            mede8erCommander.connectToMede8er(true);
+            mede8erCommander.connectToMede8er(false);
         }
         options = new BitmapFactory.Options();
         options.inSampleSize = 4;
@@ -56,8 +66,8 @@ public class MovieLoader extends GenericProgressIndicator {
 
         try {
             // first, opens the jukebox
-            mede8erCommander.jukeboxCommand(JukeboxCommand.QUERY, false);
-            mede8erCommander.jukeboxCommand(JukeboxCommand.OPEN, "0", false);
+//            mede8erCommander.jukeboxCommand(JukeboxCommand.QUERY, true);
+//            mede8erCommander.jukeboxCommand(JukeboxCommand.OPEN, "0", true);
 
             FileInputStream in = context.openFileInput(Constants.MOVIES_FILE);
             InputStreamReader inputStreamReader = new InputStreamReader(in);
@@ -66,20 +76,25 @@ public class MovieLoader extends GenericProgressIndicator {
 
             // the first rows contain the jukeboxes followed by a newline and then the genres, so has to be skipped for counting
             while ((line = bufferedReader.readLine()) != null) {
-                if (line.equals("\n")) {
+//                Logger.log("MOVIEFILE = " + line);
+                if (line.equals("")) {
                     break;
                 }
             }
 
             // now just read the whole file for counting the movies
             int counter = -1;
-            while (bufferedReader.readLine() != null) {
+            while ((line = bufferedReader.readLine()) != null) {
+//                Logger.log("MOVIEFILE2 = " + line);
                 counter++;
             }
             bufferedReader.close();
             inputStreamReader.close();
             in.close();
+            Logger.log("(max=" + max + ")");
             max = counter;
+//            max = 10;
+            Logger.log("(max=" + max + ")");
 
             in = context.openFileInput(Constants.MOVIES_FILE);
             inputStreamReader = new InputStreamReader(in);
@@ -87,8 +102,9 @@ public class MovieLoader extends GenericProgressIndicator {
             jukeboxes = Jukebox.getJukeboxMap(bufferedReader, mede8erCommander.getMede8erIpAddress());
 
             line = bufferedReader.readLine();
-            Logger.log("read genres: " + line);
-            genres = Arrays.asList(line.split(","));
+            Logger.log("read genres: " + line + " (max=" + max + ")");
+            genres = Arrays.asList(line.split(", "));
+            Logger.log("henres=" + Arrays.toString(genres.toArray()));
         }
         catch (FileNotFoundException e) {
             Logger.log("Error: " + e.getMessage());
@@ -100,12 +116,13 @@ public class MovieLoader extends GenericProgressIndicator {
             read = -1;
             return false;
         }
-
+        Logger.log("finished movieloader setup with max= " + max);
         return true;
     }
 
     @Override
     public int next() throws Exception {
+        Logger.log("calling movieloader next ");
 
         if (read == -1) {
             return Integer.MAX_VALUE;
@@ -118,14 +135,35 @@ public class MovieLoader extends GenericProgressIndicator {
 
             // creates the movie
             Movie movie = Movie.createFromDataFile(line, jukeboxes);
+            Logger.log("Read movie " + movie);
 
-            // loads the thumbnail
-            String address = movie.getNameHttpAddress() + movie.getJukebox().getThumb();
-            URL url = new URL(address);
-            Bitmap thumbnail = BitmapUtils.decodeBitmap(url, 100, 210);
+            if (movie != null) {
 
-            movie.setThumbnail(thumbnail);
-            mede8erCommander.getMoviesManager().insert(movie);
+                // loads the thumbnail
+                String address = movie.getNameHttpAddress() + "/" + movie.getJukebox().getThumb();
+                String thumbnailFilename = IoUtils.normalizeFilename(Constants.THUMBS_DIRECTORY + movie.getFolder());
+
+                // loads the thumbnail from the file system
+                Bitmap thumbnail = IoUtils.readImageFile(thumbnailFilename);
+
+                // if not present
+                if (thumbnail == null) {
+
+                    // loads it from the mede8er
+                    URL url = new URL(address);
+                    thumbnail = BitmapUtils.decodeBitmap(url, 100, 210);
+
+                    // and saves it
+                    IoUtils.saveImageFile(thumbnailFilename, thumbnail);
+                    Logger.log("Saved image " + thumbnailFilename);
+                }
+                else {
+
+                    Logger.log("image " + thumbnailFilename + " loaded from cache.");
+                }
+                movie.setThumbnail(thumbnail);
+                mede8erCommander.getMoviesManager().insert(movie);
+            }
             read++;
         }
         return read;
@@ -133,14 +171,31 @@ public class MovieLoader extends GenericProgressIndicator {
 
     @Override
     public void finish() throws Exception {
-        bufferedReader.close();
+        if (bufferedReader != null) {
+            bufferedReader.close();
+        }
+        //Logger.log("henres in finish=" + Arrays.toString(genres.toArray()));
+        mede8erCommander.getMoviesManager().setGenres(genres);
         mede8erCommander.getMoviesManager().sortMovies();
         mede8erCommander.getMoviesManager().sortGenres();
+
+        mainActivity.getDialogHandler().sendMessage(Message.obtain(mainActivity.getDialogHandler(), FULLY_OPERATIONAL));
         //MainActivity.movieGridAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void fail() {
+        mainActivity.getDialogHandler().sendMessage(Message.obtain(mainActivity.getDialogHandler(), ERROR));
     }
 
     @Override
     public CharSequence getText() {
         return text;
     }
+
+    @Override
+    public Context getContext() {
+        return mainActivity;
+    }
+
 }

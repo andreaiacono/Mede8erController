@@ -10,6 +10,10 @@ import org.aitek.controller.R;
 import org.aitek.controller.core.Element;
 import org.aitek.controller.core.Movie;
 import org.aitek.controller.mede8er.Mede8erCommander;
+import org.aitek.controller.mede8er.RemoteCommand;
+import org.aitek.controller.utils.Logger;
+
+import java.io.IOException;
 
 /**
  * Created with IntelliJ IDEA.
@@ -44,8 +48,9 @@ public class MoviePlayerActivity extends Activity {
             @Override
             public void onClick(View view) {
                 try {
-                    if (movie.getType() == Element.Type.MOVIE_FOLDER) {
-                        mede8erCommander.playMovieDir(movie.getJukebox().getAbsolutePath() + movie.getFolder().substring(0, movie.getFolder().length()-1));
+                    Logger.log("type= " + movie.getType());
+                    if (movie.getType() == Element.Type.FOLDER) {
+                        mede8erCommander.playMovieDir(movie.getJukebox().getAbsolutePath() + movie.getJukebox().getSubdir() + movie.getFolder());
                     }
                 }
                 catch (Exception e) {
@@ -54,7 +59,30 @@ public class MoviePlayerActivity extends Activity {
             }
         });
 
+        setButton(R.id.PauseButton, RemoteCommand.PAUSE);
+        setButton(R.id.StopButton, RemoteCommand.STOP);
+        setButton(R.id.PrevTrackButton, RemoteCommand.PREVIOUS_TRACK);
+        setButton(R.id.FastReverseButton, RemoteCommand.FAST_REVERSE);
+        setButton(R.id.FastForwardButton, RemoteCommand.FAST_FORWARD);
+        setButton(R.id.NextTrackButton, RemoteCommand.NEXT_TRACK);
     }
 
+    private void setButton(int buttonRes, final RemoteCommand remoteCommand) {
+        ImageButton button = (ImageButton) findViewById(buttonRes);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                sendRemoteCommand(remoteCommand);
+            }
+        });
+    }
 
+    private void sendRemoteCommand(RemoteCommand remoteCommand) {
+        try {
+            mede8erCommander.remoteCommand(remoteCommand);
+        }
+        catch (IOException e) {
+            Logger.toast(e.getMessage(), this);
+        }
+    }
 }

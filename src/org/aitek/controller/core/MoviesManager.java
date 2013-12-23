@@ -24,6 +24,8 @@ public class MoviesManager {
     private String genreFilter = null;
     private String genericFilter = null;
     private List<String> genres;
+    private String[] genresArray;
+
     private List<Movie> movies;
     private List<Movie> filteredMovies = null;
     private List<Jukebox> jukeboxes;
@@ -47,12 +49,12 @@ public class MoviesManager {
             genres = new ArrayList<>();
             movies = new ArrayList<>();
 
-            GenericProgressIndicator genericProgressIndicator = new MovieLoader(context);
+//            GenericProgressIndicator genericProgressIndicator = new MovieLoader(context);
 //            if (genericProgressIndicator.setup()) {
-            new ProgressIndicator().progress("Loading controller..", genericProgressIndicator);
+//                new ProgressIndicator().progress("Loading controller..", genericProgressIndicator);
 //            }
-//            Thread.sleep(1000);
-//            setGenres(genericProgressIndicator.getGenres());
+//            //  Thread.sleep(1000);
+//            //setGenres(genericProgressIndicator.getGenres());
         }
 
     }
@@ -88,15 +90,16 @@ public class MoviesManager {
     }
 
     public String[] getGenres() {
-        List<String> allGenresList = new ArrayList<>();
-        allGenresList.add(Constants.ALL_MOVIES);
-        allGenresList.addAll(genres);
-        String genresArray[] = new String[allGenresList.size()];
-        return allGenresList.toArray(genresArray);
+        return genresArray;
     }
 
     public void setGenres(List<String> newGenres) {
-        genres = newGenres;
+        ArrayList<String> genresList = new ArrayList<>();
+        genresList.add(Constants.ALL_MOVIES);
+        genresList.addAll(newGenres);
+        genresArray = new String[genresList.size()];
+        genresList.toArray(genresArray);
+        Logger.log("henresArray=" + Arrays.toString(genresArray));
     }
 
 //    public Movie getMovie(String title) {
@@ -119,7 +122,9 @@ public class MoviesManager {
     }
 
     public void sortGenres() {
-        Collections.sort(genres);
+        if (genres != null) {
+            Collections.sort(genres);
+        }
     }
 
     public int getCount() {
@@ -189,19 +194,20 @@ public class MoviesManager {
     public void save() throws Exception {
 
         StringBuilder fileContent = new StringBuilder();
-        for (Jukebox jukebox: jukeboxes) {
+        for (Jukebox jukebox : jukeboxes) {
             fileContent.append(jukebox.toDataFormat());
         }
 
         // separates jukeboxes from genres/movies
         fileContent.append("\n");
+        Collections.sort(genres);
         String genresArray[] = new String[genres.size()];
         String genresValues = Arrays.toString(genres.toArray(genresArray));
-        fileContent.append(genresValues.substring(1, genresValues.length() - 1)).append("\\n");
+        fileContent.append(genresValues.substring(1, genresValues.length() - 1)).append("\n");
         for (Movie movie : movies) {
             fileContent.append(movie.toDataFormat());
         }
-        Logger.log("saving file: " + fileContent.toString());
+        Logger.log("saving " + Constants.MOVIES_FILE + ": " + fileContent.toString());
 
         FileOutputStream outputStream = context.openFileOutput(Constants.MOVIES_FILE, Context.MODE_PRIVATE);
         outputStream.write(fileContent.toString().getBytes());
@@ -214,7 +220,7 @@ public class MoviesManager {
 
     public void insertGenres(String genresString) {
         String[] genres = genresString.split(" ");
-        for (String genre: genres) {
+        for (String genre : genres) {
             insertGenre(genre);
         }
     }

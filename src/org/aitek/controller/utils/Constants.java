@@ -14,6 +14,8 @@ public class Constants {
     static public final String APP_VERSION = "0.1";
 
     static public final String ROOT_DIRECTORY = "/sdcard/MoviePlayer";
+    static public final String THUMBS_DIRECTORY_NAME = "thumbs";
+    static public String THUMBS_DIRECTORY;
 
     static public final String ALL_MOVIES = "ALL MOVIES";
     static public final String ALL_MUSIC = "ALL MUSIC";
@@ -30,4 +32,5 @@ public class Constants {
     public static final int THUMBNAIL_WIDTH = 180;
     public static final int THUMBNAIL_HEIGHT = 360;
     public static final String DATAFILE_FIELD_SEPARATOR = "|";
+    public static final String DATAFILE_FIELD_SEPARATOR_REGEX = "\\" + DATAFILE_FIELD_SEPARATOR;
 }

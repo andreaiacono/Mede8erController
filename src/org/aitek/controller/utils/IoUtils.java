@@ -1,11 +1,11 @@
 package org.aitek.controller.utils;
 
 import android.app.Activity;
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.FileReader;
-import java.io.InputStreamReader;
+import java.io.*;
 
 /**
  * Created with IntelliJ IDEA.
@@ -41,5 +41,24 @@ public class IoUtils {
         }
 
         return sb.toString();
+    }
+
+    public static Bitmap readImageFile(String filename) {
+        return BitmapFactory.decodeFile(filename);
+    }
+
+    public static void saveImageFile(String filename, Bitmap image) {
+        try {
+            BufferedOutputStream outputStream = new BufferedOutputStream(new FileOutputStream(filename,true));
+            image.compress(Bitmap.CompressFormat.PNG, 90, outputStream);
+            outputStream.close();
+        }
+        catch (Exception ex) {
+            Logger.log("An error has occurred saving bitmap on [" + filename + "]: " + ex.getMessage());
+        }
+    }
+
+    public static String normalizeFilename(String name) {
+        return name.toLowerCase().replaceAll(" ", "_");
     }
 }

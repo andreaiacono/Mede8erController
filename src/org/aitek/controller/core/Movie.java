@@ -8,6 +8,7 @@ import org.aitek.controller.utils.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.lang.annotation.ElementType;
 import java.net.URLEncoder;
 import java.util.Map;
 
@@ -25,7 +26,6 @@ public class Movie extends Element implements Comparable {
     private Type type;
     private String name;
     private Bitmap thumbnail;
-
     private String genres;
     private String persons;
 
@@ -37,7 +37,7 @@ public class Movie extends Element implements Comparable {
         this.name = name;
     }
 
-    public static Movie createFromJson(JSONObject jsonObject, Jukebox jukebox) throws Exception {
+    public static Movie createFromJson(JSONObject jsonObject, Jukebox jukebox, Type type) throws Exception {
         String folder = jsonObject.optString("folder");
         String xml = jsonObject.optString("xml");
         if (xml.equals("")) {
@@ -45,11 +45,11 @@ public class Movie extends Element implements Comparable {
         }
 
         JSONArray video = jsonObject.optJSONArray("video");
-        Type type = null;
+//        Type type = null;
         String name = null;
         for (int j = 0; j < video.length(); j++) {
             JSONObject item = video.getJSONObject(j);
-            type = Type.valueOf(item.optString("type").toUpperCase());
+//            type = Type.valueOf(item.optString("type").toUpperCase());
             name = item.optString("name");
         }
         return new Movie(jukebox, folder, xml, type, name);
@@ -57,21 +57,22 @@ public class Movie extends Element implements Comparable {
 
     public static Movie createFromDataFile(String line, Map<String, Jukebox> jukeboxes) {
 
-        // TODO: check if "\\|" is needed
-        String[] fields = line.split(Constants.DATAFILE_FIELD_SEPARATOR);
+        String[] fields = line.split(Constants.DATAFILE_FIELD_SEPARATOR_REGEX);
         if (fields.length < 8) {
             return null;
         }
         Jukebox jukebox = jukeboxes.get(fields[0]);
+        Logger.log("Got jukebox:" + jukebox);
         String sortingTitle = fields[1];
         String title =  fields[2];
         String folder = fields[3];
         String name = fields[4];
+
         Type type = Type.valueOf(fields[5]);
         String genres = fields[6];
         String persons = fields[7];
 
-        Movie movie = new Movie(jukebox, folder, null, type, name);
+        Movie movie = new Movie(jukebox, folder, jukebox.getThumb(), type, name);
         movie.setTitle(title);
         movie.setSortingTitle(sortingTitle);
         movie.setGenres(genres);
@@ -97,7 +98,7 @@ public class Movie extends Element implements Comparable {
     }
 
     public void showImage(ImageView imageView, int width, int height) throws Exception {
-        String url = getNameHttpAddress() + getJukebox().getFanart();
+        String url = getNameHttpAddress() + "/" + getJukebox().getFanart();
         Logger.log("showing image from URL:" + url);
         imageView.setTag(width + "x" + height);
         ImageShowerTask task = new ImageShowerTask(imageView);
@@ -120,7 +121,7 @@ public class Movie extends Element implements Comparable {
     }
 
     public String getGenres() {
-        return genres;
+        return genres.replace("\n", "");
     }
 
     public String getPersons() {
@@ -165,6 +166,20 @@ public class Movie extends Element implements Comparable {
 
     public void setSortingTitle(String sortingTitle) {
         this.sortingTitle = sortingTitle;
+    }
+
+    @Override
+    public String toString() {
+        return "Movie{" +
+                "folder='" + folder + '\'' +
+                ", sortingTitle='" + sortingTitle + '\'' +
+                ", title='" + title + '\'' +
+                ", type=" + type +
+                ", name='" + name + '\'' +
+                ", thumbnail=" + thumbnail +
+                ", genres='" + genres + '\'' +
+                ", persons='" + persons + '\'' +
+                '}';
     }
 
 }

@@ -20,7 +20,6 @@
             android:numColumns="auto_fit"
             android:layout_toRightOf="@+id/moviesListView"
             android:layout_alignParentTop="true"
-            android:layout_above="@+id/status_text"
             android:layout_alignBottom="@+id/moviesListView"/>
 
     <!--

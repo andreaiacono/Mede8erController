@@ -16,6 +16,7 @@ import org.aitek.controller.activities.fragment.MusicFragment;
 import org.aitek.controller.activities.fragment.PlaylistFragment;
 import org.aitek.controller.activities.fragment.TabFragment;
 import org.aitek.controller.loaders.Mede8erScanner;
+import org.aitek.controller.loaders.MovieLoader;
 import org.aitek.controller.mede8er.Mede8erCommander;
 import org.aitek.controller.ui.GenericProgressIndicator;
 import org.aitek.controller.ui.ProgressIndicator;
@@ -25,15 +26,13 @@ import org.aitek.controller.utils.Logger;
 
 import java.io.File;
 
-import static org.aitek.controller.mede8er.Status.DOWN;
-import static org.aitek.controller.mede8er.Status.NO_JUKEBOX;
+import static org.aitek.controller.mede8er.Status.*;
 
 public class MainActivity extends Activity implements SearchView.OnQueryTextListener {
 
     private SearchView searchView;
     private ActionBar actionBar;
     private Mede8erCommander mede8erCommander;
-    private ProgressDialog searchingMede8erProgress;
     private TabFragment currentTabFragment;
     private Handler dialogHandler = new Handler() {
         @Override
@@ -44,6 +43,9 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
                     break;
                 case NO_JUKEBOX:
                     showAlertDialog(getString(R.string.nas_not_found), getString(R.string.nas_not_found_message));
+                    break;
+                case FULLY_OPERATIONAL:
+                    createPage();
                     break;
             }
         }
@@ -75,9 +77,27 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
 
+        Constants.THUMBS_DIRECTORY = getApplicationContext().getFilesDir() + Constants.THUMBS_DIRECTORY_NAME;
+        File file = new File(Constants.THUMBS_DIRECTORY);
+        file.mkdirs();
+
         mede8erCommander = Mede8erCommander.getInstance(this);
         mede8erCommander.getMoviesManager();
+        mede8erCommander.connectToMede8er(true);
+        try {
+            if (mede8erCommander.getMoviesManager().getCount() == 0) {
+                new ProgressIndicator().progress("Loading data..", new MovieLoader(getApplicationContext(), this), true);
+            }
+            else {
+                createPage();
+            }
+        }
+        catch (Exception e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+    }
 
+    private void createPage() {
         actionBar = getActionBar();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
         ActionBar.Tab moviesTab = actionBar.newTab().setText(getString(R.string.movies_tab));
@@ -95,6 +115,7 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
         actionBar.addTab(moviesTab);
         actionBar.addTab(musicTab);
         actionBar.addTab(playlistTab);
+
     }
 
     @Override
@@ -181,10 +202,10 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
 
     private void scanMediaPlayer() {
         mede8erCommander.getMoviesManager().clear();
-        mede8erCommander.getMusicManager().clear();
+        //mede8erCommander.getMusicManager().clear();
         GenericProgressIndicator genericProgressIndicator = new Mede8erScanner(this);
         if (genericProgressIndicator.setup()) {
-            new ProgressIndicator().progress("Scanning media player..", genericProgressIndicator);
+            new ProgressIndicator().progress("Scanning media player..", genericProgressIndicator, false);
         }
     }
 

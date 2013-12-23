@@ -7,6 +7,7 @@ import android.net.DhcpInfo;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.preference.PreferenceManager;
 import org.aitek.controller.activities.MainActivity;
@@ -39,18 +40,24 @@ public class Mede8erConnector {
 
 
     public Mede8erConnector(Context context) {
+        Logger.log("creating conenctor");
         this.context = context;
         this.inetAddress = getMede8erAddressFromPreferences();
         connectToMede8er(true);
+        Logger.log("creating conenctor");
     }
 
     public void connectToMede8er(boolean asNewThread) {
         if (asNewThread) {
+            Logger.log("new thread for connecting");
             NetworkConnectorTask task = new NetworkConnectorTask();
             task.execute(new String[]{});
         } else {
             try {
+                Logger.log("direct connection");
                 connect();
+                Logger.log("direct connected!!");
+
             }
             catch (Exception e) {
                 e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
@@ -170,7 +177,7 @@ public class Mede8erConnector {
     private Response getResponseFromMessage(String message) throws IOException {
 
         Response.Value value = Response.Value.OK;
-        if (message.startsWith("err_") || message.equals("empty") || message.startsWith("fail")) {
+        if (message.startsWith("err_") || message.equals("empty") || message.startsWith("fail") || message.equals("ok")) {
             value = Response.Value.valueOf(message.toUpperCase());
         } else {
             message = getHttpResource(message);
@@ -258,18 +265,24 @@ public class Mede8erConnector {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            searchingMede8erProgress = ProgressDialog.show(context, "Network discovery", "Searching mede8er on wifi network..");
+            Logger.log("network connector pre execution");
         }
 
         @Override
         protected String doInBackground(String... params) {
 
+            Logger.log("network connector starting..");
+            Looper.prepare();
+            //searchingMede8erProgress = ProgressDialog.show(context, "Network discovery", "Searching mede8er on wifi network..");
+            Logger.log("shown dialog");
             try {
+                Logger.log("connecting..");
                 connect();
-                searchingMede8erProgress.dismiss();
+                //searchingMede8erProgress.dismiss();
+                Logger.log("dialog dismissed..");
             }
             catch (Exception e) {
-                searchingMede8erProgress.dismiss();
+                //searchingMede8erProgress.dismiss();
                 isConnected = false;
                 Handler dialogHandler = ((MainActivity) context).getDialogHandler();
                 dialogHandler.sendMessage(Message.obtain(dialogHandler, DOWN));

@@ -9,6 +9,7 @@ package org.aitek.controller.mede8er;
 public class Status {
 
     // horrible hack instead of enum, because Handler  wants an int to pass messages
+    public static final int ERROR = -1;
     public static final int DOWN = 0;
     public static final int UP = 1;
     public static final int CONNECTED = 2;

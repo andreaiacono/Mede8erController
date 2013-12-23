@@ -16,8 +16,9 @@ public class ProgressIndicator {
     private int progressBarStatus;
 
 
-    public void progress(final String message, final GenericProgressIndicator genericProgressIndicator) {
+    public void progress(final String message, final GenericProgressIndicator genericProgressIndicator, final boolean executeSetup) {
 
+        Logger.log("executing progerss()");
         progressBar = new ProgressDialog(genericProgressIndicator.getContext());
         progressBar.setCancelable(true);
         progressBar.setMessage(message);
@@ -28,12 +29,17 @@ public class ProgressIndicator {
 
         final Handler progressBarHandler = new Handler();
 
+        Logger.log("LAUNCHING THREAD()");
         new Thread(new Runnable() {
             public void run() {
 
+                Logger.log("started progress thread " + genericProgressIndicator);
 
                 try {
-                    genericProgressIndicator.setup();
+                    if (executeSetup) {
+                        genericProgressIndicator.setup();
+                    }
+                    Logger.log("genericProgess setup finsihed. Max = " + genericProgressIndicator.getMax());
                     progressBar.setMax(genericProgressIndicator.getMax());
 
 
@@ -55,7 +61,9 @@ public class ProgressIndicator {
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
-                    Logger.log(e.getMessage());
+                    if (e.getMessage() != null) {
+                        Logger.log("Error during progress: " + e.getMessage());
+                    }
                 }
             }
         }).start();

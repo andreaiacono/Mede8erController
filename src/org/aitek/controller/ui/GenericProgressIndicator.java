@@ -60,6 +60,13 @@ public abstract class GenericProgressIndicator {
 
     }
 
+    /**
+     * something has gone wrong
+     */
+    public void fail() {
+
+    }
+
     public Context getContext() {
         return context;
     }

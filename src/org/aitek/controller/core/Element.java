@@ -9,7 +9,7 @@ package org.aitek.controller.core;
 public class Element {
 
     public enum Type {
-        MOVIE_FOLDER, MOVIE_FILE, MUSIC_FOLDER, MUSIC_FILE, PLAYLIST, FOLDER, FILELINK;
+        MOVIE_FOLDER, FILE, MUSIC_FOLDER, MUSIC_FILE, PLAYLIST, FOLDER, FILELINK;
 
     }
 
