@@ -77,7 +77,7 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
 
-        Constants.THUMBS_DIRECTORY = getApplicationContext().getFilesDir() + Constants.THUMBS_DIRECTORY_NAME;
+        Constants.THUMBS_DIRECTORY = getApplicationContext().getFilesDir() + "/" + Constants.THUMBS_DIRECTORY_NAME;
         File file = new File(Constants.THUMBS_DIRECTORY);
         file.mkdirs();
 
@@ -183,6 +183,7 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
         }
     }
 
+
     private void readPrivateDir(boolean deleteFiles) {
         File dir = getFilesDir();
         File[] subFiles = dir.listFiles();
@@ -198,7 +199,19 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
         }
 
 
+//        // delete thumbs
+//        File[] thumbs = file.listFiles();
+//        for (File thumb : thumbs) {
+//            if (deleteFiles) {
+//                thumb.delete();
+//            } else {
+//                Logger.log(thumb.getAbsolutePath());
+//            }
+//        }
+//        Logger.log("Deleted thumbs");
+
     }
+
 
     private void scanMediaPlayer() {
         mede8erCommander.getMoviesManager().clear();
@@ -243,57 +256,57 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
 
     }
 
-    class MyTabsListener implements ActionBar.TabListener {
-        public Fragment fragment;
+class MyTabsListener implements ActionBar.TabListener {
+    public Fragment fragment;
 
-        public MyTabsListener(Fragment fragment) {
-            this.fragment = fragment;
-        }
-
-        @Override
-        public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
-        }
-
-        @Override
-        public void onTabSelected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
-            fragmentTransaction.replace(R.id.fragment_container, fragment);
-            currentTabFragment = (TabFragment) fragment;
-        }
-
-        @Override
-        public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
-            fragmentTransaction.remove(fragment);
-        }
-
+    public MyTabsListener(Fragment fragment) {
+        this.fragment = fragment;
     }
 
-    private class Mede8erScannerTask extends AsyncTask<String, Void, String> {
-
-        @Override
-        protected String doInBackground(String... params) {
-
-            try {
-                Looper.prepare();
-
-                Logger.log("Checking Mede8er on the network..");
-                if (mede8erCommander.isUp()) {
-//                    searchingMede8erProgress.dismiss();
-                    scanMediaPlayer();
-                } else {
-                    mede8erCommander.connectToMede8er(false);
-//                    searchingMede8erProgress.dismiss();
-                    dialogHandler.sendMessage(Message.obtain(dialogHandler, DOWN));
-                }
-            }
-            catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            return "boh..";
-        }
-
-        @Override
-        protected void onPostExecute(String result) {
-        }
+    @Override
+    public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
     }
+
+    @Override
+    public void onTabSelected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
+        fragmentTransaction.replace(R.id.fragment_container, fragment);
+        currentTabFragment = (TabFragment) fragment;
+    }
+
+    @Override
+    public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
+        fragmentTransaction.remove(fragment);
+    }
+
+}
+
+private class Mede8erScannerTask extends AsyncTask<String, Void, String> {
+
+    @Override
+    protected String doInBackground(String... params) {
+
+        try {
+            Looper.prepare();
+
+            Logger.log("Checking Mede8er on the network..");
+            if (mede8erCommander.isUp()) {
+//                    searchingMede8erProgress.dismiss();
+                scanMediaPlayer();
+            } else {
+                mede8erCommander.connectToMede8er(false);
+//                    searchingMede8erProgress.dismiss();
+                dialogHandler.sendMessage(Message.obtain(dialogHandler, DOWN));
+            }
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return "boh..";
+    }
+
+    @Override
+    protected void onPostExecute(String result) {
+    }
+}
 }

@@ -31,7 +31,7 @@ public class FileSystemScanner extends GenericProgressIndicator {
 
     @Override
     public boolean setup() {
-        list = new File(Constants.ROOT_DIRECTORY).listFiles();
+        list = new File("").listFiles();
         fileNumber = list.length;
         return true;
     }
@@ -58,10 +58,10 @@ public class FileSystemScanner extends GenericProgressIndicator {
         if (f.isDirectory()) {
 
             File imageFile = new File(f.getAbsoluteFile() + "/folder.jpg");
-            File xmlFile = new File(Constants.ROOT_DIRECTORY + "/" + f.getName() + f.getName() + ".xml");
+            File xmlFile = new File("" + "/" + f.getName() + f.getName() + ".xml");
             if (imageFile.exists() && xmlFile.exists()) {
 
-                String xmlFilename = "file://" + Constants.ROOT_DIRECTORY + "/" + f.getName() + f.getName() + ".xml";
+                String xmlFilename = "file://" + "/" + f.getName() + f.getName() + ".xml";
                 InputStream xmlInputStream = (InputStream) new URL(xmlFilename).getContent();
                 Movie movie = null; //XmlParser.parseMovie(xmlInputStream, "", context);
                 //movie.setBaseUrl(f.getAbsolutePath());

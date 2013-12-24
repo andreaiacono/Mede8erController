@@ -8,7 +8,9 @@ import org.aitek.controller.utils.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.InputStream;
 import java.lang.annotation.ElementType;
+import java.net.URL;
 import java.net.URLEncoder;
 import java.util.Map;
 
@@ -91,6 +93,15 @@ public class Movie extends Element implements Comparable {
         data.append(getGenres()).append(Constants.DATAFILE_FIELD_SEPARATOR);
         data.append(getPersons()).append("\n");
         return data.toString();
+    }
+
+    public String getXmlHttpAddress() throws Exception {
+
+        if (type == Type.FOLDER) {
+            return getNameHttpAddress() +  URLEncoder.encode(name + xml, "utf-8").replace("+", "%20");
+        }
+
+        return getNameHttpAddress() + "/" + xml.replace(" ", "%20");
     }
 
     public String getNameHttpAddress() throws Exception {

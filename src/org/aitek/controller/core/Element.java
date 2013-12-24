@@ -14,8 +14,7 @@ public class Element {
     }
 
     private String folder;
-    private String xml;
-
+    protected String xml;
     protected Jukebox jukebox;
 
     public Element(Jukebox jukebox, String folder, String xml) {

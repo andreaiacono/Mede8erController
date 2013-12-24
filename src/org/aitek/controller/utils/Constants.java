@@ -13,7 +13,7 @@ public class Constants {
 
     static public final String APP_VERSION = "0.1";
 
-    static public final String ROOT_DIRECTORY = "/sdcard/MoviePlayer";
+    //static public final String ROOT_DIRECTORY = "/sdcard/MoviePlayer";
     static public final String THUMBS_DIRECTORY_NAME = "thumbs";
     static public String THUMBS_DIRECTORY;
 
