@@ -76,7 +76,6 @@ public class MovieLoader extends GenericProgressIndicator {
 
             // the first rows contain the jukeboxes followed by a newline and then the genres, so has to be skipped for counting
             while ((line = bufferedReader.readLine()) != null) {
-//                Logger.log("MOVIEFILE = " + line);
                 if (line.equals("")) {
                     break;
                 }
@@ -84,17 +83,13 @@ public class MovieLoader extends GenericProgressIndicator {
 
             // now just read the whole file for counting the movies
             int counter = -1;
-            while ((line = bufferedReader.readLine()) != null) {
-//                Logger.log("MOVIEFILE2 = " + line);
+            while ((bufferedReader.readLine()) != null) {
                 counter++;
             }
             bufferedReader.close();
             inputStreamReader.close();
             in.close();
-            Logger.log("(max=" + max + ")");
             max = counter;
-//            max = 10;
-            Logger.log("(max=" + max + ")");
 
             in = context.openFileInput(Constants.MOVIES_FILE);
             inputStreamReader = new InputStreamReader(in);
@@ -102,9 +97,7 @@ public class MovieLoader extends GenericProgressIndicator {
             jukeboxes = Jukebox.getJukeboxMap(bufferedReader, mede8erCommander.getMede8erIpAddress());
 
             line = bufferedReader.readLine();
-            Logger.log("read genres: " + line + " (max=" + max + ")");
             genres = Arrays.asList(line.split(", "));
-            Logger.log("henres=" + Arrays.toString(genres.toArray()));
         }
         catch (FileNotFoundException e) {
             Logger.log("Error: " + e.getMessage());
@@ -116,13 +109,11 @@ public class MovieLoader extends GenericProgressIndicator {
             read = -1;
             return false;
         }
-        Logger.log("finished movieloader setup with max= " + max);
         return true;
     }
 
     @Override
     public int next() throws Exception {
-        Logger.log("calling movieloader next ");
 
         if (read == -1) {
             return Integer.MAX_VALUE;
@@ -135,7 +126,6 @@ public class MovieLoader extends GenericProgressIndicator {
 
             // creates the movie
             Movie movie = Movie.createFromDataFile(line, jukeboxes);
-            Logger.log("Read movie " + movie);
 
             if (movie != null) {
 
@@ -155,11 +145,10 @@ public class MovieLoader extends GenericProgressIndicator {
 
                     // and saves it
                     IoUtils.saveImageFile(thumbnailFilename, thumbnail);
-                    Logger.log("Saved image " + thumbnailFilename);
                 }
                 else {
 
-                    Logger.log("image " + thumbnailFilename + " loaded from cache.");
+//                    Logger.log("image " + thumbnailFilename + " loaded from cache.");
                 }
                 movie.setThumbnail(thumbnail);
                 mede8erCommander.getMoviesManager().insert(movie);

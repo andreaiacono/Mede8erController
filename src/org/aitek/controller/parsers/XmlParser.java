@@ -1,6 +1,7 @@
 package org.aitek.controller.parsers;
 
 import org.aitek.controller.core.Movie;
+import org.aitek.controller.utils.StringUtils;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
@@ -59,7 +60,7 @@ public class XmlParser {
                         if (tagName.equalsIgnoreCase("title")) {
                             title = text;
                         } else if (tagName.equalsIgnoreCase("sorting_title")) {
-                            sortingTitle = text;
+                            sortingTitle = StringUtils.removeWords(text.toLowerCase(), StringUtils.articles);;
                         }else if (tagName.equalsIgnoreCase("genre")) {
                             genres.append(text).append(" ");
                         } else if (tagName.equalsIgnoreCase("name")) {
@@ -83,7 +84,6 @@ public class XmlParser {
         movie.setGenres(genres.toString());
         movie.setPersons(names.toString());
         movie.setTitle(title);
-        movie.setSortingTitle(sortingTitle != null ? sortingTitle : title);
-        movie.setSortingTitle(title);
+        movie.setSortingTitle(sortingTitle != null ? sortingTitle : StringUtils.removeWords(title.toLowerCase(), StringUtils.articles));
     }
 }

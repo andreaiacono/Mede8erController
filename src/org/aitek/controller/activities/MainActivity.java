@@ -87,8 +87,7 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
         try {
             if (mede8erCommander.getMoviesManager().getCount() == 0) {
                 new ProgressIndicator().progress("Loading data..", new MovieLoader(getApplicationContext(), this), true);
-            }
-            else {
+            } else {
                 createPage();
             }
         }
@@ -142,6 +141,7 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
 
             case R.id.menu_scan_mediaplayer:
 //                searchingMede8erProgress = ProgressDialog.show(MainActivity.this, getString(R.string.network_discovery), getString(R.string.network_discovery_message));
+                readPrivateDir(true);
                 Mede8erScannerTask task = new Mede8erScannerTask();
                 task.execute(new String[]{});
                 return true;
@@ -183,7 +183,6 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
         }
     }
 
-
     private void readPrivateDir(boolean deleteFiles) {
         File dir = getFilesDir();
         File[] subFiles = dir.listFiles();
@@ -198,20 +197,21 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
             }
         }
 
+        // delete thumbs
+        dir = new File(Constants.THUMBS_DIRECTORY);
+        File[] thumbs = dir.listFiles();
+        if (thumbs != null) {
 
-//        // delete thumbs
-//        File[] thumbs = file.listFiles();
-//        for (File thumb : thumbs) {
-//            if (deleteFiles) {
-//                thumb.delete();
-//            } else {
-//                Logger.log(thumb.getAbsolutePath());
-//            }
-//        }
-//        Logger.log("Deleted thumbs");
-
+            Logger.log("Deleting thumbs..");
+            for (File thumb : thumbs) {
+                if (deleteFiles) {
+                    thumb.delete();
+                } else {
+                    Logger.log(thumb.getAbsolutePath());
+                }
+            }
+        }
     }
-
 
     private void scanMediaPlayer() {
         mede8erCommander.getMoviesManager().clear();
@@ -256,57 +256,57 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
 
     }
 
-class MyTabsListener implements ActionBar.TabListener {
-    public Fragment fragment;
+    class MyTabsListener implements ActionBar.TabListener {
+        public Fragment fragment;
 
-    public MyTabsListener(Fragment fragment) {
-        this.fragment = fragment;
+        public MyTabsListener(Fragment fragment) {
+            this.fragment = fragment;
+        }
+
+        @Override
+        public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
+        }
+
+        @Override
+        public void onTabSelected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
+            fragmentTransaction.replace(R.id.fragment_container, fragment);
+            currentTabFragment = (TabFragment) fragment;
+        }
+
+        @Override
+        public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
+            fragmentTransaction.remove(fragment);
+        }
+
     }
 
-    @Override
-    public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
-    }
+    private class Mede8erScannerTask extends AsyncTask<String, Void, String> {
 
-    @Override
-    public void onTabSelected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
-        fragmentTransaction.replace(R.id.fragment_container, fragment);
-        currentTabFragment = (TabFragment) fragment;
-    }
+        @Override
+        protected String doInBackground(String... params) {
 
-    @Override
-    public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
-        fragmentTransaction.remove(fragment);
-    }
+            try {
+                Looper.prepare();
 
-}
-
-private class Mede8erScannerTask extends AsyncTask<String, Void, String> {
-
-    @Override
-    protected String doInBackground(String... params) {
-
-        try {
-            Looper.prepare();
-
-            Logger.log("Checking Mede8er on the network..");
-            if (mede8erCommander.isUp()) {
+                Logger.log("Checking Mede8er on the network..");
+                if (mede8erCommander.isUp()) {
 //                    searchingMede8erProgress.dismiss();
-                scanMediaPlayer();
-            } else {
-                mede8erCommander.connectToMede8er(false);
+                    scanMediaPlayer();
+                } else {
+                    mede8erCommander.connectToMede8er(false);
 //                    searchingMede8erProgress.dismiss();
-                dialogHandler.sendMessage(Message.obtain(dialogHandler, DOWN));
+                    dialogHandler.sendMessage(Message.obtain(dialogHandler, DOWN));
+                }
             }
-        }
-        catch (Exception e) {
-            e.printStackTrace();
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            return "boh..";
         }
 
-        return "boh..";
+        @Override
+        protected void onPostExecute(String result) {
+        }
     }
-
-    @Override
-    protected void onPostExecute(String result) {
-    }
-}
 }

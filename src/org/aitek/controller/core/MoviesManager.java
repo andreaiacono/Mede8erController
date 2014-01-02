@@ -1,9 +1,6 @@
 package org.aitek.controller.core;
 
 import android.content.Context;
-import org.aitek.controller.loaders.MovieLoader;
-import org.aitek.controller.ui.GenericProgressIndicator;
-import org.aitek.controller.ui.ProgressIndicator;
 import org.aitek.controller.utils.Constants;
 import org.aitek.controller.utils.Logger;
 
@@ -25,7 +22,6 @@ public class MoviesManager {
     private String genericFilter = null;
     private List<String> genres;
     private String[] genresArray;
-
     private List<Movie> movies;
     private List<Movie> filteredMovies = null;
     private List<Jukebox> jukeboxes;
@@ -83,7 +79,7 @@ public class MoviesManager {
 
     public Movie insert(Movie movie) {
 
-        Logger.log("called insertMovie with " + movie.getFolder());
+//        Logger.log("called insertMovie with " + movie.getFolder());
         movies.add(movie);
 
         return movie;
@@ -94,12 +90,13 @@ public class MoviesManager {
     }
 
     public void setGenres(List<String> newGenres) {
-        ArrayList<String> genresList = new ArrayList<>();
-        genresList.add(Constants.ALL_MOVIES);
-        genresList.addAll(newGenres);
-        genresArray = new String[genresList.size()];
-        genresList.toArray(genresArray);
-        Logger.log("henresArray=" + Arrays.toString(genresArray));
+        if (newGenres != null) {
+            ArrayList<String> genresList = new ArrayList<>();
+            genresList.add(Constants.ALL_MOVIES);
+            genresList.addAll(newGenres);
+            genresArray = new String[genresList.size()];
+            genresList.toArray(genresArray);
+        }
     }
 
 //    public Movie getMovie(String title) {

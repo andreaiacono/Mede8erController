@@ -22,38 +22,41 @@ public class MoviesFragment extends TabFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        RelativeLayout relativeLayout = (RelativeLayout)inflater.inflate(R.layout.movies_main, container, false);
+        RelativeLayout relativeLayout = (RelativeLayout) inflater.inflate(R.layout.movies_main, container, false);
         final MoviesManager moviesManager = Mede8erCommander.getInstance(getActivity().getApplicationContext()).getMoviesManager();
         imageAdapter = new ImageAdapter(getActivity());
-        ArrayAdapter adapter = new ArrayAdapter<>(this.getActivity(), android.R.layout.simple_list_item_1, moviesManager.getGenres());
 
-        Logger.log("henres=" + Arrays.toString(moviesManager.getGenres()));
-        Logger.log("adapter=" + adapter + ":" + adapter.getCount());
+        if (moviesManager.getGenres() != null) {
 
-        genresListView = (ListView) relativeLayout.findViewById(R.id.moviesListView);
-        genresListView.setAdapter(adapter);
-        genresListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            ArrayAdapter adapter = new ArrayAdapter<>(this.getActivity(), android.R.layout.simple_list_item_1, moviesManager.getGenres());
 
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                moviesManager.setGenreFilter(genresListView.getAdapter().getItem(i).toString());
-                imageAdapter.notifyDataSetChanged();
-            }
-        });
+            Logger.log("henres=" + Arrays.toString(moviesManager.getGenres()));
+            Logger.log("adapter=" + adapter + ":" + adapter.getCount());
 
-        gridView = (GridView) relativeLayout.findViewById(R.id.moviesGridView);
-        gridView.setAdapter(imageAdapter);
-        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            genresListView = (ListView) relativeLayout.findViewById(R.id.moviesListView);
+            genresListView.setAdapter(adapter);
+            genresListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
-            @Override
-            public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
+                @Override
+                public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                    moviesManager.setGenreFilter(genresListView.getAdapter().getItem(i).toString());
+                    imageAdapter.notifyDataSetChanged();
+                }
+            });
 
-                Intent fullScreenIntent = new Intent(v.getContext(), MovieDetailActivity.class);
-                fullScreenIntent.putExtra(MovieDetailActivity.class.getName(), position);
-                startActivity(fullScreenIntent);
-            }
-        });
+            gridView = (GridView) relativeLayout.findViewById(R.id.moviesGridView);
+            gridView.setAdapter(imageAdapter);
+            gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
+                @Override
+                public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
+
+                    Intent fullScreenIntent = new Intent(v.getContext(), MovieDetailActivity.class);
+                    fullScreenIntent.putExtra(MovieDetailActivity.class.getName(), position);
+                    startActivity(fullScreenIntent);
+                }
+            });
+        }
         return relativeLayout;
     }
 
