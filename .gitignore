@@ -3,4 +3,4 @@ gen
 .idea
 ant.properties
 build.xml
-local.properites
+local.properties
