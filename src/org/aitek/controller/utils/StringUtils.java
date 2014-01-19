@@ -9,7 +9,7 @@ package org.aitek.controller.utils;
  */
 public class StringUtils {
 
-    public static final String[] articles = new String[] {"L'", "Il ", "Lo ", "La ", "I ", "Gli ", "Le ", "Un ", "Uno ", "Una ", "The ", "A "};
+    public static final String[] articles = new String[] {"L'", "Il ", "Lo ", "La ", "I ", "Gli ", "Le ", "Un ", "Uno ", "Una ", "The ", "A ", "l'", "il ", "lo ", "la ", "i ", "gli ", "le ", "un ", "uno ", "una ", "the ", "a "};
 
     public static String removeWords(String value, String words[]) {
 

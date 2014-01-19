@@ -64,7 +64,6 @@ public class Movie extends Element implements Comparable {
             return null;
         }
         Jukebox jukebox = jukeboxes.get(fields[0]);
-        Logger.log("Got jukebox:" + jukebox);
         String sortingTitle = fields[1];
         String title =  fields[2];
         String folder = fields[3];

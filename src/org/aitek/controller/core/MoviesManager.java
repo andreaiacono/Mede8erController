@@ -30,7 +30,6 @@ public class MoviesManager {
     private Context context;
 
     public MoviesManager(Context context) throws Exception {
-        Logger.log("Starting MovieManager");
         this.context = context;
 
         genreFilter = null;
@@ -38,21 +37,8 @@ public class MoviesManager {
         filteredMovies = null;
         sortField = "title";
         sortDescending = false;
-
-        if (movies == null) {
-
-            Logger.log("Creating MovieManager");
-            genres = new ArrayList<>();
-            movies = new ArrayList<>();
-
-//            GenericProgressIndicator genericProgressIndicator = new MovieLoader(context);
-//            if (genericProgressIndicator.setup()) {
-//                new ProgressIndicator().progress("Loading controller..", genericProgressIndicator);
-//            }
-//            //  Thread.sleep(1000);
-//            //setGenres(genericProgressIndicator.getGenres());
-        }
-
+        genres = new ArrayList<>();
+        movies = new ArrayList<>();
     }
 
     public void clear() {
@@ -86,6 +72,14 @@ public class MoviesManager {
     }
 
     public String[] getGenres() {
+        if (genresArray == null) {
+
+            ArrayList<String> genresList = new ArrayList<>();
+            genresList.add(Constants.ALL_MOVIES);
+            genresList.addAll(genres);
+            genresArray = new String[genresList.size()];
+            genresList.toArray(genresArray);
+        }
         return genresArray;
     }
 
@@ -204,7 +198,7 @@ public class MoviesManager {
         for (Movie movie : movies) {
             fileContent.append(movie.toDataFormat());
         }
-        Logger.log("saving " + Constants.MOVIES_FILE + ": " + fileContent.toString());
+        Logger.log("saving " + Constants.MOVIES_FILE); // + ": " + fileContent.toString());
 
         FileOutputStream outputStream = context.openFileOutput(Constants.MOVIES_FILE, Context.MODE_PRIVATE);
         outputStream.write(fileContent.toString().getBytes());

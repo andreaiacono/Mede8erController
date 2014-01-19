@@ -4,12 +4,11 @@ import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
 import org.aitek.controller.activities.MainActivity;
-import org.aitek.controller.core.Element;
 import org.aitek.controller.core.Jukebox;
 import org.aitek.controller.core.Movie;
 import org.aitek.controller.mede8er.JukeboxCommand;
 import org.aitek.controller.mede8er.Mede8erCommander;
-import org.aitek.controller.mede8er.Status;
+import org.aitek.controller.mede8er.Mede8erStatus;
 import org.aitek.controller.mede8er.net.Response;
 import org.aitek.controller.parsers.JsonParser;
 import org.aitek.controller.ui.GenericProgressIndicator;
@@ -20,7 +19,8 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.aitek.controller.mede8er.Status.NO_JUKEBOX;
+import static org.aitek.controller.mede8er.Mede8erStatus.FULLY_OPERATIONAL;
+import static org.aitek.controller.mede8er.Mede8erStatus.NO_JUKEBOX;
 
 /**
  * Created with IntelliJ IDEA.
@@ -28,7 +28,7 @@ import static org.aitek.controller.mede8er.Status.NO_JUKEBOX;
  * Date: 8/30/13
  * Time: 12:26 PM
  */
-public class Mede8erScanner extends GenericProgressIndicator {
+public class Mede8erScannerProgressIndicator extends GenericProgressIndicator {
 
     private Mede8erCommander mede8erCommander;
     private boolean initialized;
@@ -40,7 +40,7 @@ public class Mede8erScanner extends GenericProgressIndicator {
     private int parsedElements;
 
 
-    public Mede8erScanner(Context context) {
+    public Mede8erScannerProgressIndicator(Context context) {
         super(context);
         jukeboxes = new ArrayList<>();
     }
@@ -59,7 +59,7 @@ public class Mede8erScanner extends GenericProgressIndicator {
                 return scanJukeboxes();
             }
             catch (StatusException e) {
-                if (e.getStatus() == Status.NO_JUKEBOX) {
+                if (e.getStatus() == Mede8erStatus.NO_JUKEBOX) {
                     Handler dialogHandler = ((MainActivity) context).getDialogHandler();
                     dialogHandler.sendMessage(Message.obtain(dialogHandler, NO_JUKEBOX));
                 }
@@ -77,7 +77,7 @@ public class Mede8erScanner extends GenericProgressIndicator {
                 Logger.log("Step 0");
                 Response response = mede8erCommander.jukeboxCommand(JukeboxCommand.QUERY, false);
                 if (response.getContent().toUpperCase().equals("EMPTY")) {
-                    throw new StatusException(Status.NO_JUKEBOX);
+                    throw new StatusException(Mede8erStatus.NO_JUKEBOX);
                 }
                 jukeboxes = JsonParser.getJukeboxes(response.getContent(), mede8erCommander.getMede8erIpAddress());
                 scanStep++;
@@ -155,9 +155,13 @@ public class Mede8erScanner extends GenericProgressIndicator {
     @Override
     public void finish() throws Exception {
 
-        Logger.log("saving movie file");
+        Logger.log("Mede8erScanner finished. Now saving movie file and creating page.");
         mede8erCommander.getMoviesManager().setJukeboxes(jukeboxes);
         mede8erCommander.getMoviesManager().save();
+        mede8erCommander.getMoviesManager().sortMovies();
+        mede8erCommander.getMoviesManager().sortGenres();
+
+        ((MainActivity) context).getDialogHandler().sendMessage(Message.obtain(((MainActivity) context).getDialogHandler(), FULLY_OPERATIONAL));
     }
 
 }

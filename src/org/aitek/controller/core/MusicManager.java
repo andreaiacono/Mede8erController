@@ -1,15 +1,11 @@
 package org.aitek.controller.core;
 
 import android.content.Context;
-import org.aitek.controller.loaders.MovieLoader;
-import org.aitek.controller.ui.GenericProgressIndicator;
-import org.aitek.controller.ui.ProgressIndicator;
 import org.aitek.controller.utils.Constants;
 import org.aitek.controller.utils.Logger;
 
 import java.io.FileOutputStream;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -36,18 +32,7 @@ public class MusicManager {
         genericFilter = null;
         filteredMusic = null;
         sortField = "title";
-        sortDescending = false;
 
-        if (music == null) {
-
-            genres = new ArrayList<>();
-            music = new ArrayList<>();
-
-            GenericProgressIndicator genericProgressIndicator = new MovieLoader(context, null);
-            if (genericProgressIndicator.setup()) {
-                new ProgressIndicator().progress("Loading controller..", genericProgressIndicator, false);
-            }
-        }
     }
 
     public void clear() {
@@ -68,96 +53,6 @@ public class MusicManager {
         return allGenresList.toArray(genresArray);
     }
 
-    public void setGenres(List<String> newGenres) {
-        genres = newGenres;
-    }
-
-//    public Movie getMovie(String title) {
-//        for (Movie movie : controller) {
-//            if (movie.getTitle().equals(title)) {
-//                return movie;
-//            }
-//        }
-//        return null;
-//    }
-
-    public void sortMovies() {
-        if ("title".equals(sortField)) {
-            if (sortDescending) {
-                Collections.sort(music, Collections.reverseOrder());
-            } else {
-                Collections.sort(music);
-            }
-        }
-    }
-
-    public void sortMovieGenres() {
-        Collections.sort(genres);
-    }
-
-    public int getMoviesCount() {
-        if (filteredMusic == null) {
-            return music.size();
-        }
-        return filteredMusic.size();
-    }
-
-    public Movie getMovie(int index) {
-        if (filteredMusic == null) {
-            return music.get(index);
-        }
-        return filteredMusic.get(index);
-    }
-
-    public List<Movie> getFilteredMusic() {
-
-        filteredMusic = new ArrayList<>();
-        for (Movie movie : music) {
-
-            if ((genericFilter == null || movie.getTitle().toLowerCase().indexOf(genericFilter) >= 0 || movie.getPersons().toLowerCase().indexOf(genericFilter) >= 0) &&
-                    (genreFilter == null || movie.getGenres().indexOf(genreFilter) >= 0)) {
-                filteredMusic.add(movie);
-            } else {
-                continue;
-            }
-        }
-
-        return filteredMusic;
-    }
-
-    public void setGenreFilter(String value) {
-        if (value.equals(Constants.ALL_MUSIC)) {
-            value = null;
-            if (genericFilter == null) {
-                filteredMusic = null;
-                return;
-            }
-        }
-        genreFilter = value;
-        filteredMusic = getFilteredMusic();
-    }
-
-    public void setGenericFilter(String value) {
-        if (value.equals("")) {
-            genericFilter = null;
-            if (genreFilter == null) {
-                filteredMusic = null;
-                return;
-            }
-        }
-        genericFilter = value.toLowerCase();
-        filteredMusic = getFilteredMusic();
-    }
-
-    public void setSortField(String field) {
-        if (sortField.equals(field)) {
-            sortDescending = !sortDescending;
-        } else {
-            sortField = field;
-        }
-
-        sortMovies();
-    }
 
     public void saveMusic() throws Exception {
 

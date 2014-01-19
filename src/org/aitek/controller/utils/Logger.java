@@ -22,4 +22,8 @@ public class Logger {
         toast.show();
     }
 
+    public static void both(String msg, Context context) {
+        log(msg);
+        toast(msg, context);
+    }
 }

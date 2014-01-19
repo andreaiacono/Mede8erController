@@ -49,7 +49,7 @@ public class IoUtils {
 
     public static void saveImageFile(String filename, Bitmap image) {
         try {
-            BufferedOutputStream outputStream = new BufferedOutputStream(new FileOutputStream(filename,true));
+            BufferedOutputStream outputStream = new BufferedOutputStream(new FileOutputStream(filename, true));
             image.compress(Bitmap.CompressFormat.PNG, 90, outputStream);
             outputStream.close();
         }
@@ -60,5 +60,26 @@ public class IoUtils {
 
     public static String normalizeFilename(String name) {
         return name.toLowerCase().replaceAll(" ", "_");
+    }
+
+    public static boolean isFileExisting(Context context, String filename) {
+
+        FileInputStream in = null;
+        try {
+            in = context.openFileInput(filename);
+        }
+        catch (FileNotFoundException e) {
+            return false;
+        }
+        finally {
+            try {
+                if (in != null) {
+                    in.close();
+                }
+            }
+            catch (IOException e) {
+            }
+        }
+        return true;
     }
 }

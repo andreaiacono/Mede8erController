@@ -38,7 +38,6 @@ public class TcpClient {
         // sends the request to the mede8er
         outputStream.println(request);
         outputStream.flush();
-        Logger.log("Client request: [" + request + "]");
 
         // reads the response
         char[] buffer = new char[1024];
@@ -47,7 +46,6 @@ public class TcpClient {
         if (length > 0) {
             response = new String(buffer).substring(0, length);
         }
-        Logger.log("Mede8er response: [" + response + "]");
 
         return response;
     }

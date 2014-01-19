@@ -2,14 +2,12 @@ package org.aitek.controller.mede8er.net;
 
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.net.DhcpInfo;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-import android.preference.PreferenceManager;
 import org.aitek.controller.activities.MainActivity;
 import org.aitek.controller.mede8er.Command;
 import org.aitek.controller.utils.Constants;
@@ -22,7 +20,8 @@ import java.io.InputStreamReader;
 import java.net.*;
 import java.util.Enumeration;
 
-import static org.aitek.controller.mede8er.Status.DOWN;
+import static org.aitek.controller.mede8er.Mede8erStatus.DOWN;
+import static org.aitek.controller.mede8er.Mede8erStatus.FULLY_OPERATIONAL;
 
 /**
  * Created with IntelliJ IDEA.
@@ -38,42 +37,31 @@ public class Mede8erConnector {
     private boolean isUp;
     private boolean isConnected;
 
-
-    public Mede8erConnector(Context context) {
-        Logger.log("creating conenctor");
+    public Mede8erConnector(Context context, boolean launch) {
         this.context = context;
-        this.inetAddress = getMede8erAddressFromPreferences();
+        if (launch) {
+            connectToMede8er(true);
+        }
+    }
+
+    public void launchConnector() {
         connectToMede8er(true);
-        Logger.log("creating conenctor");
     }
 
     public void connectToMede8er(boolean asNewThread) {
         if (asNewThread) {
-            Logger.log("new thread for connecting");
             NetworkConnectorTask task = new NetworkConnectorTask();
             task.execute(new String[]{});
-        } else {
+        }
+        else {
             try {
-                Logger.log("direct connection");
                 connect();
-                Logger.log("direct connected!!");
-
             }
             catch (Exception e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                Logger.both("Error connecting to mede8er: " + e.getMessage(), context);
+                e.printStackTrace();
             }
         }
-    }
-
-    private void saveMede8erIpAddress(String inetAddress) {
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
-        preferences.edit().putString(Constants.PREFERENCES_MEDE8ER_IPADDRESS, inetAddress);
-        preferences.edit().commit();
-    }
-
-    private String getMede8erAddressFromPreferences() {
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
-        return preferences.getString(Constants.PREFERENCES_MEDE8ER_IPADDRESS, inetAddress);
     }
 
     @SuppressWarnings("deprecation")
@@ -82,7 +70,7 @@ public class Mede8erConnector {
         DhcpInfo dhcpInfo = wifi.getDhcpInfo();
         if (dhcpInfo == null) {
             // TODO handle this!
-            Logger.log("Error from Dhcpinfo()");
+            Logger.both("Error from Dhcpinfo()!", context);
         }
 
         int broadcast = (dhcpInfo.ipAddress & dhcpInfo.netmask) | ~dhcpInfo.netmask;
@@ -95,7 +83,7 @@ public class Mede8erConnector {
 
     public String retrieveMede8erIpAddress() throws IOException {
 
-        String mede8erAddress = null;
+        String mede8erAddress;
         DatagramSocket socket = null;
         DatagramPacket packet;
 
@@ -105,9 +93,7 @@ public class Mede8erConnector {
             socket.setBroadcast(true);
             socket.setSoTimeout(10000);
             packet = new DatagramPacket(helloCommand.getBytes(), helloCommand.length(), getBroadcastAddress(), Constants.UDP_PORT);
-            Logger.log("sending [" + helloCommand + "] to broadcast");
             socket.send(packet);
-            Logger.log("sent [" + helloCommand + "] ");
             try {
                 while (true) {
                     byte[] buf = new byte[1024];
@@ -115,23 +101,21 @@ public class Mede8erConnector {
                     socket.receive(packet);
                     mede8erAddress = ((InetSocketAddress) packet.getSocketAddress()).getAddress().getHostAddress();
                     String localAddress = getLocalIP();
-                    Logger.log("local:" + localAddress + " mede:" + mede8erAddress);
 
                     if (!mede8erAddress.equals(localAddress)) {
-                        Logger.log("Mede8er IP sock:" + packet.getSocketAddress());
+                        Logger.log("Mede8er IP:" + mede8erAddress);
                         isUp = true;
                         return mede8erAddress;
                     }
                 }
             }
             catch (SocketTimeoutException ste) {
-                Logger.log("Receive timed out");
+                Logger.both("Receive timed out connecting to mede8er.", context);
                 isUp = false;
                 throw new IOException("Mede8er not found on the network.");
             }
         }
         finally {
-            Logger.log("finally executed.");
             if (socket != null) {
                 socket.disconnect();
                 socket.close();
@@ -150,8 +134,8 @@ public class Mede8erConnector {
             tcpClient = new TcpClient(inetAddress, Constants.TCP_PORT);
         }
         Response response = getResponseFromMessage(tcpClient.sendMessage(request));
-        Logger.log("Request: [" + request + "]");
-        Logger.log("Response: [" + response.getContent() + "]");
+        Logger.log("Request: [" + (request.length() > Constants.LOG_MAX_LENGTH ? request.substring(0, Constants.LOG_MAX_LENGTH).replaceAll("\n", "") + "..." : request) + "]");
+        Logger.log("Response: [" + (response.getContent().length() > Constants.LOG_MAX_LENGTH ? response.getContent().substring(0, Constants.LOG_MAX_LENGTH).replaceAll("\n", "") + "..." : response.getContent()) + "]");
         return response;
     }
 
@@ -179,7 +163,8 @@ public class Mede8erConnector {
         Response.Value value = Response.Value.OK;
         if (message.startsWith("err_") || message.equals("empty") || message.startsWith("fail") || message.equals("ok")) {
             value = Response.Value.valueOf(message.toUpperCase());
-        } else {
+        }
+        else {
             message = getHttpResource(message);
         }
         return new Response(value, message);
@@ -197,7 +182,6 @@ public class Mede8erConnector {
             while (!completed) {
                 char[] buffer = new char[10 * 1024];
                 int length = inputStreamReader.read(buffer);
-                Logger.log("read " + length + " bytes.");
                 content.append(new String(buffer).substring(0, length));
                 try {
                     new JSONObject(content.toString());
@@ -207,7 +191,6 @@ public class Mede8erConnector {
 
                 }
             }
-            Logger.log("Http content: [" + content.toString() + "]");
             return content.toString();
         }
         finally {
@@ -247,48 +230,52 @@ public class Mede8erConnector {
     private void connect() throws Exception {
         if (inetAddress == null) {
 
-            Logger.log("getting IP address");
             inetAddress = retrieveMede8erIpAddress();
-            Logger.log("Inet address=" + inetAddress);
-            saveMede8erIpAddress(inetAddress);
         }
-        Logger.log("alreay Inet address=" + inetAddress);
-
         tcpClient = new TcpClient(inetAddress, Constants.TCP_PORT);
         isConnected = true;
     }
 
     private class NetworkConnectorTask extends AsyncTask<String, Void, String> {
 
-        private ProgressDialog searchingMede8erProgress;
+        private ProgressDialog initialProgressDialog;
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            Logger.log("network connector pre execution");
+            initialProgressDialog = new ProgressDialog(context);
+            initialProgressDialog.setTitle("Searching for mede8er on local network");
+            initialProgressDialog.setMessage("Please wait...");
+            initialProgressDialog.setCancelable(false);
+            initialProgressDialog.setIndeterminate(true);
+            initialProgressDialog.show();
+            Logger.log("Showed ProgressDialog");
         }
 
         @Override
         protected String doInBackground(String... params) {
 
-            Logger.log("network connector starting..");
             Looper.prepare();
             //searchingMede8erProgress = ProgressDialog.show(context, "Network discovery", "Searching mede8er on wifi network..");
-            Logger.log("shown dialog");
             try {
-                Logger.log("connecting..");
                 connect();
-                //searchingMede8erProgress.dismiss();
-                Logger.log("dialog dismissed..");
             }
             catch (Exception e) {
-                //searchingMede8erProgress.dismiss();
                 isConnected = false;
                 Handler dialogHandler = ((MainActivity) context).getDialogHandler();
                 dialogHandler.sendMessage(Message.obtain(dialogHandler, DOWN));
             }
+            initialProgressDialog.dismiss();
+            return "";
+        }
 
-            return "working..";
+        @Override
+        protected void onPostExecute(String s) {
+
+            if (isConnected) {
+                Handler dialogHandler = ((MainActivity) context).getDialogHandler();
+                dialogHandler.sendMessage(Message.obtain(dialogHandler, FULLY_OPERATIONAL));
+            }
         }
     }
 }

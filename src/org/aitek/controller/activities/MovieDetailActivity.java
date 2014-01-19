@@ -37,7 +37,7 @@ public class MovieDetailActivity extends Activity {
             Logger.log("Movie: " + movie.toString());
         }
         catch (Exception e) {
-            Logger.toast("Error: " + e.getMessage(), this);
+            Logger.toast("MovieDEtail Error: " + e.getMessage(), this);
             e.printStackTrace();
         }
     }

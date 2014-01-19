@@ -1,6 +1,6 @@
 package org.aitek.controller.utils;
 
-import org.aitek.controller.mede8er.Status;
+import org.aitek.controller.mede8er.Mede8erStatus;
 
 /**
  * Created with IntelliJ IDEA.
@@ -16,19 +16,19 @@ public class StatusException extends Exception {
     public StatusException(int status) {
         super();
         switch(status) {
-            case Status.DOWN:
+            case Mede8erStatus.DOWN:
                 message= "down";
                 break;
-            case Status.UP:
+            case Mede8erStatus.UP:
                 message= "up";
                 break;
-            case Status.CONNECTED:
+            case Mede8erStatus.CONNECTED:
                 message= "connected";
                 break;
-            case Status.NO_JUKEBOX:
+            case Mede8erStatus.NO_JUKEBOX:
                 message= "no jukebox";
                 break;
-            case Status.FULLY_OPERATIONAL:
+            case Mede8erStatus.FULLY_OPERATIONAL:
                 message= "fully operational";
                 break;
         }

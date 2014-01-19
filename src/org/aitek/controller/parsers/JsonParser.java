@@ -63,7 +63,7 @@ public class JsonParser {
                             return movie;
                         }
                         catch (FileNotFoundException e) {
-                            Logger.log("Error: " + e.getMessage());
+                            Logger.log("Json Parser File not found Error: " + e.getMessage());
                         }
                 }
 

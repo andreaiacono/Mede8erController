@@ -8,13 +8,13 @@ import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
 import org.aitek.controller.mede8er.Mede8erCommander;
+import org.aitek.controller.utils.Logger;
 
 /**
  * Created with IntelliJ IDEA.
  * User: andrea
  * Date: 8/16/13
  * Time: 5:11 PM
- * To change this template use File | Settings | File Templates.
  */
 public class ImageAdapter extends BaseAdapter {
 

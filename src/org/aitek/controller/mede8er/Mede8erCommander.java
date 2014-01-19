@@ -24,18 +24,27 @@ public class Mede8erCommander {
     private MusicManager musicManager;
     private Context context;
 
-    private Mede8erCommander(Context context) {
+    private Mede8erCommander(Context context, boolean launch) {
         this.context = context;
-        mede8erConnector = new Mede8erConnector(context);
+        mede8erConnector = new Mede8erConnector(context, launch);
     }
 
     public static Mede8erCommander getInstance(Context context) {
 
+        return getInstance(context, false);
+    }
+
+    public static Mede8erCommander getInstance(Context context, boolean launch) {
+
         if (mede8erCommander == null) {
-            mede8erCommander = new Mede8erCommander(context);
+            mede8erCommander = new Mede8erCommander(context, launch);
         }
 
         return mede8erCommander;
+    }
+
+    public void launchConnector() {
+        mede8erConnector.launchConnector();
     }
 
     public boolean isUp() {
@@ -72,9 +81,18 @@ public class Mede8erCommander {
         return jukeboxCommand(Command.JUKEBOX.toString().toLowerCase() + " " + jukeboxCommand.toString().toLowerCase() + " " + id, inBackground);
     }
 
-    public void remoteCommand(RemoteCommand remoteCommand) throws IOException {
-        String command = Command.RC.toString().toLowerCase() + " " + remoteCommand.getRemoteCommand();
+    public void movieCommand(MovieCommand movieCommand, String param) throws IOException {
+        String command = Command.MOVIE.toString().toLowerCase() + " " + movieCommand.toString().toLowerCase() + (param != null ? " " + param : "");
         new CommandLauncher().execute(command);
+    }
+
+    public void remoteCommand(RemoteCommand remoteCommand, String param) throws IOException {
+        String command = Command.RC.toString().toLowerCase() + " " + remoteCommand.getRemoteCommand() + (param != null ? " " + param : "");
+        new CommandLauncher().execute(command);
+    }
+
+    public void remoteCommand(RemoteCommand remoteCommand) throws IOException {
+        remoteCommand(remoteCommand, null);
     }
 
     public MoviesManager getMoviesManager() {
@@ -84,6 +102,7 @@ public class Mede8erCommander {
             }
             catch (Exception e) {
                 e.printStackTrace();
+                Logger.toast("An error has occurred getting MoviesManager: " + e.getMessage(), context);
             }
         }
         return moviesManager;
@@ -118,6 +137,15 @@ public class Mede8erCommander {
         }
     }
 
+    public void getMovieLength() {
+        String command = Command.STATUS.toString().toLowerCase() + " movietime";
+        new CommandLauncher().execute(command);
+    }
+
+    public void openJukebox(String id) throws Exception {
+        jukeboxCommand(JukeboxCommand.OPEN, id, false);
+    }
+
     public class CommandLauncher extends AsyncTask<String, Void, Response> {
 
         @Override
@@ -128,13 +156,16 @@ public class Mede8erCommander {
             }
             catch (IOException e) {
                 e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                Logger.toast("An error has occurred launching command [" + ": " + strings[0] + "]:" + e.getMessage(), context);
+
             }
             return null;
         }
 
         @Override
         protected void onPostExecute(Response response) {
-            super.onPostExecute(response);
+            Logger.log(response.toString());
+
         }
     }
 }

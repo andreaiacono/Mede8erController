@@ -8,5 +8,5 @@ package org.aitek.controller.mede8er;
  */
 public enum Command {
 
-    HELLO, JUKEBOX, RC, PLAY, STATUS;
+    HELLO, JUKEBOX, RC, PLAY, STATUS, MOVIE;
 }

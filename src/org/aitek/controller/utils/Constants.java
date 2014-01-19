@@ -15,10 +15,11 @@ public class Constants {
 
     //static public final String ROOT_DIRECTORY = "/sdcard/MoviePlayer";
     static public final String THUMBS_DIRECTORY_NAME = "thumbs";
+    public static final int LOG_MAX_LENGTH = 100;
     static public String THUMBS_DIRECTORY;
 
-    static public final String ALL_MOVIES = "ALL MOVIES";
-    static public final String ALL_MUSIC = "ALL MUSIC";
+    static public final String ALL_MOVIES = "No Filters";
+    static public final String ALL_MUSIC = "No Filters";
     static public final String MOVIES_FILE = "movies.dat";
     static public final String MUSIC_FILE = "music.dat";
 

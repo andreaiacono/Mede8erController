@@ -3,7 +3,9 @@ package org.aitek.controller.activities;
 import android.app.*;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
-import android.os.*;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -15,18 +17,16 @@ import org.aitek.controller.activities.fragment.MoviesFragment;
 import org.aitek.controller.activities.fragment.MusicFragment;
 import org.aitek.controller.activities.fragment.PlaylistFragment;
 import org.aitek.controller.activities.fragment.TabFragment;
-import org.aitek.controller.loaders.Mede8erScanner;
-import org.aitek.controller.loaders.MovieLoader;
+import org.aitek.controller.loaders.CacheLoaderTask;
+import org.aitek.controller.loaders.Mede8erLoaderTask;
 import org.aitek.controller.mede8er.Mede8erCommander;
-import org.aitek.controller.ui.GenericProgressIndicator;
-import org.aitek.controller.ui.ProgressIndicator;
 import org.aitek.controller.utils.Constants;
 import org.aitek.controller.utils.IoUtils;
 import org.aitek.controller.utils.Logger;
 
 import java.io.File;
 
-import static org.aitek.controller.mede8er.Status.*;
+import static org.aitek.controller.mede8er.Mede8erStatus.*;
 
 public class MainActivity extends Activity implements SearchView.OnQueryTextListener {
 
@@ -34,9 +34,11 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
     private ActionBar actionBar;
     private Mede8erCommander mede8erCommander;
     private TabFragment currentTabFragment;
+    private boolean isNoCache;
     private Handler dialogHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
+
             switch (msg.what) {
                 case DOWN:
                     showAlertDialog(getString(R.string.no_mede8er), getString(R.string.no_mede8er_message));
@@ -45,6 +47,10 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
                     showAlertDialog(getString(R.string.nas_not_found), getString(R.string.nas_not_found_message));
                     break;
                 case FULLY_OPERATIONAL:
+                    if (isNoCache) loadFromNetwork();
+                    else loadFromCache();
+                    break;
+                case SHOW_MOVIES:
                     createPage();
                     break;
             }
@@ -76,28 +82,37 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
+        actionBar = getActionBar();
+
 
         Constants.THUMBS_DIRECTORY = getApplicationContext().getFilesDir() + "/" + Constants.THUMBS_DIRECTORY_NAME;
+        //readPrivateDir(true);
         File file = new File(Constants.THUMBS_DIRECTORY);
         file.mkdirs();
 
-        mede8erCommander = Mede8erCommander.getInstance(this);
-        mede8erCommander.getMoviesManager();
-        mede8erCommander.connectToMede8er(true);
-        try {
-            if (mede8erCommander.getMoviesManager().getCount() == 0) {
-                new ProgressIndicator().progress("Loading data..", new MovieLoader(getApplicationContext(), this), true);
-            } else {
-                createPage();
-            }
+        isNoCache = !IoUtils.isFileExisting(this, Constants.MOVIES_FILE);
+
+        mede8erCommander = Mede8erCommander.getInstance(this, false);
+        if (!mede8erCommander.isConnected()) {
+            mede8erCommander.launchConnector();
         }
-        catch (Exception e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        else {
+            createPage();
         }
     }
 
+    private void loadFromNetwork() {
+        Mede8erLoaderTask mede8erLoaderTask = new Mede8erLoaderTask(this);
+        mede8erLoaderTask.execute(new String[]{});
+    }
+
+    private void loadFromCache() {
+        CacheLoaderTask cacheLoaderTask = new CacheLoaderTask(this);
+        cacheLoaderTask.execute(new String[]{});
+    }
+
     private void createPage() {
-        actionBar = getActionBar();
+
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
         ActionBar.Tab moviesTab = actionBar.newTab().setText(getString(R.string.movies_tab));
         ActionBar.Tab musicTab = actionBar.newTab().setText(getString(R.string.music_tab));
@@ -142,7 +157,7 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
             case R.id.menu_scan_mediaplayer:
 //                searchingMede8erProgress = ProgressDialog.show(MainActivity.this, getString(R.string.network_discovery), getString(R.string.network_discovery_message));
                 readPrivateDir(true);
-                Mede8erScannerTask task = new Mede8erScannerTask();
+                Mede8erLoaderTask task = new Mede8erLoaderTask(this);
                 task.execute(new String[]{});
                 return true;
 
@@ -173,7 +188,7 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
                     Logger.log(IoUtils.readPrivateFile(Constants.MOVIES_FILE, this));
                 }
                 catch (Exception e) {
-                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                    e.printStackTrace();
                 }
 
 
@@ -191,7 +206,8 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
             for (File file : subFiles) {
                 if (deleteFiles) {
                     file.delete();
-                } else {
+                }
+                else {
                     Logger.log(file.getAbsolutePath());
                 }
             }
@@ -206,19 +222,11 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
             for (File thumb : thumbs) {
                 if (deleteFiles) {
                     thumb.delete();
-                } else {
+                }
+                else {
                     Logger.log(thumb.getAbsolutePath());
                 }
             }
-        }
-    }
-
-    private void scanMediaPlayer() {
-        mede8erCommander.getMoviesManager().clear();
-        //mede8erCommander.getMusicManager().clear();
-        GenericProgressIndicator genericProgressIndicator = new Mede8erScanner(this);
-        if (genericProgressIndicator.setup()) {
-            new ProgressIndicator().progress("Scanning media player..", genericProgressIndicator, false);
         }
     }
 
@@ -245,14 +253,16 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
     private void updateSearch(String query) {
 
         String tabName = getString(R.string.movies_tab);
-        if (tabName.equals(actionBar.getSelectedTab().getText())) {
-            mede8erCommander.getMoviesManager().setGenericFilter(query);
-            currentTabFragment.notifyChangedGridData();
-        } else if (tabName.equals(actionBar.getSelectedTab().getText())) {
-            mede8erCommander.getMusicManager().setGenericFilter(query);
-            currentTabFragment.notifyChangedGridData();
+        if (actionBar.getSelectedTab() != null) {
+            if (tabName.equals(actionBar.getSelectedTab().getText())) {
+                mede8erCommander.getMoviesManager().setGenericFilter(query);
+                currentTabFragment.notifyChangedGridData();
+            }
+            else if (tabName.equals(actionBar.getSelectedTab().getText())) {
+                //  mede8erCommander.getMusicManager().setGenericFilter(query);
+                currentTabFragment.notifyChangedGridData();
+            }
         }
-
 
     }
 
@@ -280,33 +290,5 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
 
     }
 
-    private class Mede8erScannerTask extends AsyncTask<String, Void, String> {
 
-        @Override
-        protected String doInBackground(String... params) {
-
-            try {
-                Looper.prepare();
-
-                Logger.log("Checking Mede8er on the network..");
-                if (mede8erCommander.isUp()) {
-//                    searchingMede8erProgress.dismiss();
-                    scanMediaPlayer();
-                } else {
-                    mede8erCommander.connectToMede8er(false);
-//                    searchingMede8erProgress.dismiss();
-                    dialogHandler.sendMessage(Message.obtain(dialogHandler, DOWN));
-                }
-            }
-            catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            return "boh..";
-        }
-
-        @Override
-        protected void onPostExecute(String result) {
-        }
-    }
 }
