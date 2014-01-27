@@ -17,6 +17,7 @@ import org.aitek.controller.activities.fragment.MoviesFragment;
 import org.aitek.controller.activities.fragment.MusicFragment;
 import org.aitek.controller.activities.fragment.PlaylistFragment;
 import org.aitek.controller.activities.fragment.TabFragment;
+import org.aitek.controller.core.MoviesManager;
 import org.aitek.controller.loaders.CacheLoaderTask;
 import org.aitek.controller.loaders.Mede8erLoaderTask;
 import org.aitek.controller.mede8er.Mede8erCommander;
@@ -34,7 +35,7 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
     private ActionBar actionBar;
     private Mede8erCommander mede8erCommander;
     private TabFragment currentTabFragment;
-    private boolean isNoCache;
+    private boolean hasNoCache;
     private Handler dialogHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -47,7 +48,7 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
                     showAlertDialog(getString(R.string.nas_not_found), getString(R.string.nas_not_found_message));
                     break;
                 case FULLY_OPERATIONAL:
-                    if (isNoCache) loadFromNetwork();
+                    if (hasNoCache) loadFromNetwork();
                     else loadFromCache();
                     break;
                 case SHOW_MOVIES:
@@ -90,7 +91,7 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
         File file = new File(Constants.THUMBS_DIRECTORY);
         file.mkdirs();
 
-        isNoCache = !IoUtils.isFileExisting(this, Constants.MOVIES_FILE);
+        hasNoCache = !IoUtils.isFileExisting(this, Constants.MOVIES_FILE);
 
         mede8erCommander = Mede8erCommander.getInstance(this, false);
         if (!mede8erCommander.isConnected()) {
@@ -157,6 +158,7 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
             case R.id.menu_scan_mediaplayer:
 //                searchingMede8erProgress = ProgressDialog.show(MainActivity.this, getString(R.string.network_discovery), getString(R.string.network_discovery_message));
                 readPrivateDir(true);
+                mede8erCommander.getMoviesManager().clear();
                 Mede8erLoaderTask task = new Mede8erLoaderTask(this);
                 task.execute(new String[]{});
                 return true;
