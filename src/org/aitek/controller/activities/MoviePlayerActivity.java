@@ -8,7 +8,6 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import org.aitek.controller.R;
-import org.aitek.controller.core.Element;
 import org.aitek.controller.core.Movie;
 import org.aitek.controller.mede8er.Mede8erCommander;
 import org.aitek.controller.mede8er.MovieCommand;
@@ -62,7 +61,7 @@ public class MoviePlayerActivity extends Activity {
         setButton(R.id.FastForwardButton, RemoteCommand.FAST_FORWARD);
         setButton(R.id.NextTrackButton, RemoteCommand.NEXT_TRACK);
 
-        seekBar = (SeekBar) findViewById(R.id.seekBar);
+        seekBar = (SeekBar) findViewById(R.id.movejump_seekbar);
         // TODO: fix get status call to have a real value here
         seekBar.setMax(9000);
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {

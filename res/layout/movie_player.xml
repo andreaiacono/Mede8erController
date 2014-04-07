@@ -72,12 +72,24 @@
             android:gravity="center"
             android:src="@drawable/end"
             android:layout_width="wrap_content"
-            android:layout_alignParentRight="true"
+            android:layout_toLeftOf="@+id/volume_seekbar"
             android:padding="25dp"
             android:layout_centerVertical="true"/>
 
     <SeekBar
-            android:id="@+id/seekBar"
+            android:id="@+id/volume_seekbar"
+            android:layout_height="fill_parent"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:layout_width="wrap_content"
+            android:rotation="270"
+            android:progress="0"
+            android:max="100"
+            android:padding="25dp"></SeekBar>
+
+    <SeekBar
+            android:id="@+id/movejump_seekbar"
             android:layout_height="wrap_content"
             android:gravity="center"
             android:layout_alignParentBottom="true"

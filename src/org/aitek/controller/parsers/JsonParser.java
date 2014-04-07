@@ -30,7 +30,7 @@ public class JsonParser {
 
         JSONArray jukeboxesJson = new JSONObject(json).optJSONArray("jukeboxes");
         int length = jukeboxesJson.length();
-        List<Jukebox> jukeboxes = new ArrayList<>();
+        List<Jukebox> jukeboxes = new ArrayList<Jukebox>();
 
         for (int i = 0; i < length; i++) {
             jukeboxes.add(getJukebox(jukeboxesJson.getJSONObject(i), ipAddress));

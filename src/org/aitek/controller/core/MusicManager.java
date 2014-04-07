@@ -19,7 +19,7 @@ public class MusicManager {
     private String genreFilter = null;
     private String genericFilter = null;
     private List<String> genres;
-    private List<Movie> music;
+    private List<String> music;
     private List<Movie> filteredMusic = null;
     private String sortField;
     private boolean sortDescending;
@@ -36,8 +36,8 @@ public class MusicManager {
     }
 
     public void clear() {
-        genres = new ArrayList<>();
-        music = new ArrayList<>();
+        genres = new ArrayList<String>();
+        music = new ArrayList<String>();
         genreFilter = null;
         genericFilter = null;
         filteredMusic = null;
@@ -46,7 +46,7 @@ public class MusicManager {
     }
 
     public String[] getGenres() {
-        List<String> allGenresList = new ArrayList<>();
+        List<String> allGenresList = new ArrayList<String>();
         allGenresList.add(Constants.ALL_MUSIC);
         allGenresList.addAll(genres);
         String genresArray[] = new String[allGenresList.size()];

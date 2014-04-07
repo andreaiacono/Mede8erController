@@ -82,7 +82,7 @@ public class Mede8erLoaderTask extends AsyncTask<String, Void, String> {
 
         public Mede8erLoaderProgressIndicator() {
             this.context = mainActivity.getApplicationContext();
-            jukeboxes = new ArrayList<>();
+            jukeboxes = new ArrayList<Jukebox>();
 
             progressBar = new ProgressDialog(mainActivity);
             progressBar.setCancelable(false);

@@ -157,8 +157,10 @@ public class CacheLoaderTask extends AsyncTask<String, Void, String> {
                 Logger.log("Finished creating Jukebox map.");
 
                 // now opens the jukeboxes
-                for (String jukeboxId: jukeboxes.keySet()) {
-                    mede8erCommander.openJukebox(jukeboxId);
+                if (!mainActivity.isInCacheMode()) {
+                    for (String jukeboxId : jukeboxes.keySet()) {
+                        mede8erCommander.openJukebox(jukeboxId);
+                    }
                 }
 
                 // creates genres

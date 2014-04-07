@@ -17,7 +17,6 @@ import org.aitek.controller.activities.fragment.MoviesFragment;
 import org.aitek.controller.activities.fragment.MusicFragment;
 import org.aitek.controller.activities.fragment.PlaylistFragment;
 import org.aitek.controller.activities.fragment.TabFragment;
-import org.aitek.controller.core.MoviesManager;
 import org.aitek.controller.loaders.CacheLoaderTask;
 import org.aitek.controller.loaders.Mede8erLoaderTask;
 import org.aitek.controller.mede8er.Mede8erCommander;
@@ -35,7 +34,8 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
     private ActionBar actionBar;
     private Mede8erCommander mede8erCommander;
     private TabFragment currentTabFragment;
-    private boolean hasNoCache;
+    private boolean hasCache;
+    private boolean isInCacheMode = false;
     private Handler dialogHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -48,8 +48,9 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
                     showAlertDialog(getString(R.string.nas_not_found), getString(R.string.nas_not_found_message));
                     break;
                 case FULLY_OPERATIONAL:
-                    if (hasNoCache) loadFromNetwork();
-                    else loadFromCache();
+                    isInCacheMode = false;
+                    if (hasCache) loadFromCache();
+                    else loadFromNetwork();
                     break;
                 case SHOW_MOVIES:
                     createPage();
@@ -63,10 +64,24 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
                     .setCancelable(false)
                     .setTitle(title)
                     .setMessage(message)
-                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    .setPositiveButton("Close app", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
+                            System.exit(0);
                         }
-                    });
+                    }
+                    );
+
+            if (hasCache) {
+                builder.setNegativeButton("Use cache", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        isInCacheMode = true;
+                        loadFromCache();
+                    }
+                }
+                );
+            }
+
             AlertDialog alert = builder.create();
             alert.show();
         }
@@ -82,6 +97,11 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (savedInstanceState != null) {
+            isInCacheMode = savedInstanceState.getBoolean("isInCacheMode");
+            Logger.both("loading isInCahce: " + isInCacheMode, this);
+        }
         setContentView(R.layout.main);
         actionBar = getActionBar();
 
@@ -91,15 +111,31 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
         File file = new File(Constants.THUMBS_DIRECTORY);
         file.mkdirs();
 
-        hasNoCache = !IoUtils.isFileExisting(this, Constants.MOVIES_FILE);
+        hasCache = IoUtils.isFileExisting(this, Constants.MOVIES_FILE);
 
         mede8erCommander = Mede8erCommander.getInstance(this, false);
-        if (!mede8erCommander.isConnected()) {
+        Logger.log("isconn:" + mede8erCommander.isConnected() + " isincache=" + isInCacheMode);
+        if (!mede8erCommander.isConnected() && !isInCacheMode) {
             mede8erCommander.launchConnector();
         }
         else {
             createPage();
         }
+    }
+
+
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        onSaveInstanceState(new Bundle());
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        Logger.both("putting isInCahce: " + isInCacheMode, this);
+        outState.putBoolean("isInCacheMode", isInCacheMode);
+        super.onSaveInstanceState(outState);
     }
 
     private void loadFromNetwork() {
@@ -119,7 +155,7 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
         ActionBar.Tab musicTab = actionBar.newTab().setText(getString(R.string.music_tab));
         ActionBar.Tab playlistTab = actionBar.newTab().setText(getString(R.string.playlist_tab));
 
-        Fragment moviesFragment = new MoviesFragment();
+        Fragment moviesFragment = new MoviesFragment(this);
         Fragment musicFragment = new MusicFragment();
         Fragment playlistFragment = new PlaylistFragment();
 
@@ -291,6 +327,11 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
         }
 
     }
+
+    public boolean isInCacheMode() {
+        return isInCacheMode;
+    }
+
 
 
 }

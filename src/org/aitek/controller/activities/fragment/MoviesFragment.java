@@ -8,13 +8,25 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
 import org.aitek.controller.R;
+import org.aitek.controller.activities.MainActivity;
 import org.aitek.controller.activities.MovieDetailActivity;
 import org.aitek.controller.core.MoviesManager;
 import org.aitek.controller.mede8er.Mede8erCommander;
 import org.aitek.controller.ui.ImageAdapter;
+import org.aitek.controller.utils.Logger;
 
 
 public class MoviesFragment extends TabFragment {
+
+    private MainActivity mainActivity;
+
+    public MoviesFragment(MainActivity mainActivity) {
+
+        this.mainActivity = mainActivity;
+    }
+
+    public MoviesFragment() {
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -25,15 +37,15 @@ public class MoviesFragment extends TabFragment {
 
         if (moviesManager.getGenres() != null) {
 
-            ArrayAdapter adapter = new ArrayAdapter<>(this.getActivity(), android.R.layout.simple_list_item_1, moviesManager.getGenres());
+            ArrayAdapter adapter = new ArrayAdapter(this.getActivity(), android.R.layout.simple_list_item_1, moviesManager.getGenres());
             genresListView = (ListView) relativeLayout.findViewById(R.id.moviesListView);
             genresListView.setAdapter(adapter);
             genresListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
                 @Override
                 public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                    moviesManager.setGenreFilter(genresListView.getAdapter().getItem(i).toString());
-                    imageAdapter.notifyDataSetChanged();
+                        moviesManager.setGenreFilter(genresListView.getAdapter().getItem(i).toString());
+                        imageAdapter.notifyDataSetChanged();
                 }
             });
 
@@ -43,10 +55,14 @@ public class MoviesFragment extends TabFragment {
 
                 @Override
                 public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-
-                    Intent fullScreenIntent = new Intent(v.getContext(), MovieDetailActivity.class);
-                    fullScreenIntent.putExtra(MovieDetailActivity.class.getName(), position);
-                    startActivity(fullScreenIntent);
+                    if (mainActivity != null && !mainActivity.isInCacheMode()) {
+                        Intent fullScreenIntent = new Intent(v.getContext(), MovieDetailActivity.class);
+                        fullScreenIntent.putExtra(MovieDetailActivity.class.getName(), position);
+                        startActivity(fullScreenIntent);
+                    }
+                    else {
+                        Logger.toast("Movie detail disabled while in cache mode.", mainActivity);
+                    }
                 }
             });
         }

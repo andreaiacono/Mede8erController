@@ -42,7 +42,7 @@ public class Mede8erScannerProgressIndicator extends GenericProgressIndicator {
 
     public Mede8erScannerProgressIndicator(Context context) {
         super(context);
-        jukeboxes = new ArrayList<>();
+        jukeboxes = new ArrayList<Jukebox>();
     }
 
     @Override

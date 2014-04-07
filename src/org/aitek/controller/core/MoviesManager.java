@@ -37,14 +37,14 @@ public class MoviesManager {
         filteredMovies = null;
         sortField = "title";
         sortDescending = false;
-        genres = new ArrayList<>();
-        movies = new ArrayList<>();
+        genres = new ArrayList<String>();
+        movies = new ArrayList<Movie>();
     }
 
     public void clear() {
-        genres = new ArrayList<>();
-        movies = new ArrayList<>();
-        jukeboxes = new ArrayList<>();
+        genres = new ArrayList<String>();
+        movies = new ArrayList<Movie>();
+        jukeboxes = new ArrayList<Jukebox>();
         genreFilter = null;
         genericFilter = null;
         filteredMovies = null;
@@ -74,7 +74,7 @@ public class MoviesManager {
     public String[] getGenres() {
         if (genresArray == null) {
 
-            ArrayList<String> genresList = new ArrayList<>();
+            ArrayList<String> genresList = new ArrayList<String>();
             genresList.add(Constants.ALL_MOVIES);
             genresList.addAll(genres);
             genresArray = new String[genresList.size()];
@@ -85,7 +85,7 @@ public class MoviesManager {
 
     public void setGenres(List<String> newGenres) {
         if (newGenres != null) {
-            ArrayList<String> genresList = new ArrayList<>();
+            ArrayList<String> genresList = new ArrayList<String>();
             genresList.add(Constants.ALL_MOVIES);
             genresList.addAll(newGenres);
             genresArray = new String[genresList.size()];
@@ -134,7 +134,7 @@ public class MoviesManager {
 
     public List<Movie> getFilteredMovies() {
 
-        filteredMovies = new ArrayList<>();
+        filteredMovies = new ArrayList<Movie>();
         for (Movie movie : movies) {
 
             if ((genericFilter == null || movie.getFolder().toLowerCase().indexOf(genericFilter) >= 0 || movie.getPersons().toLowerCase().indexOf(genericFilter) >= 0) &&
