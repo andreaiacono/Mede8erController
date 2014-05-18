@@ -49,7 +49,7 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
                     break;
                 case FULLY_OPERATIONAL:
                     isInCacheMode = false;
-                    if (hasCache) loadFromCache();
+                    if (hasCache && isInCacheMode) loadFromCache();
                     else loadFromNetwork();
                     break;
                 case SHOW_MOVIES:
@@ -98,9 +98,11 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        Logger.both("savedInstanceState: " + savedInstanceState, this);
+
         if (savedInstanceState != null) {
             isInCacheMode = savedInstanceState.getBoolean("isInCacheMode");
-            Logger.both("loading isInCahce: " + isInCacheMode, this);
+            Logger.both("Loading isInCahce: " + isInCacheMode, this);
         }
         setContentView(R.layout.main);
         actionBar = getActionBar();
