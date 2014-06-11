@@ -1,0 +1,12 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/action_language"
+          android:title="Languages"
+          android:layout_centerInParent="true"
+          android:icon="@drawable/language"
+          android:showAsAction="always"/>
+    <item android:id="@+id/action_subtitles"
+          android:title="Subtitles"
+          android:layout_centerInParent="true"
+          android:icon="@drawable/subtitles"
+          android:showAsAction="always"/>
+</menu>
