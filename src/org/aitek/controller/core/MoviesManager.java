@@ -3,6 +3,7 @@ package org.aitek.controller.core;
 import android.content.Context;
 import org.aitek.controller.utils.Constants;
 import org.aitek.controller.utils.Logger;
+import org.aitek.controller.utils.MiscUtils;
 
 import java.io.FileOutputStream;
 import java.util.ArrayList;
@@ -74,9 +75,10 @@ public class MoviesManager {
     public String[] getGenres() {
         if (genresArray == null) {
 
-            ArrayList<String> genresList = new ArrayList<String>();
+            List<String> genresList = new ArrayList<String>();
             genresList.add(Constants.ALL_MOVIES);
             genresList.addAll(genres);
+            genresList = MiscUtils.removeEmptyStrings(genresList);
             genresArray = new String[genresList.size()];
             genresList.toArray(genresArray);
         }
@@ -85,9 +87,10 @@ public class MoviesManager {
 
     public void setGenres(List<String> newGenres) {
         if (newGenres != null) {
-            ArrayList<String> genresList = new ArrayList<String>();
+            List<String> genresList = new ArrayList<String>();
             genresList.add(Constants.ALL_MOVIES);
             genresList.addAll(newGenres);
+            genresList = MiscUtils.removeEmptyStrings(genresList);
             genresArray = new String[genresList.size()];
             genresList.toArray(genresArray);
         }
