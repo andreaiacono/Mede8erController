@@ -21,7 +21,7 @@
 
     <item
             android:id="@+id/menu_reset"
-            android:title="Reset"
+            android:title="Clear cache"
             android:orderInCategory="10"
             android:showAsAction="never"/>
 
@@ -34,11 +34,6 @@
             android:id="@+id/menu_mediaplayer_info"
             android:title="@string/mediaplayer_info"
             android:orderInCategory="60"
-            android:showAsAction="never"/>
-    <item
-            android:id="@+id/menu_test"
-            android:title="pippo"
-            android:orderInCategory="70"
             android:showAsAction="never"/>
     <item
             android:id="@+id/menu_settings"

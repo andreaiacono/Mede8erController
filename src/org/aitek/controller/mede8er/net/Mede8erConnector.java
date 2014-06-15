@@ -133,8 +133,8 @@ public class Mede8erConnector {
         if (tcpClient == null) {
             tcpClient = new TcpClient(inetAddress, Constants.TCP_PORT);
         }
-        Response response = getResponseFromMessage(tcpClient.sendMessage(request));
         Logger.log("Request: [" + (request.length() > Constants.LOG_MAX_LENGTH ? request.substring(0, Constants.LOG_MAX_LENGTH).replaceAll("\n", "") + "..." : request) + "]");
+        Response response = getResponseFromMessage(tcpClient.sendMessage(request));
         Logger.log("Response: [" + (response.getContent().length() > Constants.LOG_MAX_LENGTH ? response.getContent().substring(0, Constants.LOG_MAX_LENGTH).replaceAll("\n", "") + "..." : response.getContent()) + "]");
         return response;
     }
@@ -182,13 +182,18 @@ public class Mede8erConnector {
             while (!completed) {
                 char[] buffer = new char[10 * 1024];
                 int length = inputStreamReader.read(buffer);
-                content.append(new String(buffer).substring(0, length));
-                try {
-                    new JSONObject(content.toString());
-                    completed = true;
-                }
-                catch (JSONException e) {
+                if (length > 0) {
+                    content.append(new String(buffer).substring(0, length));
+                    try {
+                        new JSONObject(content.toString());
+                        completed = true;
+                    }
+                    catch (JSONException e) {
 
+                    }
+                }
+                else {
+                    completed = true;
                 }
             }
             return content.toString();

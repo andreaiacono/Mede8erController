@@ -45,6 +45,15 @@ public class Mede8erCommander {
 
     public void launchConnector() {
         mede8erConnector.launchConnector();
+        try {
+            Logger.both("Querying mede8er jukeboxes...", context);
+            jukeboxCommand(JukeboxCommand.QUERY, true);
+        }
+        catch (IOException e) {
+            Logger.both("Error querying mede8er jukeboxes: " + e.getMessage(), context);
+            e.printStackTrace();
+        }
+
     }
 
     public boolean isUp() {
