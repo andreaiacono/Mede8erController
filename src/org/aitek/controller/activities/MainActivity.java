@@ -48,9 +48,12 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
                     showAlertDialog(getString(R.string.nas_not_found), getString(R.string.nas_not_found_message));
                     break;
                 case FULLY_OPERATIONAL:
-                    isInCacheMode = false;
-                    if (hasCache && isInCacheMode) loadFromCache();
-                    else loadFromNetwork();
+                    if (hasCache) {
+                        loadFromCache();
+                    }
+                    else {
+                        loadFromNetwork();
+                    }
                     break;
                 case SHOW_MOVIES:
                     createPage();
