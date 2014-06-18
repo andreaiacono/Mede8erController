@@ -63,7 +63,7 @@ public class MoviePlayerActivity extends Activity {
         setButton(R.id.FastForwardButton, RemoteCommand.FAST_FORWARD);
         setButton(R.id.NextTrackButton, RemoteCommand.NEXT_TRACK);
 
-        seekBar = (SeekBar) findViewById(R.id.movejump_seekbar);
+        seekBar = (SeekBar) findViewById(R.id.movieJumpSeekbar);
         // TODO: fix get status call to have a real value here
         seekBar.setMax(9000);
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -108,6 +108,7 @@ public class MoviePlayerActivity extends Activity {
                     break;
                 case FILE:
                     mede8erCommander.playFile(movie.getJukebox().getAbsolutePath() + movie.getJukebox().getSubdir() + movie.getFolder() + "/" + movie.getName());
+                    //mede8erCommander.getMovieLength();
                     break;
             }
 

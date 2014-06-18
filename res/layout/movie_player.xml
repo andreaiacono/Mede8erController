@@ -2,14 +2,17 @@
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_height="fill_parent"
         android:layout_width="match_parent">
+
     <ImageButton
             android:id="@+id/PauseButton"
             android:layout_height="wrap_content"
             android:layout_toLeftOf="@+id/PlayButton"
             android:layout_width="wrap_content"
             android:src="@drawable/pause"
-            android:padding="25dp">
-            </ImageButton>
+            android:padding="25dp"
+            android:contentDescription="Pause">
+    </ImageButton>
+
     <ImageButton
             android:id="@+id/PlayButton"
             android:layout_height="wrap_content"
@@ -17,7 +20,9 @@
             android:src="@drawable/play"
             android:layout_width="wrap_content"
             android:layout_centerHorizontal="true"
-            android:padding="25dp"></ImageButton>
+            android:padding="25dp"
+            android:contentDescription="Play"/>
+
     <ImageButton
             android:id="@+id/StopButton"
             android:layout_height="wrap_content"
@@ -25,7 +30,8 @@
             android:src="@drawable/stop"
             android:textColor="#000"
             android:layout_width="wrap_content"
-            android:padding="25dp"></ImageButton>
+            android:padding="25dp"/>
+
     <ImageButton
             android:id="@+id/PrevTrackButton"
             android:layout_height="wrap_content"
@@ -35,16 +41,20 @@
             android:padding="25dp"
             android:contentDescription="Previous Track"
             android:layout_centerVertical="true"
-            ></ImageButton>
+            android:layout_toLeftOf="@+id/FastReverseButton"/>
+
     <ImageButton
             android:id="@+id/FastReverseButton"
             android:layout_height="wrap_content"
             android:gravity="center"
             android:src="@drawable/rewind"
             android:layout_width="wrap_content"
-            android:layout_toRightOf="@+id/PrevTrackButton"
             android:padding="25dp"
-            android:layout_centerVertical="true"></ImageButton>
+            android:layout_marginRight="78dp"
+            android:layout_alignTop="@+id/PrevTrackButton"
+            android:layout_toLeftOf="@+id/PauseButton"
+            android:contentDescription="Fast Reverse"/>
+
     <ImageView
             android:id="@+id/movieplayer_thumbnail"
             android:gravity="center"
@@ -55,16 +65,18 @@
             android:layout_centerInParent="true"
             android:layout_margin="10dp"
             android:padding="25dp"
-    ></ImageView>
+            android:contentDescription="Thumbnail"/>
+
     <ImageButton
             android:id="@+id/FastForwardButton"
             android:layout_height="wrap_content"
             android:src="@drawable/fast_forward"
             android:gravity="center"
             android:layout_width="wrap_content"
-            android:layout_toLeftOf="@+id/NextTrackButton"
             android:padding="25dp"
-            android:layout_centerVertical="true"></ImageButton>
+            android:layout_alignTop="@+id/NextTrackButton"
+            android:layout_toLeftOf="@+id/NextTrackButton"
+            android:contentDescription="Fast Forward"/>
 
     <ImageButton
             android:id="@+id/NextTrackButton"
@@ -72,27 +84,62 @@
             android:gravity="center"
             android:src="@drawable/end"
             android:layout_width="wrap_content"
-            android:layout_toLeftOf="@+id/volume_seekbar"
             android:padding="25dp"
-            android:layout_centerVertical="true"/>
+            android:layout_alignTop="@+id/FastReverseButton"
+            android:layout_toLeftOf="@+id/FullVolumeImageView"
+            android:layout_marginRight="50dp"
+            android:contentDescription="Next Track"/>
 
     <SeekBar
-            android:id="@+id/volume_seekbar"
-            android:layout_height="fill_parent"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentRight="true"
-            android:layout_width="wrap_content"
-            android:rotation="270"
-            android:progress="0"
-            android:max="100"
-            android:padding="25dp"></SeekBar>
-
-    <SeekBar
-            android:id="@+id/movejump_seekbar"
+            android:id="@+id/movieJumpSeekbar"
             android:layout_height="wrap_content"
             android:gravity="center"
             android:layout_alignParentBottom="true"
             android:layout_width="fill_parent"
-            android:padding="25dp"></SeekBar>
+            android:padding="25dp"
+            android:layout_alignLeft="@+id/PrevTrackButton"
+            android:layout_alignStart="@+id/PrevTrackButton"
+            android:layout_alignRight="@+id/NextTrackButton"
+            android:layout_alignEnd="@+id/NextTrackButton"
+            android:indeterminate="true"/>
+
+    <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/FullVolumeImageView"
+            android:src="@drawable/volume"
+            android:layout_alignBottom="@+id/StopButton"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginRight="42dp"
+            android:contentDescription="Volume"/>
+
+    <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/muteImageView2"
+            android:src="@drawable/mute"
+            android:contentDescription="Mute"
+            android:layout_above="@+id/movieJumpSeekbar"
+            android:layout_alignLeft="@+id/FullVolumeImageView"
+            android:layout_alignStart="@+id/FullVolumeImageView"/>
+
+    <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/imageView3"
+            android:src="@drawable/duration"
+            android:layout_alignTop="@+id/movieJumpSeekbar"
+            android:layout_toLeftOf="@+id/movieJumpSeekbar"
+            android:layout_alignBottom="@+id/movieJumpSeekbar"
+            android:contentDescription="Movie Jump"/>
+
+    <org.aitek.controller.ui.VerticalSeekBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/volumeSeekBar"
+            android:layout_alignRight="@+id/FullVolumeImageView"
+            android:layout_alignEnd="@+id/FullVolumeImageView"
+            android:layout_above="@+id/muteImageView2"
+            android:layout_below="@+id/FullVolumeImageView"/>
 </RelativeLayout>
