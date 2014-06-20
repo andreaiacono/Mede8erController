@@ -10,10 +10,12 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import org.aitek.controller.R;
+import org.aitek.controller.core.Element;
 import org.aitek.controller.core.Movie;
 import org.aitek.controller.mede8er.Mede8erCommander;
 import org.aitek.controller.mede8er.MovieCommand;
 import org.aitek.controller.mede8er.RemoteCommand;
+import org.aitek.controller.utils.Constants;
 import org.aitek.controller.utils.Logger;
 
 import java.io.IOException;
@@ -29,8 +31,11 @@ public class MoviePlayerActivity extends Activity {
     private Movie movie;
     private ImageButton playButton;
     private Mede8erCommander mede8erCommander;
-    private SeekBar seekBar;
-    private int length;
+    private SeekBar moviePositionSeekBar;
+    private int actualVolume;
+    private SeekBar volumeSeekBar;
+    private ImageButton fullVolumeButton;
+    private ImageButton muteVolumeButton;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,6 +47,8 @@ public class MoviePlayerActivity extends Activity {
             int position = (Integer) intent.getExtras().get(MoviePlayerActivity.class.getName());
             movie = Mede8erCommander.getInstance(this).getMoviesManager().getMovie(position);
             ImageView imageView = (ImageView) findViewById(R.id.movieplayer_thumbnail);
+
+            // TODO
             movie.showImage(imageView, 500, 260);
         }
         catch (Exception e) {
@@ -63,10 +70,9 @@ public class MoviePlayerActivity extends Activity {
         setButton(R.id.FastForwardButton, RemoteCommand.FAST_FORWARD);
         setButton(R.id.NextTrackButton, RemoteCommand.NEXT_TRACK);
 
-        seekBar = (SeekBar) findViewById(R.id.movieJumpSeekbar);
-        // TODO: fix get status call to have a real value here
-        seekBar.setMax(9000);
-        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+        moviePositionSeekBar = (SeekBar) findViewById(R.id.movieJumpSeekbar);
+        moviePositionSeekBar.setMax(9000);
+        moviePositionSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
                 try {
@@ -74,7 +80,6 @@ public class MoviePlayerActivity extends Activity {
                 }
                 catch (IOException e) {
                     Logger.log("An error has occurred sending movie jump command: " + e.getMessage());
-                    e.printStackTrace();
                 }
             }
 
@@ -86,6 +91,74 @@ public class MoviePlayerActivity extends Activity {
             public void onStopTrackingTouch(SeekBar seekBar) {
             }
         });
+
+        volumeSeekBar = (SeekBar) findViewById(R.id.volumeSeekBar);
+        volumeSeekBar.setMax(Constants.VOLUME_STEPS);
+
+        // lowers the volume
+        changeVolume(RemoteCommand.VOL_DOWN, Constants.VOLUME_STEPS);
+
+        // raises the volume up to 1/3 of max
+        int volumeLevel = Constants.VOLUME_STEPS / 3;
+        changeVolume(RemoteCommand.VOL_DOWN, volumeLevel);
+
+        volumeSeekBar.setProgress(actualVolume);
+
+        volumeSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                if (i < actualVolume) {
+                    changeVolume(RemoteCommand.VOL_DOWN, 1);
+                }
+                else {
+                    changeVolume(RemoteCommand.VOL_UP, 1);
+                }
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+            }
+        });
+
+        fullVolumeButton = (ImageButton) findViewById(R.id.FullVolumeImageView);
+        fullVolumeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                changeVolume(RemoteCommand.VOL_UP, Constants.VOLUME_STEPS);
+            }
+        });
+        muteVolumeButton = (ImageButton) findViewById(R.id.muteImageView2);
+        muteVolumeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                changeVolume(RemoteCommand.VOL_DOWN, Constants.VOLUME_STEPS);
+            }
+        });
+
+        setControlsStatus(false, null);
+    }
+
+    private void changeVolume(RemoteCommand remoteCommand, int times) {
+
+        for (int j = 0; j < times; j++) {
+            try {
+                mede8erCommander.remoteCommand(remoteCommand);
+                if (remoteCommand == RemoteCommand.VOL_DOWN) {
+                    actualVolume--;
+                }
+                else {
+                    actualVolume++;
+                }
+            }
+            catch (IOException e) {
+                Logger.log("An error has occurred changing volume: " + e.getMessage());
+                e.printStackTrace();
+            }
+        }
     }
 
     @Override
@@ -112,13 +185,40 @@ public class MoviePlayerActivity extends Activity {
                     break;
             }
 
-            //mede8erCommander.getMovieLength();
+            setControlsStatus(true, movie.getType());
 
         }
         catch (Exception e) {
             Logger.both("An error has occurred issuing the play command: " + e.getMessage(), this);
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            e.printStackTrace();
         }
+    }
+
+    private void setControlsStatus(boolean isEnabled, Element.Type type) {
+
+        volumeSeekBar.setEnabled(isEnabled);
+        moviePositionSeekBar.setEnabled(isEnabled);
+        fullVolumeButton.setEnabled(isEnabled);
+        muteVolumeButton.setEnabled(isEnabled);
+
+        setButtonStatus(R.id.PauseButton, isEnabled);
+        setButtonStatus(R.id.StopButton, isEnabled);
+        setButtonStatus(R.id.PrevTrackButton, isEnabled);
+        setButtonStatus(R.id.FastReverseButton, isEnabled);
+        setButtonStatus(R.id.FastForwardButton, isEnabled);
+        setButtonStatus(R.id.NextTrackButton, isEnabled);
+
+        if (type == Element.Type.FILE) {
+            moviePositionSeekBar.setEnabled(isEnabled);
+        }
+        else {
+            moviePositionSeekBar.setEnabled(false);
+        }
+    }
+
+    private void setButtonStatus(int buttonRes, boolean isEnabled) {
+        ImageButton button = (ImageButton) findViewById(buttonRes);
+        button.setEnabled(isEnabled);
     }
 
     private void setButton(int buttonRes, final RemoteCommand remoteCommand) {

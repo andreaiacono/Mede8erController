@@ -1,8 +1,5 @@
 package org.aitek.controller.utils;
 
-import android.content.res.Resources;
-import org.aitek.controller.R;
-
 /**
  * Created with IntelliJ IDEA.
  * User: andrea
@@ -34,4 +31,6 @@ public class Constants {
     public static final int THUMBNAIL_HEIGHT = 360;
     public static final String DATAFILE_FIELD_SEPARATOR = "|";
     public static final String DATAFILE_FIELD_SEPARATOR_REGEX = "\\" + DATAFILE_FIELD_SEPARATOR;
+
+    public static final int VOLUME_STEPS = 20;
 }

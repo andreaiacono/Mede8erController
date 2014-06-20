@@ -127,7 +127,7 @@
     <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/imageView3"
+            android:id="@+id/movieJumpImage"
             android:src="@drawable/duration"
             android:layout_alignTop="@+id/movieJumpSeekbar"
             android:layout_toLeftOf="@+id/movieJumpSeekbar"
