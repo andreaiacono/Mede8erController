@@ -34,8 +34,8 @@ public class MoviePlayerActivity extends Activity {
     private SeekBar moviePositionSeekBar;
     private int actualVolume;
     private SeekBar volumeSeekBar;
-    private ImageButton fullVolumeButton;
-    private ImageButton muteVolumeButton;
+    private ImageView fullVolumeButton;
+    private ImageView muteVolumeButton;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,7 +55,7 @@ public class MoviePlayerActivity extends Activity {
             e.printStackTrace();
         }
 
-        playButton = (ImageButton) findViewById(R.id.PlayButton);
+        playButton = (ImageButton) findViewById(R.id.playButton);
         playButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -63,14 +63,14 @@ public class MoviePlayerActivity extends Activity {
             }
         });
 
-        setButton(R.id.PauseButton, RemoteCommand.PAUSE);
-        setButton(R.id.StopButton, RemoteCommand.STOP);
-        setButton(R.id.PrevTrackButton, RemoteCommand.PREVIOUS_TRACK);
-        setButton(R.id.FastReverseButton, RemoteCommand.FAST_REVERSE);
-        setButton(R.id.FastForwardButton, RemoteCommand.FAST_FORWARD);
-        setButton(R.id.NextTrackButton, RemoteCommand.NEXT_TRACK);
+        setButton(R.id.pauseButton, RemoteCommand.PAUSE);
+        setButton(R.id.stopButton, RemoteCommand.STOP);
+        setButton(R.id.prevTrackButton, RemoteCommand.PREVIOUS_TRACK);
+        setButton(R.id.fastReverseButton, RemoteCommand.FAST_REVERSE);
+        setButton(R.id.fastForwardButton, RemoteCommand.FAST_FORWARD);
+        setButton(R.id.nextTrackButton, RemoteCommand.NEXT_TRACK);
 
-        moviePositionSeekBar = (SeekBar) findViewById(R.id.movieJumpSeekbar);
+        moviePositionSeekBar = (SeekBar) findViewById(R.id.movieJumpSeekBar);
         moviePositionSeekBar.setMax(9000);
         moviePositionSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -94,16 +94,6 @@ public class MoviePlayerActivity extends Activity {
 
         volumeSeekBar = (SeekBar) findViewById(R.id.volumeSeekBar);
         volumeSeekBar.setMax(Constants.VOLUME_STEPS);
-
-        // lowers the volume
-        changeVolume(RemoteCommand.VOL_DOWN, Constants.VOLUME_STEPS);
-
-        // raises the volume up to 1/3 of max
-        int volumeLevel = Constants.VOLUME_STEPS / 3;
-        changeVolume(RemoteCommand.VOL_DOWN, volumeLevel);
-
-        volumeSeekBar.setProgress(actualVolume);
-
         volumeSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
@@ -124,18 +114,20 @@ public class MoviePlayerActivity extends Activity {
             }
         });
 
-        fullVolumeButton = (ImageButton) findViewById(R.id.FullVolumeImageView);
+        fullVolumeButton = (ImageView) findViewById(R.id.fullVolumeImageView);
         fullVolumeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 changeVolume(RemoteCommand.VOL_UP, Constants.VOLUME_STEPS);
+                volumeSeekBar.setProgress(Constants.VOLUME_STEPS);
             }
         });
-        muteVolumeButton = (ImageButton) findViewById(R.id.muteImageView2);
+        muteVolumeButton = (ImageView) findViewById(R.id.muteImageView2);
         muteVolumeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 changeVolume(RemoteCommand.VOL_DOWN, Constants.VOLUME_STEPS);
+                volumeSeekBar.setProgress(0);
             }
         });
 
@@ -178,6 +170,7 @@ public class MoviePlayerActivity extends Activity {
 
                 case FOLDER:
                     mede8erCommander.playMovieDir(movie.getJukebox().getAbsolutePath() + movie.getJukebox().getSubdir() + movie.getFolder());
+
                     break;
                 case FILE:
                     mede8erCommander.playFile(movie.getJukebox().getAbsolutePath() + movie.getJukebox().getSubdir() + movie.getFolder() + "/" + movie.getName());
@@ -185,8 +178,14 @@ public class MoviePlayerActivity extends Activity {
                     break;
             }
 
-            setControlsStatus(true, movie.getType());
+            // lowers the volume
+            changeVolume(RemoteCommand.VOL_DOWN, Constants.VOLUME_STEPS);
 
+            // raises the volume up to 1/3 of max
+            int volumeLevel = Constants.VOLUME_STEPS / 3;
+            changeVolume(RemoteCommand.VOL_UP, volumeLevel);
+
+            setControlsStatus(true, movie.getType());
         }
         catch (Exception e) {
             Logger.both("An error has occurred issuing the play command: " + e.getMessage(), this);
@@ -197,16 +196,15 @@ public class MoviePlayerActivity extends Activity {
     private void setControlsStatus(boolean isEnabled, Element.Type type) {
 
         volumeSeekBar.setEnabled(isEnabled);
-        moviePositionSeekBar.setEnabled(isEnabled);
         fullVolumeButton.setEnabled(isEnabled);
         muteVolumeButton.setEnabled(isEnabled);
 
-        setButtonStatus(R.id.PauseButton, isEnabled);
-        setButtonStatus(R.id.StopButton, isEnabled);
-        setButtonStatus(R.id.PrevTrackButton, isEnabled);
-        setButtonStatus(R.id.FastReverseButton, isEnabled);
-        setButtonStatus(R.id.FastForwardButton, isEnabled);
-        setButtonStatus(R.id.NextTrackButton, isEnabled);
+        setButtonStatus(R.id.pauseButton, isEnabled);
+        setButtonStatus(R.id.stopButton, isEnabled);
+        setButtonStatus(R.id.prevTrackButton, isEnabled);
+        setButtonStatus(R.id.fastReverseButton, isEnabled);
+        setButtonStatus(R.id.fastForwardButton, isEnabled);
+        setButtonStatus(R.id.nextTrackButton, isEnabled);
 
         if (type == Element.Type.FILE) {
             moviePositionSeekBar.setEnabled(isEnabled);
