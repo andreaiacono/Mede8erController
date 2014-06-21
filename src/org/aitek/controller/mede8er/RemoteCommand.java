@@ -8,9 +8,9 @@ package org.aitek.controller.mede8er;
  */
 public enum RemoteCommand {
 
-    PLAY("play"), PAUSE("pause"), STOP("stop"), NEXT_TRACK("next"), PREVIOUS_TRACK("prev"),
-    INFO("info"), VOL_UP("vol+"), VOL_DOWN("vol-"), AUDIO("audio"), SUBTITLE("subtitle"),
-    GO_TO("goto"), FAST_FORWARD("ffw"), FAST_REVERSE("frw"), JUMP_TO("jump");
+    PLAY("play"), PAUSE("pause "), STOP("stop "), NEXT_TRACK("next "), PREVIOUS_TRACK("prev "),
+    INFO("info "), VOL_UP("vol+ "), VOL_DOWN("vol- "), AUDIO("audio "), SUBTITLE("subtitle "),
+    GO_TO("goto "), FAST_FORWARD("ffw "), FAST_REVERSE("frw "), JUMP_TO("jump "), MUTE("mute ");
 
     private String remoteCommand;
 

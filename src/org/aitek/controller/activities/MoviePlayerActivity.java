@@ -9,16 +9,21 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.SeekBar;
+import android.widget.TextView;
 import org.aitek.controller.R;
 import org.aitek.controller.core.Element;
 import org.aitek.controller.core.Movie;
+import org.aitek.controller.mede8er.Callbackable;
 import org.aitek.controller.mede8er.Mede8erCommander;
 import org.aitek.controller.mede8er.MovieCommand;
 import org.aitek.controller.mede8er.RemoteCommand;
+import org.aitek.controller.mede8er.net.Response;
 import org.aitek.controller.utils.Constants;
 import org.aitek.controller.utils.Logger;
+import org.aitek.controller.utils.MiscUtils;
 
-import java.io.IOException;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * Created with IntelliJ IDEA.
@@ -26,7 +31,7 @@ import java.io.IOException;
  * Date: 8/16/13
  * Time: 6:23 PM
  */
-public class MoviePlayerActivity extends Activity {
+public class MoviePlayerActivity extends Activity implements Callbackable {
 
     private Movie movie;
     private ImageButton playButton;
@@ -36,6 +41,9 @@ public class MoviePlayerActivity extends Activity {
     private SeekBar volumeSeekBar;
     private ImageView fullVolumeButton;
     private ImageView muteVolumeButton;
+    private boolean isStartedPlaying;
+    private int runningTime;
+    private TextView runningTimeLabel;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,11 +57,13 @@ public class MoviePlayerActivity extends Activity {
             ImageView imageView = (ImageView) findViewById(R.id.movieplayer_thumbnail);
 
             // TODO
-            movie.showImage(imageView, 500, 260);
+            movie.showImage(imageView, 500, 260, 1f);
         }
         catch (Exception e) {
             e.printStackTrace();
         }
+
+        runningTimeLabel = (TextView) findViewById(R.id.runningTime);
 
         playButton = (ImageButton) findViewById(R.id.playButton);
         playButton.setOnClickListener(new View.OnClickListener() {
@@ -75,12 +85,7 @@ public class MoviePlayerActivity extends Activity {
         moviePositionSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-                try {
-                    mede8erCommander.movieCommand(MovieCommand.JUMP, "" + i);
-                }
-                catch (IOException e) {
-                    Logger.log("An error has occurred sending movie jump command: " + e.getMessage());
-                }
+                mede8erCommander.movieCommand(MovieCommand.JUMP, "" + i);
             }
 
             @Override
@@ -114,6 +119,9 @@ public class MoviePlayerActivity extends Activity {
             }
         });
 
+        mede8erCommander.remoteCommand(RemoteCommand.MUTE, null);
+        volumeSeekBar.setProgress(Constants.VOLUME_STEPS / 3);
+
         fullVolumeButton = (ImageView) findViewById(R.id.fullVolumeImageView);
         fullVolumeButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -137,18 +145,12 @@ public class MoviePlayerActivity extends Activity {
     private void changeVolume(RemoteCommand remoteCommand, int times) {
 
         for (int j = 0; j < times; j++) {
-            try {
-                mede8erCommander.remoteCommand(remoteCommand);
-                if (remoteCommand == RemoteCommand.VOL_DOWN) {
-                    actualVolume--;
-                }
-                else {
-                    actualVolume++;
-                }
+            mede8erCommander.remoteCommand(remoteCommand);
+            if (remoteCommand == RemoteCommand.VOL_DOWN) {
+                actualVolume--;
             }
-            catch (IOException e) {
-                Logger.log("An error has occurred changing volume: " + e.getMessage());
-                e.printStackTrace();
+            else {
+                actualVolume++;
             }
         }
     }
@@ -165,31 +167,49 @@ public class MoviePlayerActivity extends Activity {
 
     private void playMovie() {
 
-        try {
-            switch (movie.getType()) {
-
-                case FOLDER:
-                    mede8erCommander.playMovieDir(movie.getJukebox().getAbsolutePath() + movie.getJukebox().getSubdir() + movie.getFolder());
-
-                    break;
-                case FILE:
-                    mede8erCommander.playFile(movie.getJukebox().getAbsolutePath() + movie.getJukebox().getSubdir() + movie.getFolder() + "/" + movie.getName());
-                    //mede8erCommander.getMovieLength();
-                    break;
-            }
-
-            // lowers the volume
-            changeVolume(RemoteCommand.VOL_DOWN, Constants.VOLUME_STEPS);
-
-            // raises the volume up to 1/3 of max
-            int volumeLevel = Constants.VOLUME_STEPS / 3;
-            changeVolume(RemoteCommand.VOL_UP, volumeLevel);
-
-            setControlsStatus(true, movie.getType());
+        if (isStartedPlaying) {
+            mede8erCommander.remoteCommand(RemoteCommand.PLAY);
         }
-        catch (Exception e) {
-            Logger.both("An error has occurred issuing the play command: " + e.getMessage(), this);
-            e.printStackTrace();
+        else {
+            try {
+                switch (movie.getType()) {
+
+                    case FOLDER:
+                        mede8erCommander.playMovieDir(movie.getJukebox().getAbsolutePath() + movie.getJukebox().getSubdir() + movie.getFolder());
+
+                        break;
+                    case FILE:
+                        mede8erCommander.playFile(movie.getJukebox().getAbsolutePath() + movie.getJukebox().getSubdir() + movie.getFolder() + "/" + movie.getName());
+                        mede8erCommander.getMovieLength(this);
+                        break;
+                }
+
+                isStartedPlaying = true;
+
+                // lowers the volume
+                mede8erCommander.remoteCommand(RemoteCommand.MUTE);
+
+                // raises the volume up to 1/3 of max
+                int volumeLevel = Constants.VOLUME_STEPS / 3;
+                changeVolume(RemoteCommand.VOL_UP, volumeLevel);
+
+                setControlsStatus(true, movie.getType());
+
+                Timer timer = new Timer();
+                timer.schedule(new  TimerTask() {
+
+                    @Override
+                    public void run() {
+
+                        incrementTime();
+                    }
+                }, 0, 1000);
+
+            }
+            catch (Exception e) {
+                Logger.both("An error has occurred issuing the play command: " + e.getMessage(), this);
+                e.printStackTrace();
+            }
         }
     }
 
@@ -198,6 +218,7 @@ public class MoviePlayerActivity extends Activity {
         volumeSeekBar.setEnabled(isEnabled);
         fullVolumeButton.setEnabled(isEnabled);
         muteVolumeButton.setEnabled(isEnabled);
+        runningTimeLabel.setEnabled(isEnabled);
 
         setButtonStatus(R.id.pauseButton, isEnabled);
         setButtonStatus(R.id.stopButton, isEnabled);
@@ -224,22 +245,33 @@ public class MoviePlayerActivity extends Activity {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                sendRemoteCommand(remoteCommand);
+                mede8erCommander.remoteCommand(remoteCommand);
             }
         });
     }
 
-    private void sendRemoteCommand(RemoteCommand remoteCommand, String param) {
-        try {
-            mede8erCommander.remoteCommand(remoteCommand, param);
-        }
-        catch (IOException e) {
-            Logger.toast(e.getMessage(), this);
-        }
+    public void incrementTime() {
+
+        runningTime ++;
+//        runningTimeLabel.setText(MiscUtils.getTime(runningTime));
     }
 
-    private void sendRemoteCommand(RemoteCommand remoteCommand) {
-        sendRemoteCommand(remoteCommand, null);
-    }
+    @Override
+    public void callback(Response response) {
 
+        if (response != null) {
+
+            String result = response.getContent();
+            if (result.contains("/")) {
+
+                try {
+                    int length = Integer.parseInt(result.substring(result.indexOf("/")+1));
+                    moviePositionSeekBar.setMax(length);
+                }
+                catch (NumberFormatException nfe) {
+
+                }
+            }
+        }
+    }
 }

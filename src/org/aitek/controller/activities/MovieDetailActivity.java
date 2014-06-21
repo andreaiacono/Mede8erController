@@ -33,7 +33,7 @@ public class MovieDetailActivity extends Activity {
 
         try {
             movie = Mede8erCommander.getInstance(this.getApplicationContext()).getMoviesManager().getMovie(position);
-            movie.showImage(imageView, Constants.THUMBNAIL_WIDTH, Constants.THUMBNAIL_HEIGHT);
+            movie.showImage(imageView, Constants.THUMBNAIL_WIDTH, Constants.THUMBNAIL_HEIGHT, 1.0f);
             Logger.log("Movie: " + movie.toString());
         }
         catch (Exception e) {

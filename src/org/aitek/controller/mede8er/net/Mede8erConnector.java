@@ -160,14 +160,22 @@ public class Mede8erConnector {
 
     private Response getResponseFromMessage(String message) throws IOException {
 
-        Response.Value value = Response.Value.OK;
-        if (message.startsWith("err_") || message.equals("empty") || message.startsWith("fail") || message.equals("ok")) {
-            value = Response.Value.valueOf(message.toUpperCase());
+        Response.Code code = Response.Code.OK;
+        try {
+            Long.parseLong(message.replace("/", ""));
+            code = Response.Code.STATUS;
+            return new Response(code, message);
         }
-        else {
-            message = getHttpResource(message);
+        catch (NumberFormatException nfe) {
+
+            if (message.startsWith("err_") || message.equals("empty") || message.startsWith("fail") || message.equals("ok")) {
+                code = Response.Code.valueOf(message.toUpperCase());
+            }
+            else {
+                message = getHttpResource(message);
+            }
+            return new Response(code, message);
         }
-        return new Response(value, message);
     }
 
     private String getHttpResource(String uri) throws IOException {

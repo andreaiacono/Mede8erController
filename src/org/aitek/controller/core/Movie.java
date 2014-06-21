@@ -107,10 +107,11 @@ public class Movie extends Element implements Comparable {
         return "http://" + jukebox.getIpAddress() + jukebox.getSubdir() + URLEncoder.encode(getFolder(), "utf-8").replace("+", "%20").replace("%2F", "/");
     }
 
-    public void showImage(ImageView imageView, int width, int height) throws Exception {
+    public void showImage(ImageView imageView, int width, int height, float transparency) throws Exception {
         String url = getNameHttpAddress() + "/" + getJukebox().getFanart();
         Logger.log("showing image from URL:" + url);
         imageView.setTag(width + "x" + height);
+        imageView.setAlpha(transparency);
         ImageShowerTask task = new ImageShowerTask(imageView);
         task.execute(url);
     }

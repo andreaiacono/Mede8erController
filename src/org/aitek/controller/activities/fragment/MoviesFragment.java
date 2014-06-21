@@ -2,10 +2,8 @@ package org.aitek.controller.activities.fragment;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
+import android.view.*;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.*;
 import org.aitek.controller.R;
 import org.aitek.controller.activities.MainActivity;
@@ -34,6 +32,7 @@ public class MoviesFragment extends TabFragment {
         RelativeLayout relativeLayout = (RelativeLayout) inflater.inflate(R.layout.movies_main, container, false);
         final MoviesManager moviesManager = Mede8erCommander.getInstance(getActivity()).getMoviesManager();
         imageAdapter = new ImageAdapter(getActivity());
+        getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
         if (moviesManager.getGenres() != null) {
 

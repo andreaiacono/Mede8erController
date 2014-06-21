@@ -90,17 +90,17 @@ public class Mede8erCommander {
         return jukeboxCommand(Command.JUKEBOX.toString().toLowerCase() + " " + jukeboxCommand.toString().toLowerCase() + " " + id, inBackground);
     }
 
-    public void movieCommand(MovieCommand movieCommand, String param) throws IOException {
+    public void movieCommand(MovieCommand movieCommand, String param) {
         String command = Command.MOVIE.toString().toLowerCase() + " " + movieCommand.toString().toLowerCase() + (param != null ? " " + param : "");
         new CommandLauncher().execute(command);
     }
 
-    public void remoteCommand(RemoteCommand remoteCommand, String param) throws IOException {
+    public void remoteCommand(RemoteCommand remoteCommand, String param) {
         String command = Command.RC.toString().toLowerCase() + " " + remoteCommand.getRemoteCommand() + (param != null ? " " + param : "");
         new CommandLauncher().execute(command);
     }
 
-    public void remoteCommand(RemoteCommand remoteCommand) throws IOException {
+    public void remoteCommand(RemoteCommand remoteCommand) {
         remoteCommand(remoteCommand, null);
     }
 
@@ -141,14 +141,15 @@ public class Mede8erCommander {
         if (inBackground) {
             new CommandLauncher().execute(command);
             return null;
-        } else {
+        }
+        else {
             return mede8erConnector.send(command);
         }
     }
 
-    public void getMovieLength() {
-        String command = Command.STATUS.toString().toLowerCase() + " movietime";
-        new CommandLauncher().execute(command);
+    public void getMovieLength(Callbackable callbackable) throws Exception {
+        String command = Command.STATUS.toString().toLowerCase() + " movietime ";
+        new CommandLauncher(callbackable).execute(command);
     }
 
     public void openJukebox(String id) throws Exception {
@@ -156,6 +157,15 @@ public class Mede8erCommander {
     }
 
     public class CommandLauncher extends AsyncTask<String, Void, Response> {
+
+        private Callbackable callbackable;
+
+        public CommandLauncher() {
+        }
+
+        public CommandLauncher(Callbackable callbackable) {
+            this.callbackable = callbackable;
+        }
 
         @Override
         protected Response doInBackground(String... strings) {
@@ -173,8 +183,9 @@ public class Mede8erCommander {
 
         @Override
         protected void onPostExecute(Response response) {
-            Logger.log(response.toString());
-
+            if (callbackable != null) {
+                callbackable.callback(response);
+            }
         }
     }
 }
