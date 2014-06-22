@@ -3,8 +3,10 @@ package org.aitek.controller.activities;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -21,9 +23,6 @@ import org.aitek.controller.mede8er.net.Response;
 import org.aitek.controller.utils.Constants;
 import org.aitek.controller.utils.Logger;
 import org.aitek.controller.utils.MiscUtils;
-
-import java.util.Timer;
-import java.util.TimerTask;
 
 /**
  * Created with IntelliJ IDEA.
@@ -44,6 +43,7 @@ public class MoviePlayerActivity extends Activity implements Callbackable {
     private boolean isStartedPlaying;
     private int runningTime;
     private TextView runningTimeLabel;
+    private Handler handler = new Handler();
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -85,7 +85,10 @@ public class MoviePlayerActivity extends Activity implements Callbackable {
         moviePositionSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-                mede8erCommander.movieCommand(MovieCommand.JUMP, "" + i);
+                if (i != runningTime) {
+                    mede8erCommander.movieCommand(MovieCommand.JUMP, "" + i);
+                    runningTime = i;
+                }
             }
 
             @Override
@@ -164,11 +167,24 @@ public class MoviePlayerActivity extends Activity implements Callbackable {
         return true;
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        if (item.getItemId() == R.id.action_language) {
+            mede8erCommander.remoteCommand(RemoteCommand.AUDIO);
+        }
+        else if (item.getItemId() == R.id.action_subtitles) {
+            mede8erCommander.remoteCommand(RemoteCommand.SUBTITLE);
+        }
+
+        return true;
+    }
 
     private void playMovie() {
 
         if (isStartedPlaying) {
             mede8erCommander.remoteCommand(RemoteCommand.PLAY);
+            startTimer();
         }
         else {
             try {
@@ -180,7 +196,8 @@ public class MoviePlayerActivity extends Activity implements Callbackable {
                         break;
                     case FILE:
                         mede8erCommander.playFile(movie.getJukebox().getAbsolutePath() + movie.getJukebox().getSubdir() + movie.getFolder() + "/" + movie.getName());
-                        mede8erCommander.getMovieLength(this);
+                        launchDelayedLength(this, 3000);
+                        startTimer();
                         break;
                 }
 
@@ -194,23 +211,29 @@ public class MoviePlayerActivity extends Activity implements Callbackable {
                 changeVolume(RemoteCommand.VOL_UP, volumeLevel);
 
                 setControlsStatus(true, movie.getType());
-
-                Timer timer = new Timer();
-                timer.schedule(new  TimerTask() {
-
-                    @Override
-                    public void run() {
-
-                        incrementTime();
-                    }
-                }, 0, 1000);
-
             }
             catch (Exception e) {
                 Logger.both("An error has occurred issuing the play command: " + e.getMessage(), this);
                 e.printStackTrace();
             }
         }
+    }
+
+    private void launchDelayedLength(final Callbackable callbackable, final int delay) {
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+
+            @Override
+            public void run() {
+                try {
+                    mede8erCommander.getMovieLength(callbackable);
+                }
+                catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+        }, delay);
     }
 
     private void setControlsStatus(boolean isEnabled, Element.Type type) {
@@ -246,26 +269,33 @@ public class MoviePlayerActivity extends Activity implements Callbackable {
             @Override
             public void onClick(View view) {
                 mede8erCommander.remoteCommand(remoteCommand);
+                if (remoteCommand == RemoteCommand.PAUSE || remoteCommand == RemoteCommand.STOP) {
+                    stopTimer();
+                }
             }
         });
     }
 
-    public void incrementTime() {
+    private void startTimer() {
+        handler.removeCallbacks(mUpdateTimeTask);
+        handler.postDelayed(mUpdateTimeTask, 1000);
+    }
 
-        runningTime ++;
-//        runningTimeLabel.setText(MiscUtils.getTime(runningTime));
+    private void stopTimer() {
+        handler.removeCallbacks(mUpdateTimeTask);
     }
 
     @Override
     public void callback(Response response) {
 
+        Logger.log("Callback received: " + response);
         if (response != null) {
 
             String result = response.getContent();
             if (result.contains("/")) {
 
                 try {
-                    int length = Integer.parseInt(result.substring(result.indexOf("/")+1));
+                    int length = Integer.parseInt(result.substring(result.indexOf("/") + 1));
                     moviePositionSeekBar.setMax(length);
                 }
                 catch (NumberFormatException nfe) {
@@ -274,4 +304,16 @@ public class MoviePlayerActivity extends Activity implements Callbackable {
             }
         }
     }
+
+    private Runnable mUpdateTimeTask = new Runnable() {
+        public void run() {
+            runningTime++;
+            Logger.log("updated value to :" + MiscUtils.getTime(runningTime));
+            runningTimeLabel.setText(MiscUtils.getTime(runningTime));
+            runningTimeLabel.invalidate();
+            moviePositionSeekBar.setProgress(moviePositionSeekBar.getProgress() + 1);
+            moviePositionSeekBar.invalidate();
+            handler.postDelayed(this, 1000);
+        }
+    };
 }

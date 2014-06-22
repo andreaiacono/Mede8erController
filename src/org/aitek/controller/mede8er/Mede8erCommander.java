@@ -174,9 +174,7 @@ public class Mede8erCommander {
                 return mede8erConnector.send(strings[0]);
             }
             catch (IOException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                Logger.toast("An error has occurred launching command [" + ": " + strings[0] + "]:" + e.getMessage(), context);
-
+                e.printStackTrace();
             }
             return null;
         }

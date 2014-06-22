@@ -27,9 +27,9 @@ public class MiscUtils {
 
     public static String getTime(int seconds) {
 
-        int hours = (int) (seconds / 3600);
-        int minutes = (int) (seconds / 60);
-        int secs = (int) seconds % 60;
+        int hours = seconds / 3600;
+        int minutes = (seconds / 60) % 60;
+        int secs = seconds % 60;
         return "" + ((hours < 10) ? "0" : "") + hours + ":" + ((minutes < 10) ? "0" : "") + minutes + ":" + ((secs < 10) ? "0" : "") + secs;
     }
 }
