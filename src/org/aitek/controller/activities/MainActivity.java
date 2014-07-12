@@ -3,6 +3,7 @@ package org.aitek.controller.activities;
 import android.app.*;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -100,6 +101,7 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 
         Logger.both("savedInstanceState: " + savedInstanceState, this);
 
@@ -224,9 +226,15 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
                 return true;
 
             case R.id.menu_mediaplayer_info:
-                Logger.log("Showing file listing: ");
-                readPrivateDir(false);
-                Logger.log("Movies file: ");
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                String message="Mede8er IP: " + mede8erCommander.getMede8erIpAddress();
+                message += "\nAPI version: ";
+                message += "\nMovies number: " + mede8erCommander.getMoviesManager().getCount();
+                builder.setMessage(message).setTitle(R.string.info_title);
+                AlertDialog dialog = builder.create();
+                dialog.show();
+
                 try {
                     Logger.log(IoUtils.readPrivateFile(Constants.MOVIES_FILE, this));
                 }

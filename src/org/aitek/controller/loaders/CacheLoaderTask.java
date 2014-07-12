@@ -19,6 +19,7 @@ import org.aitek.controller.utils.Logger;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.Arrays;
@@ -158,8 +159,21 @@ public class CacheLoaderTask extends AsyncTask<String, Void, String> {
 
                 // now opens the jukeboxes
                 if (!mainActivity.isInCacheMode()) {
-                    for (String jukeboxId : jukeboxes.keySet()) {
-                        mede8erCommander.openJukebox(jukeboxId);
+                    for (final String jukeboxId : jukeboxes.keySet()) {
+
+                        Runnable jukeboxOpener = new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    mede8erCommander.openJukebox(jukeboxId);
+                                }
+                                catch (IOException ex) {
+
+                                }
+                            }
+                        };
+                        Thread thread = new Thread(jukeboxOpener);
+                        thread.start();
                     }
                 }
 

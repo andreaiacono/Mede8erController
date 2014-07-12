@@ -32,5 +32,5 @@ public class Constants {
     public static final String DATAFILE_FIELD_SEPARATOR = "|";
     public static final String DATAFILE_FIELD_SEPARATOR_REGEX = "\\" + DATAFILE_FIELD_SEPARATOR;
 
-    public static final int VOLUME_STEPS = 20;
+    public static final int VOLUME_STEPS = 32;
 }

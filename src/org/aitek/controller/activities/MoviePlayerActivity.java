@@ -176,6 +176,8 @@ public class MoviePlayerActivity extends Activity implements Callbackable {
         else if (item.getItemId() == R.id.action_subtitles) {
             mede8erCommander.remoteCommand(RemoteCommand.SUBTITLE);
         }
+        mede8erCommander.remoteCommand(RemoteCommand.ARROW_DOWN);
+        mede8erCommander.remoteCommand(RemoteCommand.ENTER);
 
         return true;
     }
@@ -196,8 +198,8 @@ public class MoviePlayerActivity extends Activity implements Callbackable {
                         break;
                     case FILE:
                         mede8erCommander.playFile(movie.getJukebox().getAbsolutePath() + movie.getJukebox().getSubdir() + movie.getFolder() + "/" + movie.getName());
-                        launchDelayedLength(this, 3000);
                         startTimer();
+                        launchDelayedLength(this, 5000);
                         break;
                 }
 

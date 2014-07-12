@@ -152,7 +152,7 @@ public class Mede8erCommander {
         new CommandLauncher(callbackable).execute(command);
     }
 
-    public void openJukebox(String id) throws Exception {
+    public void openJukebox(String id) throws IOException {
         jukeboxCommand(JukeboxCommand.OPEN, id, false);
     }
 
