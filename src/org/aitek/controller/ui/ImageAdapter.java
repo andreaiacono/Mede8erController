@@ -2,13 +2,13 @@ package org.aitek.controller.ui;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
 import org.aitek.controller.mede8er.Mede8erCommander;
-import org.aitek.controller.utils.Logger;
 
 /**
  * Created with IntelliJ IDEA.
@@ -46,14 +46,14 @@ public class ImageAdapter extends BaseAdapter {
         ImageView imageView;
         if (convertView == null) {
             imageView = new ImageView(context);
-            imageView.setLayoutParams(new GridView.LayoutParams(180, 220));
+            imageView.setLayoutParams(new GridView.LayoutParams(240, 450));
             imageView.setScaleType(ImageView.ScaleType.CENTER);
-            imageView.setPadding(7, 7, 0, 0);
+            imageView.setPadding(5, 5, 5, 5);
         } else {
             imageView = (ImageView) convertView;
         }
 
-        imageView.setImageBitmap(mede8erCommander.getMoviesManager().getMovie(position).getThumbnail());
+        imageView.setImageBitmap(Bitmap.createScaledBitmap(mede8erCommander.getMoviesManager().getMovie(position).getThumbnail(), 269, 400, false));
         return imageView;
     }
 

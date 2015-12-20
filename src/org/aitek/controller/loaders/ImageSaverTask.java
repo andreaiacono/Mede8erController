@@ -2,18 +2,9 @@ package org.aitek.controller.loaders;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.net.http.AndroidHttpClient;
 import android.os.AsyncTask;
-import org.aitek.controller.activities.MainActivity;
-import org.aitek.controller.core.Movie;
 import org.aitek.controller.utils.BitmapUtils;
-import org.aitek.controller.utils.Constants;
 import org.aitek.controller.utils.Logger;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.client.methods.HttpGet;
 
 import java.io.*;
 

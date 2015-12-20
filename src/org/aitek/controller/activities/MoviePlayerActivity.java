@@ -44,6 +44,7 @@ public class MoviePlayerActivity extends Activity implements Callbackable {
     private int runningTime;
     private TextView runningTimeLabel;
     private Handler handler = new Handler();
+    private int languagesCounter = 0;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -172,11 +173,15 @@ public class MoviePlayerActivity extends Activity implements Callbackable {
 
         if (item.getItemId() == R.id.action_language) {
             mede8erCommander.remoteCommand(RemoteCommand.AUDIO);
+            languagesCounter++;
+            for (int j=0; j<languagesCounter; j++) {
+                mede8erCommander.remoteCommand(RemoteCommand.ARROW_DOWN);
+            }
+            mede8erCommander.remoteCommand(RemoteCommand.ENTER);
         }
         else if (item.getItemId() == R.id.action_subtitles) {
             mede8erCommander.remoteCommand(RemoteCommand.SUBTITLE);
         }
-        mede8erCommander.remoteCommand(RemoteCommand.ARROW_DOWN);
         mede8erCommander.remoteCommand(RemoteCommand.ENTER);
 
         return true;
@@ -310,7 +315,7 @@ public class MoviePlayerActivity extends Activity implements Callbackable {
     private Runnable mUpdateTimeTask = new Runnable() {
         public void run() {
             runningTime++;
-            Logger.log("updated value to :" + MiscUtils.getTime(runningTime));
+//            Logger.log("updated value to :" + MiscUtils.getTime(runningTime));
             runningTimeLabel.setText(MiscUtils.getTime(runningTime));
             runningTimeLabel.invalidate();
             moviePositionSeekBar.setProgress(moviePositionSeekBar.getProgress() + 1);
