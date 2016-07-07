@@ -139,7 +139,6 @@ public class Mede8erLoaderTask extends AsyncTask<String, Void, String> {
 
         public void getMovies() throws Exception {
 
-            Logger.log("Step 2");
             int counter = 0;
 
             // loops over all the jukeboxes
@@ -186,7 +185,6 @@ public class Mede8erLoaderTask extends AsyncTask<String, Void, String> {
 
         public void finish() {
 
-            Logger.log("Mede8erScanner finished. Now saving movie file and creating page.");
             progressBar.dismiss();
             mede8erCommander.getMoviesManager().setJukeboxes(jukeboxes);
             mede8erCommander.getMoviesManager().sortMovies();

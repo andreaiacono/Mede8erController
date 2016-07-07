@@ -1,27 +1,28 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
             android:id="@+id/action_search"
-            android:title="Search"
+            android:title="@string/search"
             android:icon="@android:drawable/ic_menu_search"
             android:showAsAction="always"
             android:actionViewClass="android.widget.SearchView"/>
 
     <item
             android:icon="@drawable/sort"
-            android:showAsAction="ifRoom">
+            android:showAsAction="ifRoom"
+            android:title="@string/sort_menu">
         <menu>
             <item
                     android:id="@+id/menuSortByTitle"
-                    android:title="Sort by title"/>
+                    android:title="@string/sort_by_title"/>
             <item
                     android:id="@+id/menuSortByDate"
-                    android:title="Sort by date"/>
+                    android:title="@string/sort_by_date"/>
         </menu>
     </item>
 
     <item
             android:id="@+id/menu_reset"
-            android:title="Clear cache"
+            android:title="@string/clear_cache"
             android:orderInCategory="10"
             android:showAsAction="never"/>
 

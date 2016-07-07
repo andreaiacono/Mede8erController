@@ -1,6 +1,7 @@
 package org.aitek.controller.parsers;
 
 import org.aitek.controller.core.Movie;
+import org.aitek.controller.utils.MiscUtils;
 import org.aitek.controller.utils.StringUtils;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -23,7 +24,6 @@ public class XmlParser {
      * mapped by the file
      *
      * @param inputStream
-     * @param context
      * @return
      * @throws Exception
      */
@@ -34,6 +34,7 @@ public class XmlParser {
 
         String title = "";
         String sortingTitle = null;
+        String date = "01/01/1970";
         StringBuilder names = new StringBuilder();
         StringBuilder genres = new StringBuilder();
 
@@ -67,6 +68,8 @@ public class XmlParser {
                             names.append(text).append(" ");
                         } else if (tagName.equalsIgnoreCase("actor")) {
                             names.append(text).append(" ");
+                        } else if (tagName.equalsIgnoreCase("date")) {
+                            date = text;
                         }
                         break;
 
@@ -83,6 +86,7 @@ public class XmlParser {
 
         movie.setGenres(genres.toString());
         movie.setPersons(names.toString());
+        movie.setDate(MiscUtils.getDateFromString(date));
         movie.setTitle(title);
         movie.setSortingTitle(sortingTitle != null ? sortingTitle : StringUtils.removeWords(title.toLowerCase(), StringUtils.articles));
     }

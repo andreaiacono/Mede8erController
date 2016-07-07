@@ -216,12 +216,12 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
                 return true;
 
             case R.id.menuSortByTitle:
-                mede8erCommander.getMoviesManager().setSortField("title");
+                mede8erCommander.getMoviesManager().setTitleComparator();
                 currentTabFragment.notifyChangedGridData();
                 return true;
 
             case R.id.menuSortByDate:
-                mede8erCommander.getMoviesManager().setSortField("date");
+                mede8erCommander.getMoviesManager().setDateComparator();
                 currentTabFragment.notifyChangedGridData();
                 return true;
 

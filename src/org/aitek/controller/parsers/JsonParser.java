@@ -1,11 +1,8 @@
 package org.aitek.controller.parsers;
 
-import android.content.Context;
 import org.aitek.controller.core.Element;
 import org.aitek.controller.core.Jukebox;
 import org.aitek.controller.core.Movie;
-import org.aitek.controller.loaders.ImageSaverTask;
-import org.aitek.controller.utils.Constants;
 import org.aitek.controller.utils.Logger;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -14,7 +11,6 @@ import org.json.JSONObject;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -86,10 +82,8 @@ public class JsonParser {
     public static int getElementLength(JSONObject jsonContent) throws Exception {
         JSONArray files = jsonContent.optJSONArray("files");
         if (files != null) {
-//            Logger.log("Files length= " + files.length());
             return files.length();
         }
-        Logger.log("Files length= returning 0");
         return 0;
     }
 }

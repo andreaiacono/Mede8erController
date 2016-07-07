@@ -1,6 +1,7 @@
 package org.aitek.controller.core;
 
 import android.content.Context;
+
 import org.aitek.controller.utils.Constants;
 import org.aitek.controller.utils.Logger;
 import org.aitek.controller.utils.MiscUtils;
@@ -9,6 +10,7 @@ import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -26,9 +28,38 @@ public class MoviesManager {
     private List<Movie> movies;
     private List<Movie> filteredMovies = null;
     private List<Jukebox> jukeboxes;
-    private String sortField;
-    private boolean sortDescending;
     private Context context;
+    private Comparator<Movie> comparator = MovieComparator.BY_TITLE_ASC;
+
+
+    private enum MovieComparator implements Comparator<Movie> {
+        BY_TITLE_ASC {
+            public int compare(Movie m1, Movie m2) {
+                return m1.getSortingTitle().compareTo(m2.getSortingTitle());
+            }
+        },
+        BY_DATE_ASC {
+            public int compare(Movie m1, Movie m2) {
+                if (m1.getDate() == null) {
+                    return -1;
+                }
+                if (m2.getDate() == null) {
+                    return 1;
+                }
+                return m1.getDate().compareTo(m2.getDate());
+            }
+        },
+        BY_TITLE_DESC {
+            public int compare(Movie m1, Movie m2) {
+                return -BY_TITLE_ASC.compare(m1, m2);
+            }
+        },
+        BY_DATE_DESC {
+            public int compare(Movie m1, Movie m2) {
+                return -BY_DATE_ASC.compare(m1, m2);
+            }
+        }
+    }
 
     public MoviesManager(Context context) throws Exception {
         this.context = context;
@@ -36,8 +67,6 @@ public class MoviesManager {
         genreFilter = null;
         genericFilter = null;
         filteredMovies = null;
-        sortField = "title";
-        sortDescending = false;
         genres = new ArrayList<String>();
         movies = new ArrayList<Movie>();
     }
@@ -49,8 +78,6 @@ public class MoviesManager {
         genreFilter = null;
         genericFilter = null;
         filteredMovies = null;
-        sortField = "title";
-        sortDescending = false;
     }
 
     public String insertGenre(String genre) {
@@ -65,10 +92,7 @@ public class MoviesManager {
     }
 
     public Movie insert(Movie movie) {
-
-//        Logger.log("called insertMovie with " + movie.getFolder());
         movies.add(movie);
-
         return movie;
     }
 
@@ -96,23 +120,8 @@ public class MoviesManager {
         }
     }
 
-//    public Movie getMovie(String title) {
-//        for (Movie movie : controller) {
-//            if (movie.getTitle().equals(title)) {
-//                return movie;
-//            }
-//        }
-//        return null;
-//    }
-
     public void sortMovies() {
-        if ("title".equals(sortField)) {
-            if (sortDescending) {
-                Collections.sort(movies, Collections.reverseOrder());
-            } else {
-                Collections.sort(movies);
-            }
-        }
+        Collections.sort(movies, comparator);
     }
 
     public void sortGenres() {
@@ -175,13 +184,21 @@ public class MoviesManager {
         filteredMovies = getFilteredMovies();
     }
 
-    public void setSortField(String field) {
-        if (sortField.equals(field)) {
-            sortDescending = !sortDescending;
+    public void setTitleComparator() {
+        if (comparator == MovieComparator.BY_TITLE_ASC) {
+            comparator = MovieComparator.BY_TITLE_DESC;
         } else {
-            sortField = field;
+            comparator = MovieComparator.BY_TITLE_ASC;
         }
+        sortMovies();
+    }
 
+    public void setDateComparator() {
+        if (comparator == MovieComparator.BY_DATE_DESC) {
+            comparator = MovieComparator.BY_DATE_ASC;
+        } else {
+            comparator = MovieComparator.BY_DATE_DESC;
+        }
         sortMovies();
     }
 

@@ -20,4 +20,8 @@
     <string name="network_discovery">Network discovery</string>
     <string name="network_discovery_message">Searching mede8er on wifi network..</string>
     <string name="info_title">Mede8er Player Info</string>
+    <string name="clear_cache">Clear cache</string>
+    <string name="sort_by_title">Sort by title</string>
+    <string name="sort_by_date">Sort by date</string>
+    <string name="sort_menu">Sort menu</string>
 </resources>

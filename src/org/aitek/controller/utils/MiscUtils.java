@@ -1,7 +1,11 @@
 package org.aitek.controller.utils;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Created with IntelliJ IDEA.
@@ -31,5 +35,16 @@ public class MiscUtils {
         int minutes = (seconds / 60) % 60;
         int secs = seconds % 60;
         return "" + ((hours < 10) ? "0" : "") + hours + ":" + ((minutes < 10) ? "0" : "") + minutes + ":" + ((secs < 10) ? "0" : "") + secs;
+    }
+
+
+    public static String getFormattedDate(Date date) {
+        DateFormat format = new SimpleDateFormat("d/M/yy", Locale.ENGLISH);
+        return format.format(date);
+    }
+
+    public static Date getDateFromString(String date) throws Exception {
+        DateFormat format = new SimpleDateFormat("d/M/yy", Locale.ENGLISH);
+        return format.parse(date);
     }
 }
