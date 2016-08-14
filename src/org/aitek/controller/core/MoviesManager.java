@@ -26,7 +26,7 @@ public class MoviesManager {
     private List<String> genres;
     private String[] genresArray;
     private List<Movie> movies;
-    private List<Movie> filteredMovies = null;
+    private List<Movie> displayedMovies = null;
     private List<Jukebox> jukeboxes;
     private Context context;
     private Comparator<Movie> comparator = MovieComparator.BY_TITLE_ASC;
@@ -66,7 +66,7 @@ public class MoviesManager {
 
         genreFilter = null;
         genericFilter = null;
-        filteredMovies = null;
+        displayedMovies = movies;
         genres = new ArrayList<String>();
         movies = new ArrayList<Movie>();
     }
@@ -74,10 +74,10 @@ public class MoviesManager {
     public void clear() {
         genres = new ArrayList<String>();
         movies = new ArrayList<Movie>();
+        displayedMovies = movies;
         jukeboxes = new ArrayList<Jukebox>();
         genreFilter = null;
         genericFilter = null;
-        filteredMovies = null;
     }
 
     public String insertGenre(String genre) {
@@ -122,6 +122,7 @@ public class MoviesManager {
 
     public void sortMovies() {
         Collections.sort(movies, comparator);
+//        Collections.sort(displayedMovies, comparator);
     }
 
     public void sortGenres() {
@@ -131,57 +132,57 @@ public class MoviesManager {
     }
 
     public int getCount() {
-        if (filteredMovies == null) {
+        if (displayedMovies == null) {
             return movies.size();
         }
-        return filteredMovies.size();
+        return displayedMovies.size();
     }
 
     public Movie getMovie(int index) {
-        if (filteredMovies == null) {
+        if (displayedMovies == null) {
             return movies.get(index);
         }
-        return filteredMovies.get(index);
+        return displayedMovies.get(index);
     }
 
-    public List<Movie> getFilteredMovies() {
+    public List<Movie> getDisplayedMovies() {
 
-        filteredMovies = new ArrayList<Movie>();
+        displayedMovies = new ArrayList<Movie>();
         for (Movie movie : movies) {
 
             if ((genericFilter == null || movie.getFolder().toLowerCase().indexOf(genericFilter) >= 0 || movie.getPersons().toLowerCase().indexOf(genericFilter) >= 0) &&
                     (genreFilter == null || movie.getGenres().indexOf(genreFilter) >= 0)) {
-                filteredMovies.add(movie);
+                displayedMovies.add(movie);
             } else {
                 continue;
             }
         }
 
-        return filteredMovies;
+        return displayedMovies;
     }
 
     public void setGenreFilter(String value) {
         if (value.equals(Constants.ALL_MOVIES)) {
             value = null;
             if (genericFilter == null) {
-                filteredMovies = null;
+                displayedMovies = movies;
                 return;
             }
         }
         genreFilter = value;
-        filteredMovies = getFilteredMovies();
+        displayedMovies = getDisplayedMovies();
     }
 
     public void setGenericFilter(String value) {
         if (value.equals("")) {
             genericFilter = null;
             if (genreFilter == null) {
-                filteredMovies = null;
+                displayedMovies = movies;
                 return;
             }
         }
         genericFilter = value.toLowerCase();
-        filteredMovies = getFilteredMovies();
+        displayedMovies = getDisplayedMovies();
     }
 
     public void setTitleComparator() {
