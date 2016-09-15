@@ -37,7 +37,7 @@ public class MovieDetailActivity extends Activity {
             Logger.log("Movie: " + movie.toString());
         }
         catch (Exception e) {
-            Logger.toast("MovieDEtail Error: " + e.getMessage(), this);
+            Logger.toast("MovieDetail Error: " + e.getMessage(), this);
             e.printStackTrace();
         }
     }
@@ -64,10 +64,19 @@ public class MovieDetailActivity extends Activity {
             catch (Exception e) {
                 Logger.toast("An error occurred trying to play the movie: " + e.getMessage(), getApplicationContext());
             }
-
-            return true;
         }
-
+        else if (item.getItemId() == R.id.action_trailer) {
+            try {
+                Intent intent = new Intent(Intent.ACTION_SEARCH);
+                intent.setPackage("com.google.android.youtube");
+                intent.putExtra("query", movie.getTitle() + " trailer");
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+            }
+            catch (Exception e) {
+                Logger.toast("An error occurred trying to launch youtube for trailer: " + e.getMessage(), getApplicationContext());
+            }
+        }
         return true;
     }
 }
