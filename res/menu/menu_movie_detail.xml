@@ -2,6 +2,7 @@
     <item android:id="@+id/action_trailer"
         android:title="Trailer"
         android:layout_centerInParent="true"
+        android:icon="@drawable/ic_action_trailer"
         android:showAsAction="always"/>
     <item android:id="@+id/action_play"
           android:title="Play"

@@ -69,7 +69,7 @@ public class MovieDetailActivity extends Activity {
             try {
                 Intent intent = new Intent(Intent.ACTION_SEARCH);
                 intent.setPackage("com.google.android.youtube");
-                intent.putExtra("query", movie.getTitle() + " trailer");
+                intent.putExtra("query", movie.getTitle() + " trailer ita");
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
             }
